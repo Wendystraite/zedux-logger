@@ -1,5 +1,5 @@
 {
-  "name": "zedux-logger",
+  "name": "@wendystraite/zedux-logger",
   "version": "1.0.1",
   "description": "Logging utility for Zedux",
   "scripts": {
