@@ -21,5 +21,6 @@
 
     "declaration": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["src/vitest-setup.ts", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }
