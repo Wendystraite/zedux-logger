@@ -1,7 +1,10 @@
 import { pipe } from 'remeda';
 import { describe, expect, test } from 'vitest';
 
-import { deobfuscate, deobfuscateAndTransform } from './deobfuscate.js';
+import {
+  deobfuscate,
+  deobfuscateAndTransform,
+} from '../src/deobfuscate/deobfuscate.js';
 
 describe('deobfuscate', () => {
   test('should deobfuscate data-last', () => {

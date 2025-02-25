@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "allowJs": true,
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true
+  },
+  "include": ["tests/**/*"],
+  "files": ["vitest.config.ts", "eslint.config.ts"]
+}

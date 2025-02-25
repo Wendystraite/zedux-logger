@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
-import { type AtomName, parseAtomName } from './parseAtomName.js';
+import {
+  type AtomName,
+  parseAtomName,
+} from '../src/parseAtomName/parseAtomName.js';
 
 describe('parseAtomName', () => {
   test.each<

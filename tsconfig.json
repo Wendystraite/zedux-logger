@@ -1,26 +1,7 @@
 {
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "es2022",
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "jsx": "react-jsx",
-
-    "module": "NodeNext",
-    "outDir": "dist",
-    "rootDir": "src",
-    "sourceMap": true,
-
-    "declaration": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["src/vitest-setup.ts", "src/**/*.test.ts", "src/**/*.test.tsx"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.lib.json" },
+    { "path": "./tsconfig.tests.json" }
+  ]
 }

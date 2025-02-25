@@ -17,8 +17,8 @@ import {
   type SelectorAtomName,
   type SignalAtomName,
   parseAtomName,
-} from '../parseAtomName/parseAtomName.js';
-import { graphByNamespaces } from './graphByNamespaces.js';
+} from '../src/parseAtomName/parseAtomName.js';
+import { graphByNamespaces } from '../src/generateGraph/graphByNamespaces.js';
 
 describe('graphByNamespaces', () => {
   test('should create graph', () => {
