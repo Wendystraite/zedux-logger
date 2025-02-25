@@ -1,0 +1,54 @@
+{
+  "name": "zedux-logger",
+  "version": "1.0.0",
+  "description": "Logging utility for Zedux",
+  "scripts": {
+    "dev": "vitest",
+    "build": "tsc",
+    "format": "prettier --write .",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "check-format": "prettier --check .",
+    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+    "ci": "pnpm run build && pnpm run check-format && pnpm run check-exports && pnpm run lint && pnpm run test"
+  },
+  "keywords": [
+    "log",
+    "zedux"
+  ],
+  "homepage": "https://github.com/Wendystraite/zedux-logger",
+  "bugs": {
+    "url": "https://github.com/Wendystraite/zedux-logger/issues"
+  },
+  "author": "Wendy Fouchter <wendy.fouchter@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wendystraite/zedux-logger.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
+    "@eslint/js": "^9.21.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@types/react": "^19.0.10",
+    "@zedux/react": "2.0.0-beta.4",
+    "eslint": "^9.21.0",
+    "happy-dom": "^17.1.4",
+    "jiti": "^2.4.2",
+    "prettier": "^3.5.2",
+    "react": "^19.0.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.25.0",
+    "vitest": "^3.0.7"
+  },
+  "main": "dist/index.js",
+  "dependencies": {
+    "microdiff": "^1.5.0",
+    "remeda": "^2.20.2"
+  }
+}
