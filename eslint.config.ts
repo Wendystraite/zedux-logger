@@ -38,6 +38,7 @@ export default tseslint.config(
       ],
       complexity: ['error', 20],
       eqeqeq: 'error',
+      "no-console": "error",
     },
   },
   {

@@ -99,7 +99,7 @@ export function addZeduxLogger<E extends Ecosystem>(
     addWaitingForPromisesNodesToLog(addToLogsArgs);
 
     consoleGroup(
-      console,
+      options.console,
       'groupCollapsed',
       [logSummary, ...logSummaryColors],
       () => {

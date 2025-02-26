@@ -15,7 +15,7 @@ export function logSnapshot(
   }
 
   consoleGroup(
-    console,
+    options.console,
     options.groupCollapseSnapshot ? 'groupCollapsed' : 'group',
     '📸 snapshot',
     () => {

@@ -26,7 +26,7 @@ export function logStateDiffs(args: LogArgs): void {
     options.console.log('🔍 (no diffs)');
   } else {
     consoleGroup(
-      console,
+      options.console,
       options.groupCollapseStateDiff ? 'groupCollapsed' : 'group',
       `🔍 ${diffs.length} diff${diffs.length > 1 ? 's' : ''}`,
       () => {

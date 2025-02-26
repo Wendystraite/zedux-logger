@@ -18,12 +18,12 @@ export function logGraph(
   }
 
   consoleGroup(
-    console,
+    options.console,
     options.groupCollapseGraph ? 'groupCollapsed' : 'group',
     '📈 graph',
     () => {
       if (newGraph !== undefined) {
-        consoleGroup(console, 'group', 'new graph', () => {
+        consoleGroup(options.console, 'group', 'new graph', () => {
           if (options.showGraphByNamespaces) {
             options.console.log('by-namespaces', newGraph.byNamespaces);
           }
@@ -32,7 +32,7 @@ export function logGraph(
           options.console.log('top-down', newGraph.topDown);
         });
       } else if (oldGraph !== undefined) {
-        consoleGroup(console, 'group', 'old graph', () => {
+        consoleGroup(options.console, 'group', 'old graph', () => {
           if (options.showGraphByNamespaces) {
             options.console.log('by-namespaces', oldGraph.byNamespaces);
           }
