@@ -1,15 +1,15 @@
 import { ZEDUX_LOGGER_COLORS } from '../colors.js';
+import type { LogArgs } from './LogArgs.js';
 import type { AtomName } from '../parseAtomName/parseAtomName.js';
-import type { AddToLogsSummaryArgs } from './AddToLogsSummaryArgs.js';
 
-export function addAtomNameToLog({
+export function createAddToSummaryAtomName({
   show = true,
   atomName,
 }: {
   show?: boolean;
   atomName: AtomName | undefined;
 }) {
-  return function (args: AddToLogsSummaryArgs): void {
+  return function addToSummaryAtomName(args: LogArgs): void {
     const { addLogToSummary } = args;
 
     if (!show || atomName === undefined) {

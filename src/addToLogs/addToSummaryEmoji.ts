@@ -1,6 +1,6 @@
-import type { AddToLogsSummaryArgs } from './AddToLogsSummaryArgs.js';
+import type { LogArgs } from './LogArgs.js';
 
-export function addSummaryEmojiToLog(args: AddToLogsSummaryArgs): void {
+export function addToSummaryEmoji(args: LogArgs): void {
   const {
     addLogToSummary,
     what: {

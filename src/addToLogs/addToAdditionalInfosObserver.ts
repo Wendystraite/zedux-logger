@@ -1,8 +1,9 @@
 import { deobfuscateNode } from '../deobfuscate/deobfuscateNode.js';
 import type { LogArgs } from './LogArgs.js';
 
-export function logObserver(args: LogArgs): void {
+export function addToAdditionalInfosObserver(args: LogArgs): void {
   const {
+    addLogToAdditionalInfos,
     what: { observer },
     options,
   } = args;
@@ -11,8 +12,9 @@ export function logObserver(args: LogArgs): void {
     return;
   }
 
-  options.console.log(
-    '🔗 observer',
-    options.deobfuscateNode ? deobfuscateNode(observer) : observer,
-  );
+  addLogToAdditionalInfos({
+    emoji: '🔗',
+    log: 'observer',
+    data: options.deobfuscateNode ? deobfuscateNode(observer) : observer,
+  });
 }

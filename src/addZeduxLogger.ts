@@ -1,34 +1,36 @@
 import { type Ecosystem } from '@zedux/react';
 import { mapToObj } from 'remeda';
 
-import { consoleGroup } from './utils/consoleGroup.js';
-import { addAtomNameToLog } from './addToLog/addAtomNameToLog.js';
-import { addEcosystemNameToLog } from './addToLog/addEcosystemNameToLog.js';
-import { addOperationToLog } from './addToLog/addOperationToLog.js';
-import { addStateToLog } from './addToLog/addStateToLog.js';
-import { addSummaryEmojiToLog } from './addToLog/addSummaryEmojiToLog.js';
-import { addSummaryToLog } from './addToLog/addSummaryToLog.js';
-import { addTtlToLog } from './addToLog/addTtlToLog.js';
-import { addWaitingForPromisesNodesToLog } from './addToLog/addWaitingForPromisesNodesToLog.js';
+import { addToSummaryAtomName } from './addToLogs/addToSummaryAtomName.js';
+import { addToSummaryEcosystemName } from './addToLogs/addToSummaryEcosystemName.js';
+import { addToSummaryOperation } from './addToLogs/addToSummaryOperation.js';
+import { addToSummaryStates } from './addToLogs/addToSummaryStates.js';
+import { addToSummaryEmoji } from './addToLogs/addToSummaryEmoji.js';
+import { addToSummarySummary } from './addToLogs/addToSummarySummary.js';
+import { addToSummaryTtl } from './addToLogs/addToSummaryTtl.js';
+import { addToSummaryWaitingPromises } from './addToLogs/addToSummaryWaitingPromises.js';
 import { canLogEvent } from './canLogEvent/canLogEvent.js';
 import { type Graph, generateGraph } from './generateGraph/generateGraph.js';
 import { generateSnapshot } from './generateSnapshot/generateSnapshot.js';
-import { logDependencies } from './log/logDependencies.js';
-import { logEcosystem } from './log/logEcosystem.js';
-import { logError } from './log/logError.js';
-import { logEvent } from './log/logEvent.js';
-import { logGraph } from './log/logGraph.js';
-import { logNewState } from './log/logNewState.js';
-import { logNode } from './log/logNode.js';
-import { logObserver } from './log/logObserver.js';
-import { logOldState } from './log/logOldState.js';
-import { logReasons } from './log/logReasons.js';
-import { logSnapshot } from './log/logSnapshot.js';
-import { logStateDiffs } from './log/logStateDiffs.js';
-import { logWaitingPromises } from './log/logWaitingPromises.js';
+import { addToAdditionalInfosDependencies } from './addToLogs/addToAdditionalInfosDependencies.js';
 import { parseWhatHappened } from './parseWhatHappened/parseWhatHappened.js';
 import type { ZeduxLoggerOptions } from './types/ZeduxLoggerOptions.js';
 import type { SubscribedTo } from './types/SubscribedTo.js';
+import type { LogArgs, AdditionalInfoOrSubLogs } from './addToLogs/LogArgs.js';
+import { addToAdditionalInfosEcosystem } from './addToLogs/addToAdditionalInfosEcosystem.js';
+import { addToAdditionalInfosError } from './addToLogs/addToAdditionalInfosError.js';
+import { addToAdditionalInfosEvent } from './addToLogs/addToAdditionalInfosEvent.js';
+import { addToAdditionalInfosGraph } from './addToLogs/addToAdditionalInfosGraph.js';
+import { addToAdditionalInfosNewState } from './addToLogs/addToAdditionalInfosNewState.js';
+import { addToAdditionalInfosNode } from './addToLogs/addToAdditionalInfosNode.js';
+import { addToAdditionalInfosObserver } from './addToLogs/addToAdditionalInfosObserver.js';
+import { addToAdditionalInfosOldState } from './addToLogs/addToAdditionalInfosOldState.js';
+import { addToAdditionalInfosReasons } from './addToLogs/addToAdditionalInfosReasons.js';
+import { addToAdditionalInfosSnapshot } from './addToLogs/addToAdditionalInfosSnapshot.js';
+import { addToAdditionalInfosStateDiffs } from './addToLogs/addToAdditionalInfosStateDiffs.js';
+import { addToAdditionalInfosWaitingPromises } from './addToLogs/addToAdditionalInfosWaitingPromises.js';
+import { addToSummaryObserverAtomName } from './addToLogs/addToSummaryObserverAtomName.js';
+import { logLogArgs } from './log/logLogArgs.js';
 
 export function addZeduxLogger<E extends Ecosystem>(
   ecosystem: E,
@@ -73,7 +75,11 @@ export function addZeduxLogger<E extends Ecosystem>(
 
     let logSummary = '';
     const logSummaryColors: string[] = [];
-    const addToLogsArgs = {
+    const additionalInfos: AdditionalInfoOrSubLogs[] = [];
+    const logArgs: LogArgs = {
+      logSummary,
+      logSummaryColors,
+      additionalInfos,
       addLogToSummary(log: string, ...colors: string[]): void {
         if (log !== '') {
           logSummary += ' ';
@@ -81,43 +87,42 @@ export function addZeduxLogger<E extends Ecosystem>(
         logSummary += log;
         logSummaryColors.push(...colors);
       },
+      addLogToAdditionalInfos(args: AdditionalInfoOrSubLogs): void {
+        additionalInfos.push(args);
+      },
       what,
       options,
+      oldGraph,
+      newGraph,
+      oldSnapshot,
+      newSnapshot,
     };
 
-    addSummaryEmojiToLog(addToLogsArgs);
-    addEcosystemNameToLog(addToLogsArgs);
-    addAtomNameToLog({ atomName: what.atomName })(addToLogsArgs);
-    addSummaryToLog(addToLogsArgs);
-    addOperationToLog(addToLogsArgs);
-    addTtlToLog(addToLogsArgs);
-    addStateToLog(addToLogsArgs);
-    addAtomNameToLog({
-      show: options.showObserver,
-      atomName: what.observerAtomName,
-    })(addToLogsArgs);
-    addWaitingForPromisesNodesToLog(addToLogsArgs);
+    addToSummaryEmoji(logArgs);
+    addToSummaryEcosystemName(logArgs);
+    addToSummaryAtomName(logArgs);
+    addToSummarySummary(logArgs);
+    addToSummaryOperation(logArgs);
+    addToSummaryTtl(logArgs);
+    addToSummaryStates(logArgs);
+    addToSummaryObserverAtomName(logArgs);
+    addToSummaryWaitingPromises(logArgs);
 
-    consoleGroup(
-      options.console,
-      'groupCollapsed',
-      [logSummary, ...logSummaryColors],
-      () => {
-        logEvent({ what, options });
-        logOldState({ what, options });
-        logNewState({ what, options });
-        logWaitingPromises({ what, options });
-        logStateDiffs({ what, options });
-        logReasons({ what, options });
-        logError({ what, options });
-        logNode({ what, options });
-        logObserver({ what, options });
-        logDependencies({ what, options, newGraph, oldGraph });
-        logEcosystem({ what, options });
-        logGraph({ what, options, newGraph, oldGraph });
-        logSnapshot({ what, options, oldSnapshot, newSnapshot });
-      },
-    );
+    addToAdditionalInfosEvent(logArgs);
+    addToAdditionalInfosOldState(logArgs);
+    addToAdditionalInfosNewState(logArgs);
+    addToAdditionalInfosWaitingPromises(logArgs);
+    addToAdditionalInfosStateDiffs(logArgs);
+    addToAdditionalInfosReasons(logArgs);
+    addToAdditionalInfosError(logArgs);
+    addToAdditionalInfosNode(logArgs);
+    addToAdditionalInfosObserver(logArgs);
+    addToAdditionalInfosDependencies(logArgs);
+    addToAdditionalInfosEcosystem(logArgs);
+    addToAdditionalInfosGraph(logArgs);
+    addToAdditionalInfosSnapshot(logArgs);
+
+    logLogArgs(logArgs);
   });
 
   return ecosystem;

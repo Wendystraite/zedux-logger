@@ -1,8 +1,9 @@
 import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { LogArgs } from './LogArgs.js';
 
-export function logOldState(args: LogArgs): void {
+export function addToAdditionalInfosOldState(args: LogArgs): void {
   const {
+    addLogToAdditionalInfos,
     what: { hasOldState = false, oldState },
     options,
   } = args;
@@ -11,9 +12,10 @@ export function logOldState(args: LogArgs): void {
     return;
   }
 
-  options.console.log(
-    '⬅️ %cold state',
-    ZEDUX_LOGGER_COLORS.groupOldState,
-    oldState,
-  );
+  addLogToAdditionalInfos({
+    emoji: '⬅️',
+    log: '%cold state',
+    colors: [ZEDUX_LOGGER_COLORS.groupOldState],
+    data: oldState,
+  });
 }

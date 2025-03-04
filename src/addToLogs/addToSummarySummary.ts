@@ -1,6 +1,6 @@
-import type { AddToLogsSummaryArgs } from './AddToLogsSummaryArgs.js';
+import type { LogArgs } from './LogArgs.js';
 
-export function addSummaryToLog(args: AddToLogsSummaryArgs): void {
+export function addToSummarySummary(args: LogArgs): void {
   const {
     addLogToSummary,
     what: {

@@ -1,7 +1,7 @@
 import { ZEDUX_LOGGER_COLORS } from '../colors.js';
-import type { AddToLogsSummaryArgs } from './AddToLogsSummaryArgs.js';
+import type { LogArgs } from './LogArgs.js';
 
-export function addOperationToLog(args: AddToLogsSummaryArgs): void {
+export function addToSummaryOperation(args: LogArgs): void {
   const {
     addLogToSummary,
     what: { operation },

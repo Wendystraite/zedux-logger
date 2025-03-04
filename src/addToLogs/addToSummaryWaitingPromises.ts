@@ -1,9 +1,7 @@
 import { ZEDUX_LOGGER_COLORS } from '../colors.js';
-import type { AddToLogsSummaryArgs } from './AddToLogsSummaryArgs.js';
+import type { LogArgs } from './LogArgs.js';
 
-export function addWaitingForPromisesNodesToLog(
-  args: AddToLogsSummaryArgs,
-): void {
+export function addToSummaryWaitingPromises(args: LogArgs): void {
   const {
     addLogToSummary,
     what: { waitingForPromisesNodes },
