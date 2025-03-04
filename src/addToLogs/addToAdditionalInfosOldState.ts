@@ -5,10 +5,12 @@ export function addToAdditionalInfosOldState(args: LogArgs): void {
   const {
     addLogToAdditionalInfos,
     what: { hasOldState = false, oldState },
-    options,
+    options: {
+      showInDetails: { showOldState },
+    },
   } = args;
 
-  if (!options.showOldState || !hasOldState) {
+  if (!showOldState || !hasOldState) {
     return;
   }
 

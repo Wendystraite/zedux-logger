@@ -4,10 +4,12 @@ export function addToAdditionalInfosError(args: LogArgs): void {
   const {
     addLogToAdditionalInfos,
     what: { error },
-    options,
+    options: {
+      showInDetails: { showError },
+    },
   } = args;
 
-  if (!options.showError || error === undefined) {
+  if (!showError || error === undefined) {
     return;
   }
 

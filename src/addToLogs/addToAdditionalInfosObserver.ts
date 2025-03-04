@@ -5,16 +5,19 @@ export function addToAdditionalInfosObserver(args: LogArgs): void {
   const {
     addLogToAdditionalInfos,
     what: { observer },
-    options,
+    options: {
+      showInDetails: { showObserver },
+      deobfuscateSingleLetters,
+    },
   } = args;
 
-  if (!options.showObserver || observer === undefined) {
+  if (!showObserver || observer === undefined) {
     return;
   }
 
   addLogToAdditionalInfos({
     emoji: '🔗',
     log: 'observer',
-    data: options.deobfuscateNode ? deobfuscateNode(observer) : observer,
+    data: deobfuscateSingleLetters.node ? deobfuscateNode(observer) : observer,
   });
 }

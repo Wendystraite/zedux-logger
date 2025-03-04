@@ -2,28 +2,34 @@ import { AtomInstance, ExternalNode } from '@zedux/react';
 
 import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
 import type { SubscribedTo } from '../types/SubscribedTo.js';
-import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
 export function canLogEvent(args: {
   what: WhatHappened;
-  options: ZeduxLoggerOptions;
+  options: CompleteZeduxLoggerOptions;
   subscribedTo: SubscribedTo;
 }): boolean {
   const {
     what: { node, flags, event, eventMap },
-    options,
+    options: {
+      disableLoggingFlag,
+      filters: { hideExternalNodesChanges, hideSignalsChanges },
+    },
     subscribedTo,
   } = args;
 
-  if (flags?.includes(options.disableLoggingFlag) === true) {
+  if (
+    disableLoggingFlag !== null &&
+    flags?.includes(disableLoggingFlag) === true
+  ) {
     return false;
   }
 
-  if (options.hideExternalNodesChanges && node instanceof ExternalNode) {
+  if (hideExternalNodesChanges && node instanceof ExternalNode) {
     return false;
   }
 
-  if (options.hideSignalsChanges && node?.id.startsWith('@signal') === true) {
+  if (hideSignalsChanges && node?.id.startsWith('@signal') === true) {
     return false;
   }
 

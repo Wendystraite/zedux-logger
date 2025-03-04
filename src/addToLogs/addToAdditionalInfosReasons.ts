@@ -5,10 +5,13 @@ export function addToAdditionalInfosReasons(args: LogArgs): void {
   const {
     addLogToAdditionalInfos,
     what: { reasons },
-    options,
+    options: {
+      showInDetails: { showReasons },
+      deobfuscateSingleLetters,
+    },
   } = args;
 
-  if (!options.showReasons || reasons === undefined) {
+  if (!showReasons || reasons === undefined) {
     return;
   }
 
@@ -21,7 +24,9 @@ export function addToAdditionalInfosReasons(args: LogArgs): void {
     addLogToAdditionalInfos({
       emoji: '💡',
       log: 'reasons',
-      data: options.deobfuscateReasons ? deobfuscateReasons(reasons) : reasons,
+      data: deobfuscateSingleLetters.reasons
+        ? deobfuscateReasons(reasons)
+        : reasons,
     });
   }
 }

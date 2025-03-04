@@ -1,6 +1,6 @@
 import type { Graph } from '../generateGraph/generateGraph.js';
 import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
-import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
 export interface LogArgs {
   readonly logSummary: string;
@@ -10,7 +10,7 @@ export interface LogArgs {
   addLogToSummary(this: void, log: string, ...colors: string[]): void;
   addLogToAdditionalInfos(this: void, args: AdditionalInfoOrSubLogs): void;
   what: WhatHappened;
-  options: ZeduxLoggerOptions;
+  options: CompleteZeduxLoggerOptions;
   newGraph: Graph | undefined;
   oldGraph: Graph | undefined;
   oldSnapshot: unknown;

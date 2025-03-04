@@ -6,7 +6,14 @@ export function addToSummarySummary(args: LogArgs): void {
     what: {
       summary: [summary, , summaryColor],
     },
+    options: {
+      showInSummary: { showSummary },
+    },
   } = args;
+
+  if (!showSummary) {
+    return;
+  }
 
   addLogToSummary(`%c${summary}`, summaryColor);
 }

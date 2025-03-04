@@ -1,24 +1,29 @@
 import type { LogArgs } from './LogArgs.js';
 
 export function addToAdditionalInfosGraph(args: LogArgs): void {
-  const { options, newGraph, oldGraph, addLogToAdditionalInfos } = args;
+  const {
+    options: {
+      showInDetails: { showGraph },
+      graphOptions: { groupCollapseGraph, showGraphByNamespaces },
+    },
+    newGraph,
+    oldGraph,
+    addLogToAdditionalInfos,
+  } = args;
 
-  if (
-    !options.showGraph ||
-    (oldGraph === undefined && newGraph === undefined)
-  ) {
+  if (!showGraph || (oldGraph === undefined && newGraph === undefined)) {
     return;
   }
 
   addLogToAdditionalInfos({
     emoji: '📈',
     log: 'graph',
-    groupCollapsedSubLogs: options.groupCollapseGraph,
+    groupCollapsedSubLogs: groupCollapseGraph,
     subLogs: [
       {
         log: 'new graph',
         subLogs: [
-          options.showGraphByNamespaces && {
+          showGraphByNamespaces && {
             log: 'by-namespaces',
             data: newGraph?.byNamespaces,
           },
@@ -39,7 +44,7 @@ export function addToAdditionalInfosGraph(args: LogArgs): void {
       {
         log: 'old graph',
         subLogs: [
-          options.showGraphByNamespaces && {
+          showGraphByNamespaces && {
             log: 'by-namespaces',
             data: oldGraph?.byNamespaces,
           },

@@ -2,21 +2,26 @@ import type { Ecosystem } from '@zedux/react';
 import type { RefObject } from 'react';
 
 import type { EventMap } from '../types/EventMap.js';
-import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
-export function generateSnapshot({
-  ecosystem,
-  eventMap,
-  options,
-  oldSnapshotRef,
-}: {
+export function generateSnapshot(args: {
   ecosystem: Ecosystem;
   eventMap: EventMap;
-  options: ZeduxLoggerOptions;
+  options: CompleteZeduxLoggerOptions;
   oldSnapshotRef: RefObject<unknown>;
 }): unknown {
+  const {
+    ecosystem,
+    eventMap,
+    oldSnapshotRef,
+    options: {
+      console,
+      showInDetails: { showSnapshot },
+    },
+  } = args;
+
   let canDehydrate = false;
-  if (options.showSnapshot) {
+  if (showSnapshot) {
     if (eventMap.change !== undefined) {
       canDehydrate = true;
     } else if (
@@ -35,7 +40,7 @@ export function generateSnapshot({
       newSnapshot = ecosystem.dehydrate();
       oldSnapshotRef.current = newSnapshot;
     } catch (error) {
-      options.console.warn('Failed to generate snapshot', error);
+      console.warn('Failed to generate snapshot', error);
     }
   }
 

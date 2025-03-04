@@ -6,9 +6,12 @@ export function addToAdditionalInfosDependencies(args: LogArgs): void {
     what: { node },
     newGraph,
     oldGraph,
+    options: {
+      showInDetails: { showDependencies },
+    },
   } = args;
 
-  if (node === undefined) {
+  if (!showDependencies || node === undefined) {
     return;
   }
 

@@ -30,7 +30,11 @@ import { generateSnapshot } from './generateSnapshot/generateSnapshot.js';
 import { logLogArgs } from './log/logLogArgs.js';
 import { parseWhatHappened } from './parseWhatHappened/parseWhatHappened.js';
 import type { SubscribedTo } from './types/SubscribedTo.js';
-import type { ZeduxLoggerOptions } from './types/ZeduxLoggerOptions.js';
+import {
+  DEFAULT_ZEDUX_LOGGER_OPTIONS,
+  type ZeduxLoggerOptions,
+} from './types/ZeduxLoggerOptions.js';
+import { defaults } from './utils/defaults.js';
 
 export function addZeduxLogger<E extends Ecosystem>(
   ecosystem: E,
@@ -41,19 +45,21 @@ export function addZeduxLogger<E extends Ecosystem>(
     current: undefined,
   };
 
-  if (!options.enabled) {
+  const completeOptions = defaults(DEFAULT_ZEDUX_LOGGER_OPTIONS, options);
+
+  if (!completeOptions.enabled) {
     return ecosystem;
   }
 
-  const subscribedTo: SubscribedTo = mapToObj(options.events, (event) => [
-    event,
-    true,
-  ]);
+  const subscribedTo: SubscribedTo = mapToObj(
+    completeOptions.events,
+    (event) => [event, true],
+  );
 
   ecosystem.on((eventMap) => {
     const what = parseWhatHappened(ecosystem, eventMap);
 
-    if (!canLogEvent({ what, options, subscribedTo })) {
+    if (!canLogEvent({ what, options: completeOptions, subscribedTo })) {
       return;
     }
 
@@ -61,7 +67,7 @@ export function addZeduxLogger<E extends Ecosystem>(
     const newSnapshot = generateSnapshot({
       ecosystem,
       eventMap,
-      options,
+      options: completeOptions,
       oldSnapshotRef,
     });
 
@@ -69,7 +75,7 @@ export function addZeduxLogger<E extends Ecosystem>(
     const newGraph = generateGraph({
       ecosystem,
       eventMap,
-      options,
+      options: completeOptions,
       oldGraphRef,
     });
 
@@ -91,7 +97,7 @@ export function addZeduxLogger<E extends Ecosystem>(
         additionalInfos.push(args);
       },
       what,
-      options,
+      options: completeOptions,
       oldGraph,
       newGraph,
       oldSnapshot,

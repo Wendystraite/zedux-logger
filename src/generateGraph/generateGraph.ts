@@ -6,7 +6,7 @@ import {
 import type { RefObject } from 'react';
 
 import type { EventMap } from '../types/EventMap.js';
-import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 import {
   type GraphByNamespaces,
   graphByNamespaces,
@@ -26,19 +26,29 @@ export interface Graph {
   topDown: GraphViewRecursive;
 }
 
-export function generateGraph({
-  ecosystem,
-  eventMap,
-  options,
-  oldGraphRef,
-}: {
+export function generateGraph(args: {
   ecosystem: Ecosystem;
   eventMap: EventMap;
-  options: ZeduxLoggerOptions;
+  options: CompleteZeduxLoggerOptions;
   oldGraphRef: RefObject<Graph | undefined>;
 }): Graph | undefined {
+  const {
+    ecosystem,
+    eventMap,
+    options: {
+      console,
+      showInDetails: { showGraph },
+      graphOptions: {
+        showGraphByNamespaces,
+        hideExternalNodesFromFlatGraph,
+        hideSignalsFromFlatGraph,
+      },
+    },
+    oldGraphRef,
+  } = args;
+
   let canGraph = false;
-  if (options.showGraph) {
+  if (showGraph) {
     if (eventMap.edge !== undefined) {
       canGraph = true;
     } else if (
@@ -57,7 +67,7 @@ export function generateGraph({
       const flat = ecosystem.viewGraph('flat');
 
       newGraph = {
-        byNamespaces: options.showGraphByNamespaces
+        byNamespaces: showGraphByNamespaces
           ? graphByNamespaces({
               flat,
               getNode: (id) => ecosystem.n.get(id),
@@ -69,26 +79,19 @@ export function generateGraph({
       };
       oldGraphRef.current = newGraph;
     } catch (error) {
-      options.console.warn('Failed to generate graph', error);
+      console.warn('Failed to generate graph', error);
     }
   }
 
   if (
-    (options.hideExternalNodesFromFlatGraph ||
-      options.hideSignalsFromFlatGraph) &&
+    (hideExternalNodesFromFlatGraph || hideSignalsFromFlatGraph) &&
     newGraph !== undefined
   ) {
     for (const [, node] of ecosystem.n) {
-      if (
-        options.hideExternalNodesFromFlatGraph &&
-        node instanceof ExternalNode
-      ) {
+      if (hideExternalNodesFromFlatGraph && node instanceof ExternalNode) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newGraph.flat[node.id];
-      } else if (
-        options.hideSignalsFromFlatGraph &&
-        node.id.startsWith('@signal')
-      ) {
+      } else if (hideSignalsFromFlatGraph && node.id.startsWith('@signal')) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newGraph.flat[node.id];
       }

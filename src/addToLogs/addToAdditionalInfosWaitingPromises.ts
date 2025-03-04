@@ -4,11 +4,13 @@ export function addToAdditionalInfosWaitingPromises(args: LogArgs): void {
   const {
     addLogToAdditionalInfos,
     what: { waitingForPromisesNodes },
-    options,
+    options: {
+      showInDetails: { showWaitingPromises },
+    },
   } = args;
 
   if (
-    !options.showWaitingPromises ||
+    !showWaitingPromises ||
     waitingForPromisesNodes === undefined ||
     waitingForPromisesNodes.length <= 0
   ) {

@@ -12,7 +12,10 @@ export function addToSummaryStates(args: LogArgs): void {
       hasOldState = false,
       hasNewState = false,
     },
-    options,
+    options: {
+      console,
+      showInSummary: { showOldState, showNewState },
+    },
   } = args;
 
   let showState = false;
@@ -22,12 +25,12 @@ export function addToSummaryStates(args: LogArgs): void {
     showState = true;
   }
 
-  if (showState && options.showOldState && oldState !== undefined) {
+  if (showState && showOldState && oldState !== undefined) {
     const oldStateString = stringifyState({
-      showStateOption: options.showOldState,
+      showStateOption: showOldState,
       state: oldState,
       hasState: hasOldState,
-      options,
+      console,
     });
     if (oldStateString !== undefined) {
       addLogToSummary(
@@ -38,12 +41,12 @@ export function addToSummaryStates(args: LogArgs): void {
     }
   }
 
-  if (showState && options.showNewState) {
+  if (showState && showNewState) {
     const newStateString = stringifyState({
-      showStateOption: options.showNewState,
+      showStateOption: showNewState,
       state: newState,
       hasState: hasNewState,
-      options,
+      console,
     });
     if (newStateString !== undefined) {
       addLogToSummary(

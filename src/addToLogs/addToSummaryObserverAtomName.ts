@@ -2,9 +2,15 @@ import type { LogArgs } from './LogArgs.js';
 import { createAddToSummaryAtomName } from './createAddToSummaryAtomName.js';
 
 export function addToSummaryObserverAtomName(args: LogArgs): void {
-  const { options, what } = args;
+  const {
+    options: {
+      showInSummary: { showObserverName },
+    },
+    what: { observerAtomName },
+  } = args;
+
   createAddToSummaryAtomName({
-    show: options.showObserver,
-    atomName: what.observerAtomName,
+    show: showObserverName,
+    atomName: observerAtomName,
   })(args);
 }

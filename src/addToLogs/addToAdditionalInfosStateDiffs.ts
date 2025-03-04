@@ -8,11 +8,14 @@ export function addToAdditionalInfosStateDiffs(args: LogArgs): void {
   const {
     addLogToAdditionalInfos,
     what: { hasOldState = false, hasNewState = false, oldState, newState },
-    options,
+    options: {
+      showInDetails: { showStateDiff },
+      diffOptions: { groupCollapseStateDiff },
+    },
   } = args;
 
   if (
-    !options.showStateDiff ||
+    !showStateDiff ||
     !hasOldState ||
     !hasNewState ||
     (!isArray(oldState) && !isPlainObject(oldState)) ||
@@ -32,7 +35,7 @@ export function addToAdditionalInfosStateDiffs(args: LogArgs): void {
     addLogToAdditionalInfos({
       emoji: '🔍',
       log: `${diffs.length} diff${diffs.length > 1 ? 's' : ''}`,
-      groupCollapsedSubLogs: options.groupCollapseStateDiff,
+      groupCollapsedSubLogs: groupCollapseStateDiff,
       subLogs: diffs.map(({ type, path, ...diff }) => {
         const colorsMap: Record<typeof type, string> = {
           CREATE: ZEDUX_LOGGER_COLORS.diffCreate,

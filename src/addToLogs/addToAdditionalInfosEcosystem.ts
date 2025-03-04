@@ -5,17 +5,20 @@ export function addToAdditionalInfosEcosystem(args: LogArgs): void {
   const {
     addLogToAdditionalInfos,
     what: { ecosystem },
-    options,
+    options: {
+      showInDetails: { showEcosystem },
+      deobfuscateSingleLetters,
+    },
   } = args;
 
-  if (!options.showEcosystem) {
+  if (!showEcosystem) {
     return;
   }
 
   addLogToAdditionalInfos({
     emoji: '🌍',
     log: 'ecosystem',
-    data: options.deobfuscateEcosystem
+    data: deobfuscateSingleLetters.ecosystem
       ? deobfuscateEcosystem(ecosystem)
       : ecosystem,
   });

@@ -5,7 +5,9 @@ export function addToSummaryTtl(args: LogArgs): void {
   const {
     addLogToSummary,
     what: { eventMap, template },
-    options: { showTtl },
+    options: {
+      showInSummary: { showTtl },
+    },
   } = args;
 
   if (

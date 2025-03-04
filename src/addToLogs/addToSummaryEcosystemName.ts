@@ -5,7 +5,9 @@ export function addToSummaryEcosystemName(args: LogArgs): void {
   const {
     addLogToSummary,
     what: { ecosystemName },
-    options: { showEcosystemName },
+    options: {
+      showInSummary: { showEcosystemName },
+    },
   } = args;
 
   if (!showEcosystemName) {

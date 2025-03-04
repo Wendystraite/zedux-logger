@@ -5,9 +5,12 @@ export function addToSummaryOperation(args: LogArgs): void {
   const {
     addLogToSummary,
     what: { operation },
+    options: {
+      showInSummary: { showOperation },
+    },
   } = args;
 
-  if (operation === undefined) {
+  if (!showOperation || operation === undefined) {
     return;
   }
 

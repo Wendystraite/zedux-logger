@@ -6,10 +6,12 @@ export function addToSummaryEmoji(args: LogArgs): void {
     what: {
       summary: [, summaryEmoji],
     },
-    options: { showSummaryEmoji },
+    options: {
+      showInSummary: { showEmoji },
+    },
   } = args;
 
-  if (!showSummaryEmoji) {
+  if (!showEmoji) {
     return;
   }
 

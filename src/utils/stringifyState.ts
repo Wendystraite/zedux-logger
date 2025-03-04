@@ -1,14 +1,14 @@
 import { sliceString } from 'remeda';
 
-import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
 export function stringifyState(args: {
   showStateOption: boolean;
   state: unknown;
   hasState: boolean;
-  options: ZeduxLoggerOptions;
+  console: CompleteZeduxLoggerOptions['console'];
 }): string | undefined {
-  const { showStateOption, state, hasState, options } = args;
+  const { showStateOption, state, hasState, console } = args;
   let stateString: string | undefined;
   if (showStateOption && hasState) {
     try {
@@ -18,7 +18,7 @@ export function stringifyState(args: {
         stateString = JSON.stringify(state);
       }
     } catch (error: unknown) {
-      options.console.warn('Failed to generate previous state string', error);
+      console.warn('Failed to generate previous state string', error);
       stateString = String(state);
     }
   }

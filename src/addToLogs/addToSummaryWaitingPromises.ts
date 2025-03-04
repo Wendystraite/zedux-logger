@@ -5,7 +5,9 @@ export function addToSummaryWaitingPromises(args: LogArgs): void {
   const {
     addLogToSummary,
     what: { waitingForPromisesNodes },
-    options: { showWaitingPromises },
+    options: {
+      showInSummary: { showWaitingPromises },
+    },
   } = args;
 
   if (

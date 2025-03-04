@@ -5,16 +5,19 @@ export function addToAdditionalInfosNode(args: LogArgs): void {
   const {
     addLogToAdditionalInfos,
     what: { node },
-    options,
+    options: {
+      showInDetails: { showNode },
+      deobfuscateSingleLetters,
+    },
   } = args;
 
-  if (!options.showNode || node === undefined) {
+  if (!showNode || node === undefined) {
     return;
   }
 
   addLogToAdditionalInfos({
     emoji: '🔗',
     log: 'node',
-    data: options.deobfuscateNode ? deobfuscateNode(node) : node,
+    data: deobfuscateSingleLetters.node ? deobfuscateNode(node) : node,
   });
 }
