@@ -1,8 +1,8 @@
 import { AtomInstance, ExternalNode } from '@zedux/react';
 
 import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
-import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 import type { SubscribedTo } from '../types/SubscribedTo.js';
+import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
 export function canLogEvent(args: {
   what: WhatHappened;

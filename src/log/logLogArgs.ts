@@ -1,6 +1,6 @@
 import type { LogArgs } from '../addToLogs/LogArgs.js';
-import { logAdditionalInfo } from './logAdditionalInfo.js';
 import { consoleGroup } from '../utils/consoleGroup.js';
+import { logAdditionalInfo } from './logAdditionalInfo.js';
 
 export function logLogArgs(logArgs: LogArgs): void {
   const { options, logSummary, logSummaryColors, additionalInfos } = logArgs;

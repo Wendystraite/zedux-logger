@@ -1,6 +1,6 @@
 import { ZEDUX_LOGGER_COLORS } from '../colors.js';
-import type { LogArgs } from './LogArgs.js';
 import type { AtomName } from '../parseAtomName/parseAtomName.js';
+import type { LogArgs } from './LogArgs.js';
 
 export function createAddToSummaryAtomName({
   show = true,

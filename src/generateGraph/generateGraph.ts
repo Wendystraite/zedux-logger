@@ -5,8 +5,8 @@ import {
 } from '@zedux/react';
 import type { RefObject } from 'react';
 
-import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 import type { EventMap } from '../types/EventMap.js';
+import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 import {
   type GraphByNamespaces,
   graphByNamespaces,
