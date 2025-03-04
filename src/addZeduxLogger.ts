@@ -38,14 +38,14 @@ import { defaults } from './utils/defaults.js';
 
 export function addZeduxLogger<E extends Ecosystem>(
   ecosystem: E,
-  options: ZeduxLoggerOptions,
+  options?: ZeduxLoggerOptions,
 ): E {
   const oldSnapshotRef: { current: unknown } = { current: undefined };
   const oldGraphRef: { current: Graph | undefined } = {
     current: undefined,
   };
 
-  const completeOptions = defaults(DEFAULT_ZEDUX_LOGGER_OPTIONS, options);
+  const completeOptions = defaults(DEFAULT_ZEDUX_LOGGER_OPTIONS, options ?? {});
 
   if (!completeOptions.enabled) {
     return ecosystem;
