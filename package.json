@@ -8,6 +8,7 @@
     "format": "prettier --write src",
     "lint": "eslint src",
     "test": "vitest run",
+    "bench": "vitest bench",
     "check-format": "prettier --check src",
     "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
     "ci": "pnpm run build && pnpm run check-format && pnpm run check-exports && pnpm run lint && pnpm run test",
