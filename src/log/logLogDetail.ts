@@ -1,12 +1,12 @@
 import { isTruthy } from 'remeda';
 
-import type { AdditionalInfoOrSubLogs } from '../addToLogs/LogArgs.js';
+import type { LogDetail } from '../addToLogs/LogArgs.js';
 import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 import { consoleGroup } from '../utils/consoleGroup.js';
 
-export function logAdditionalInfo(
+export function logLogDetail(
   console: CompleteZeduxLoggerOptions['console'],
-  info: AdditionalInfoOrSubLogs,
+  info: LogDetail,
 ) {
   const logs = [
     info.emoji !== undefined ? `${info.emoji} ${info.log}` : info.log,
@@ -23,7 +23,7 @@ export function logAdditionalInfo(
           console.log(info.data);
         }
         for (const subLog of subLogs) {
-          logAdditionalInfo(console, subLog);
+          logLogDetail(console, subLog);
         }
       },
     );

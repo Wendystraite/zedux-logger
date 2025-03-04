@@ -1,7 +1,7 @@
 import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosSnapshot(args: LogArgs): void {
+export function addToDetailsSnapshot(args: LogArgs): void {
   const {
     options: {
       showInDetails: { showSnapshot },
@@ -9,7 +9,7 @@ export function addToAdditionalInfosSnapshot(args: LogArgs): void {
     },
     oldSnapshot,
     newSnapshot,
-    addLogToAdditionalInfos,
+    addLogToDetails,
   } = args;
 
   if (
@@ -19,7 +19,7 @@ export function addToAdditionalInfosSnapshot(args: LogArgs): void {
     return;
   }
 
-  addLogToAdditionalInfos({
+  addLogToDetails({
     emoji: '📸',
     log: 'snapshot',
     groupCollapsedSubLogs: groupCollapseSnapshot,

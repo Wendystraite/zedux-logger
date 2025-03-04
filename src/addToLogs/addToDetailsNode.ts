@@ -1,9 +1,9 @@
 import { deobfuscateNode } from '../deobfuscate/deobfuscateNode.js';
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosNode(args: LogArgs): void {
+export function addToDetailsNode(args: LogArgs): void {
   const {
-    addLogToAdditionalInfos,
+    addLogToDetails,
     what: { node },
     options: {
       showInDetails: { showNode },
@@ -15,7 +15,7 @@ export function addToAdditionalInfosNode(args: LogArgs): void {
     return;
   }
 
-  addLogToAdditionalInfos({
+  addLogToDetails({
     emoji: '🔗',
     log: 'node',
     data: deobfuscateSingleLetters.node ? deobfuscateNode(node) : node,

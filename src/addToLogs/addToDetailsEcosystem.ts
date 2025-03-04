@@ -1,9 +1,9 @@
 import { deobfuscateEcosystem } from '../deobfuscate/deobfuscateEcosystem.js';
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosEcosystem(args: LogArgs): void {
+export function addToDetailsEcosystem(args: LogArgs): void {
   const {
-    addLogToAdditionalInfos,
+    addLogToDetails,
     what: { ecosystem },
     options: {
       showInDetails: { showEcosystem },
@@ -15,7 +15,7 @@ export function addToAdditionalInfosEcosystem(args: LogArgs): void {
     return;
   }
 
-  addLogToAdditionalInfos({
+  addLogToDetails({
     emoji: '🌍',
     log: 'ecosystem',
     data: deobfuscateSingleLetters.ecosystem

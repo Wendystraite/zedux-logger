@@ -1,9 +1,9 @@
 import { deobfuscateReasons } from '../deobfuscate/deobfuscateEvent.js';
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosReasons(args: LogArgs): void {
+export function addToDetailsReasons(args: LogArgs): void {
   const {
-    addLogToAdditionalInfos,
+    addLogToDetails,
     what: { reasons },
     options: {
       showInDetails: { showReasons },
@@ -16,12 +16,12 @@ export function addToAdditionalInfosReasons(args: LogArgs): void {
   }
 
   if (reasons.length <= 0) {
-    addLogToAdditionalInfos({
+    addLogToDetails({
       emoji: '💡',
       log: '(no reasons)',
     });
   } else {
-    addLogToAdditionalInfos({
+    addLogToDetails({
       emoji: '💡',
       log: 'reasons',
       data: deobfuscateSingleLetters.reasons

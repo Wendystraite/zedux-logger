@@ -5,23 +5,24 @@ import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js'
 export interface LogArgs {
   readonly logSummary: string;
   readonly logSummaryColors: string[];
-  readonly additionalInfos: AdditionalInfoOrSubLogs[];
+  readonly details: LogDetail[];
 
   addLogToSummary(this: void, log: string, ...colors: string[]): void;
-  addLogToAdditionalInfos(this: void, args: AdditionalInfoOrSubLogs): void;
+  addLogToDetails(this: void, detail: LogDetail): void;
+
   what: WhatHappened;
   options: CompleteZeduxLoggerOptions;
   newGraph: Graph | undefined;
   oldGraph: Graph | undefined;
-  oldSnapshot: unknown;
   newSnapshot: unknown;
+  oldSnapshot: unknown;
 }
 
-export interface AdditionalInfoOrSubLogs {
+export interface LogDetail {
   emoji?: string;
   log: string;
   colors?: string[];
-  subLogs?: Array<AdditionalInfoOrSubLogs | false | undefined>;
+  subLogs?: Array<LogDetail | false | undefined>;
   groupCollapsedSubLogs?: boolean;
   data?: unknown;
 }

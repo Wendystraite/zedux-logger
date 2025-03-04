@@ -1,8 +1,8 @@
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosDependencies(args: LogArgs): void {
+export function addToDetailsDependencies(args: LogArgs): void {
   const {
-    addLogToAdditionalInfos,
+    addLogToDetails,
     what: { node },
     newGraph,
     oldGraph,
@@ -21,7 +21,7 @@ export function addToAdditionalInfosDependencies(args: LogArgs): void {
     return;
   }
 
-  addLogToAdditionalInfos({
+  addLogToDetails({
     emoji: '🔗',
     log: 'dependencies',
     data: graph.dependencies,

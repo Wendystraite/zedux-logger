@@ -1,6 +1,6 @@
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosGraph(args: LogArgs): void {
+export function addToDetailsGraph(args: LogArgs): void {
   const {
     options: {
       showInDetails: { showGraph },
@@ -8,14 +8,14 @@ export function addToAdditionalInfosGraph(args: LogArgs): void {
     },
     newGraph,
     oldGraph,
-    addLogToAdditionalInfos,
+    addLogToDetails,
   } = args;
 
   if (!showGraph || (oldGraph === undefined && newGraph === undefined)) {
     return;
   }
 
-  addLogToAdditionalInfos({
+  addLogToDetails({
     emoji: '📈',
     log: 'graph',
     groupCollapsedSubLogs: groupCollapseGraph,

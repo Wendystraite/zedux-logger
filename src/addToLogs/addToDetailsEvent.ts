@@ -1,9 +1,9 @@
 import { deobfuscateEvent } from '../deobfuscate/deobfuscateEvent.js';
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosEvent(args: LogArgs): void {
+export function addToDetailsEvent(args: LogArgs): void {
   const {
-    addLogToAdditionalInfos,
+    addLogToDetails,
     what: { event },
     options: {
       showInDetails: { showEvent },
@@ -15,7 +15,7 @@ export function addToAdditionalInfosEvent(args: LogArgs): void {
     return;
   }
 
-  addLogToAdditionalInfos({
+  addLogToDetails({
     emoji: '📢',
     log: `event(${event.type})`,
     data: deobfuscateSingleLetters.event ? deobfuscateEvent(event) : event,

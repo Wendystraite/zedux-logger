@@ -1,8 +1,8 @@
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosWaitingPromises(args: LogArgs): void {
+export function addToDetailsWaitingPromises(args: LogArgs): void {
   const {
-    addLogToAdditionalInfos,
+    addLogToDetails,
     what: { waitingForPromisesNodes },
     options: {
       showInDetails: { showWaitingPromises },
@@ -17,7 +17,7 @@ export function addToAdditionalInfosWaitingPromises(args: LogArgs): void {
     return;
   }
 
-  addLogToAdditionalInfos({
+  addLogToDetails({
     emoji: '⌛',
     log: 'waiting for',
     data: waitingForPromisesNodes.map((node) => [node.id, node]),

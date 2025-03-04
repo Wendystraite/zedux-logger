@@ -4,9 +4,9 @@ import { isArray, isPlainObject } from 'remeda';
 import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { LogArgs } from './LogArgs.js';
 
-export function addToAdditionalInfosStateDiffs(args: LogArgs): void {
+export function addToDetailsStateDiffs(args: LogArgs): void {
   const {
-    addLogToAdditionalInfos,
+    addLogToDetails,
     what: { hasOldState = false, hasNewState = false, oldState, newState },
     options: {
       showInDetails: { showStateDiff },
@@ -27,12 +27,12 @@ export function addToAdditionalInfosStateDiffs(args: LogArgs): void {
   const diffs = microdiff(oldState, newState);
 
   if (diffs.length <= 0) {
-    addLogToAdditionalInfos({
+    addLogToDetails({
       emoji: '🔍',
       log: '(no diffs)',
     });
   } else {
-    addLogToAdditionalInfos({
+    addLogToDetails({
       emoji: '🔍',
       log: `${diffs.length} diff${diffs.length > 1 ? 's' : ''}`,
       groupCollapsedSubLogs: groupCollapseStateDiff,
