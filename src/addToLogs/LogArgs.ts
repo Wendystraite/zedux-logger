@@ -3,9 +3,9 @@ import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
 import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
 export interface LogArgs {
-  readonly logSummary: string;
-  readonly logSummaryColors: string[];
-  readonly details: LogDetail[];
+  logSummary: string;
+  logSummaryColors: string[];
+  details: LogDetail[];
 
   addLogToSummary(this: void, log: string, ...colors: string[]): void;
   addLogToDetails(this: void, detail: LogDetail): void;

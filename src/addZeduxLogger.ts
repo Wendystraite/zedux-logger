@@ -79,22 +79,19 @@ export function addZeduxLogger<E extends Ecosystem>(
       oldGraphRef,
     });
 
-    let logSummary = '';
-    const logSummaryColors: string[] = [];
-    const details: LogDetail[] = [];
     const logArgs: LogArgs = {
-      logSummary,
-      logSummaryColors,
-      details,
+      logSummary: '',
+      logSummaryColors: [],
+      details: [],
       addLogToSummary(log: string, ...colors: string[]): void {
         if (log !== '') {
-          logSummary += ' ';
+          logArgs.logSummary += ' ';
         }
-        logSummary += log;
-        logSummaryColors.push(...colors);
+        logArgs.logSummary += log;
+        logArgs.logSummaryColors.push(...colors);
       },
       addLogToDetails(args: LogDetail): void {
-        details.push(args);
+        logArgs.details.push(args);
       },
       what,
       options: completeOptions,
