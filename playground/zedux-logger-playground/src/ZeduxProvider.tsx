@@ -9,7 +9,9 @@ export function ZeduxProvider({ children }: PropsWithChildren) {
   const ecosystem = useMemo(() => {
     const ecosystem = createEcosystem();
     addZeduxLogger(ecosystem);
-    addBasicZeduxLogger(ecosystem); // For debugging
+    if (localStorage.getItem('DEBUG')) {
+      addBasicZeduxLogger(ecosystem); // For debugging
+    }
     return ecosystem;
   }, []);
   return (
