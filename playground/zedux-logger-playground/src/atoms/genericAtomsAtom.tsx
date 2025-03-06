@@ -126,6 +126,7 @@ function createGenericAtom(
             .setPromise(promise)
             .setExports({
               reset() {
+                data.set('pending');
                 promiseSignal.set(delay());
               },
             });
