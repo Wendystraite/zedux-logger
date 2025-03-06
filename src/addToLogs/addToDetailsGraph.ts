@@ -20,45 +20,45 @@ export function addToDetailsGraph(args: LogArgs): void {
     log: 'graph',
     groupCollapsedSubLogs: groupCollapseGraph,
     subLogs: [
-      {
+      newGraph !== undefined && {
         log: 'new graph',
         subLogs: [
           showGraphByNamespaces && {
             log: 'by-namespaces',
-            data: newGraph?.byNamespaces,
+            data: newGraph.byNamespaces,
           },
           {
             log: 'flat',
-            data: newGraph?.flat,
+            data: newGraph.flat,
           },
           {
             log: 'bottom-up',
-            data: newGraph?.bottomUp,
+            data: newGraph.bottomUp,
           },
           {
             log: 'top-down',
-            data: newGraph?.topDown,
+            data: newGraph.topDown,
           },
         ],
       },
-      {
+      oldGraph !== undefined && {
         log: 'old graph',
         subLogs: [
           showGraphByNamespaces && {
             log: 'by-namespaces',
-            data: oldGraph?.byNamespaces,
+            data: oldGraph.byNamespaces,
           },
           {
             log: 'flat',
-            data: oldGraph?.flat,
+            data: oldGraph.flat,
           },
           {
             log: 'bottom-up',
-            data: oldGraph?.bottomUp,
+            data: oldGraph.bottomUp,
           },
           {
             log: 'top-down',
-            data: oldGraph?.topDown,
+            data: oldGraph.topDown,
           },
         ],
       },
