@@ -1,7 +1,7 @@
 import { useAtomValue } from '@zedux/react';
 
 import { genericAtomsAtom } from '../atoms/genericAtomsAtom';
-import { GenericAtomListItem } from './GenericAtomListItem';
+import { GenericAtomListItem } from './GenericAtomListItem/GenericAtomListItem';
 
 export function GenericAtomList() {
   const genericAtoms = useAtomValue(genericAtomsAtom);
