@@ -1,4 +1,4 @@
-import { AtomInstance, ExternalNode } from '@zedux/react';
+import { ExternalNode } from '@zedux/react';
 
 import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
 import type { SubscribedTo } from '../types/SubscribedTo.js';
@@ -10,7 +10,7 @@ export function canLogEvent(args: {
   subscribedTo: SubscribedTo;
 }): boolean {
   const {
-    what: { node, flags, event, eventMap },
+    what: { node, flags, event },
     options: {
       disableLoggingFlag,
       filters: { hideExternalNodesChanges, hideSignalsChanges },
@@ -34,16 +34,6 @@ export function canLogEvent(args: {
   }
 
   if (event?.type === undefined || !subscribedTo[event.type]) {
-    return false;
-  }
-
-  if (
-    subscribedTo.cycle &&
-    subscribedTo.promiseChange &&
-    eventMap.promiseChange?.source !== undefined &&
-    eventMap.promiseChange.source instanceof AtomInstance &&
-    eventMap.promiseChange.source._promiseStatus === 'loading'
-  ) {
     return false;
   }
 
