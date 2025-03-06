@@ -15,6 +15,7 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
   ],
   disableLoggingFlag: null,
   console,
+  oneLineLogs: false,
   showInSummary: {
     showEmoji: true,
     showEcosystemName: false,
@@ -94,6 +95,13 @@ export interface ZeduxLoggerOptions {
     Console,
     'log' | 'warn' | 'group' | 'groupCollapsed' | 'groupEnd'
   >;
+
+  /**
+   * Instead of using console.group, use a single console.log per event.
+   * Useful for logging to a file, for easier copy-pasting or as a simple preference.
+   * @default false
+   */
+  oneLineLogs?: boolean;
 
   /**
    * Logs to show in the log's summary.

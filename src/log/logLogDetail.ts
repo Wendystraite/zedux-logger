@@ -6,28 +6,30 @@ import { consoleGroup } from '../utils/consoleGroup.js';
 
 export function logLogDetail(
   console: CompleteZeduxLoggerOptions['console'],
-  info: LogDetail,
+  logDetail: LogDetail,
 ) {
   const logs = [
-    info.emoji !== undefined ? `${info.emoji} ${info.log}` : info.log,
-    ...(info.colors ?? []),
+    logDetail.emoji !== undefined
+      ? `${logDetail.emoji} ${logDetail.log}`
+      : logDetail.log,
+    ...(logDetail.colors ?? []),
   ];
-  const subLogs = info.subLogs?.filter(isTruthy);
-  if (subLogs !== undefined && subLogs.length > 0) {
+  const subLogDetails = logDetail.subLogs?.filter(isTruthy);
+  if (subLogDetails !== undefined && subLogDetails.length > 0) {
     consoleGroup(
       console,
-      info.groupCollapsedSubLogs === true ? 'groupCollapsed' : 'group',
+      logDetail.groupCollapsedSubLogs === true ? 'groupCollapsed' : 'group',
       logs,
       () => {
-        if (info.data !== undefined) {
-          console.log(info.data);
+        if (logDetail.data !== undefined) {
+          console.log(logDetail.data);
         }
-        for (const subLog of subLogs) {
-          logLogDetail(console, subLog);
+        for (const subLogDetail of subLogDetails) {
+          logLogDetail(console, subLogDetail);
         }
       },
     );
   } else {
-    console.log(...logs, info.data);
+    console.log(...logs, logDetail.data);
   }
 }
