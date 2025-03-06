@@ -29,36 +29,64 @@ function runBench(ecosystem: Ecosystem) {
 
 /*
 
- ✓ tests/addZeduxLogger.bench.ts > addZeduxLogger 1995ms
-     name                          hz      min      max     mean      p75      p99     p995     p999      rme  samples
-   · basic zedux logger      1,123.52   0.3688  10.5369   0.8901   0.9022   3.4802   5.1641  10.5369   ±7.23%      562   fastest
-   · zedux logger             45.6794  14.8655  52.9693  21.8917  22.1447  52.9693  52.9693  52.9693  ±17.19%       23   slowest
-   · zedux logger one lines   49.4197  16.1319  24.9644  20.2348  21.5278  24.9644  24.9644  24.9644   ±4.99%       25
+ ✓ tests/addZeduxLogger.bench.ts > addZeduxLogger 6193ms
+     name                                    hz      min      max     mean      p75      p99     p995     p999     rme  samples
+   · basic zedux logger                1,325.14   0.3636   6.4895   0.7546   0.7178   3.5537   3.8694   6.4895  ±6.16%      664   fastest
+   · zedux logger                       44.9748  15.3198  47.5096  22.2347  23.6917  42.8014  47.5096  47.5096  ±4.11%      100
+   · zedux logger one lines             44.2411  12.1256  69.6589  22.6034  25.2088  66.1401  69.6589  69.6589  ±8.60%      100   slowest
+   · zedux logger no graph & snapshot    180.63   2.7927  11.5419   5.5361   7.2246  10.9144  11.5419  11.5419  ±8.36%      100
 
  BENCH  Summary
 
   basic zedux logger - tests/addZeduxLogger.bench.ts > addZeduxLogger
-    22.73x faster than zedux logger one lines
-    24.60x faster than zedux logger
+    7.34x faster than zedux logger no graph & snapshot
+    29.46x faster than zedux logger
+    29.95x faster than zedux logger one lines
 
 */
 
+const benchOptions = { iterations: 100 };
+
 describe('addZeduxLogger', () => {
-  bench('basic zedux logger', () => {
-    const ecosystem = createEcosystem();
-    addBasicZeduxLogger(ecosystem);
-    runBench(ecosystem);
-  });
+  bench(
+    'basic zedux logger',
+    () => {
+      const ecosystem = createEcosystem();
+      addBasicZeduxLogger(ecosystem);
+      runBench(ecosystem);
+    },
+    benchOptions,
+  );
 
-  bench('zedux logger', () => {
-    const ecosystem = createEcosystem();
-    addZeduxLogger(ecosystem);
-    runBench(ecosystem);
-  });
+  bench(
+    'zedux logger',
+    () => {
+      const ecosystem = createEcosystem();
+      addZeduxLogger(ecosystem);
+      runBench(ecosystem);
+    },
+    benchOptions,
+  );
 
-  bench('zedux logger one lines', () => {
-    const ecosystem = createEcosystem();
-    addZeduxLogger(ecosystem, { oneLineLogs: true });
-    runBench(ecosystem);
-  });
+  bench(
+    'zedux logger one lines',
+    () => {
+      const ecosystem = createEcosystem();
+      addZeduxLogger(ecosystem, { oneLineLogs: true });
+      runBench(ecosystem);
+    },
+    benchOptions,
+  );
+
+  bench(
+    'zedux logger no graph & snapshot',
+    () => {
+      const ecosystem = createEcosystem();
+      addZeduxLogger(ecosystem, {
+        showInDetails: { showGraph: false, showSnapshot: false },
+      });
+      runBench(ecosystem);
+    },
+    benchOptions,
+  );
 });
