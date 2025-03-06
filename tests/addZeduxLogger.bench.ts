@@ -1,15 +1,8 @@
 import { type Ecosystem, atom, createEcosystem } from '@zedux/react';
-import {
-  entries,
-  filter,
-  forEach,
-  isNonNullish,
-  map,
-  pipe,
-  values,
-} from 'remeda';
+import { forEach, values } from 'remeda';
 import { bench, describe, vi } from 'vitest';
 
+import { addBasicZeduxLogger } from '../src/addBasicZeduxLogger';
 import { addZeduxLogger } from '../src/addZeduxLogger';
 import type { ZeduxLoggerOptions } from '../src/types/ZeduxLoggerOptions';
 
@@ -36,35 +29,22 @@ function runBench(ecosystem: Ecosystem) {
 
 /*
 
- ✓ tests/addZeduxLogger.bench.ts > addZeduxLogger 1285ms
-     name                      hz      min      max     mean      p75      p99     p995     p999      rme  samples
-   · simple console.log  1,615.27   0.3226   6.4830   0.6191   0.5758   2.4223   3.5346   6.4830   ±5.47%      808   fastest
-   · zedux logger         74.3548  10.5002  35.8879  13.4490  13.5125  35.8879  35.8879  35.8879  ±11.64%       38
+ ✓ tests/addZeduxLogger.bench.ts > addZeduxLogger 1305ms
+     name                      hz      min      max     mean      p75      p99     p995     p999     rme  samples
+   · basic zedux logger  1,808.97   0.2940   5.0787   0.5528   0.5254   1.9800   2.5519   5.0787  ±4.53%      905   fastest
+   · zedux logger         78.7171  10.8497  21.3964  12.7037  13.3945  21.3964  21.3964  21.3964  ±4.67%       40
 
  BENCH  Summary
 
-  simple console.log - tests/addZeduxLogger.bench.ts > addZeduxLogger
-    21.72x faster than zedux logger
+  basic zedux logger - tests/addZeduxLogger.bench.ts > addZeduxLogger
+    22.98x faster than zedux logger
 
 */
 
 describe('addZeduxLogger', () => {
-  bench('simple console.log', () => {
+  bench('basic zedux logger', () => {
     const ecosystem = createEcosystem();
-    ecosystem.on((eventMap) => {
-      const { type, event } = pipe(
-        eventMap,
-        entries(),
-        map(([type, event]) => ({ type, event })),
-        filter(({ event }) => isNonNullish(event)),
-        (events) => events[0] ?? { type: 'unknown', event: undefined },
-      );
-
-      if (typeof event === 'object') {
-        // eslint-disable-next-line no-console
-        console.log(type, ':', event);
-      }
-    });
+    addBasicZeduxLogger(ecosystem);
     runBench(ecosystem);
   });
 

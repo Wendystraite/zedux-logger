@@ -36,6 +36,16 @@ import {
 } from './types/ZeduxLoggerOptions.js';
 import { defaults } from './utils/defaults.js';
 
+/**
+ * A logger for Zedux that log everything happening in an ecosystem.
+ *
+ * @param ecosystem ecosystem to attach the logger to
+ * @param options options for the logger
+ *
+ * @example
+ * const ecosystem = createEcosystem();
+ * addZeduxLogger(ecosystem);
+ */
 export function addZeduxLogger<E extends Ecosystem>(
   ecosystem: E,
   options?: ZeduxLoggerOptions,
