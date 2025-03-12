@@ -1,4 +1,3 @@
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { LogArgs } from './LogArgs.js';
 
 export function addToSummaryTtl(args: LogArgs): void {
@@ -7,6 +6,7 @@ export function addToSummaryTtl(args: LogArgs): void {
     what: { eventMap, template },
     options: {
       showInSummary: { showTtl },
+      colors,
     },
   } = args;
 
@@ -20,8 +20,8 @@ export function addToSummaryTtl(args: LogArgs): void {
 
   addLogToSummary(
     `%c(ttl %c${template.ttl}%c)`,
-    ZEDUX_LOGGER_COLORS.default,
-    ZEDUX_LOGGER_COLORS.ttl,
-    ZEDUX_LOGGER_COLORS.default,
+    colors.default,
+    colors.ttl,
+    colors.default,
   );
 }

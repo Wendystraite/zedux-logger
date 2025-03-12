@@ -1,4 +1,3 @@
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { LogArgs } from './LogArgs.js';
 
 export function addToDetailsSnapshot(args: LogArgs): void {
@@ -6,6 +5,7 @@ export function addToDetailsSnapshot(args: LogArgs): void {
     options: {
       showInDetails: { showSnapshot },
       snapshotOptions: { groupCollapseSnapshot },
+      colors,
     },
     oldSnapshot,
     newSnapshot,
@@ -26,12 +26,12 @@ export function addToDetailsSnapshot(args: LogArgs): void {
     subLogs: [
       oldSnapshot !== undefined && {
         log: '%cold snapshot',
-        colors: [ZEDUX_LOGGER_COLORS.groupOldSnapshot],
+        colors: [colors.groupOldSnapshot],
         data: oldSnapshot,
       },
       newSnapshot !== undefined && {
         log: '%cnew snapshot',
-        colors: [ZEDUX_LOGGER_COLORS.groupNewSnapshot],
+        colors: [colors.groupNewSnapshot],
         data: newSnapshot,
       },
     ],

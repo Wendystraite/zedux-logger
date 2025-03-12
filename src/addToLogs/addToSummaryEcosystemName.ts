@@ -1,4 +1,3 @@
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { LogArgs } from './LogArgs.js';
 
 export function addToSummaryEcosystemName(args: LogArgs): void {
@@ -7,6 +6,7 @@ export function addToSummaryEcosystemName(args: LogArgs): void {
     what: { ecosystemName },
     options: {
       showInSummary: { showEcosystemName },
+      colors,
     },
   } = args;
 
@@ -14,5 +14,5 @@ export function addToSummaryEcosystemName(args: LogArgs): void {
     return;
   }
 
-  addLogToSummary(`%c${ecosystemName}`, ZEDUX_LOGGER_COLORS.ecosystemName);
+  addLogToSummary(`%c${ecosystemName}`, colors.ecosystemName);
 }

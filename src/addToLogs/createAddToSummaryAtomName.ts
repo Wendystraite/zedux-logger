@@ -1,4 +1,3 @@
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { AtomName } from '../parseAtomName/parseAtomName.js';
 import type { LogArgs } from './LogArgs.js';
 
@@ -10,7 +9,10 @@ export function createAddToSummaryAtomName({
   atomName: AtomName | undefined;
 }) {
   return function addToSummaryAtomName(args: LogArgs): void {
-    const { addLogToSummary } = args;
+    const {
+      addLogToSummary,
+      options: { colors },
+    } = args;
 
     if (!show || atomName === undefined) {
       return;
@@ -25,17 +27,17 @@ export function createAddToSummaryAtomName({
         const namespacesColors = namespaces
           .map((_ns, idx) => [
             idx >= namespaces.length - 1
-              ? ZEDUX_LOGGER_COLORS.atomNameLastNamespace
-              : ZEDUX_LOGGER_COLORS.atomNameNamespace,
-            ZEDUX_LOGGER_COLORS.default,
+              ? colors.atomNameLastNamespace
+              : colors.atomNameNamespace,
+            colors.default,
           ])
           .flat();
 
         addLogToSummary(
           `${namespacesStr}%c${paramsStr}%c${scopeStr}`,
           ...namespacesColors,
-          ZEDUX_LOGGER_COLORS.atomNameParams,
-          ZEDUX_LOGGER_COLORS.atomNameScope,
+          colors.atomNameParams,
+          colors.atomNameScope,
         );
 
         break;
@@ -47,19 +49,19 @@ export function createAddToSummaryAtomName({
         const namespacesColors = namespaces
           .map((_ns, idx) => [
             idx >= namespaces.length - 1
-              ? ZEDUX_LOGGER_COLORS.atomNameLastNamespace
-              : ZEDUX_LOGGER_COLORS.atomNameNamespace,
-            ZEDUX_LOGGER_COLORS.default,
+              ? colors.atomNameLastNamespace
+              : colors.atomNameNamespace,
+            colors.default,
           ])
           .flat();
 
         addLogToSummary(
           `signal(${namespacesStr}%c${paramsStr}%c-%c${signalUid}%c)`,
           ...namespacesColors,
-          ZEDUX_LOGGER_COLORS.atomNameParams,
-          ZEDUX_LOGGER_COLORS.default,
-          ZEDUX_LOGGER_COLORS.atomNameSignalUid,
-          ZEDUX_LOGGER_COLORS.default,
+          colors.atomNameParams,
+          colors.default,
+          colors.atomNameSignalUid,
+          colors.default,
         );
 
         break;
@@ -70,11 +72,11 @@ export function createAddToSummaryAtomName({
 
         addLogToSummary(
           `selector(%c${selectorName}%c${paramsStr}%c-%c${selectorUid}%c)`,
-          ZEDUX_LOGGER_COLORS.atomNameSelectorName,
-          ZEDUX_LOGGER_COLORS.atomNameParams,
-          ZEDUX_LOGGER_COLORS.default,
-          ZEDUX_LOGGER_COLORS.atomNameSelectorUid,
-          ZEDUX_LOGGER_COLORS.default,
+          colors.atomNameSelectorName,
+          colors.atomNameParams,
+          colors.default,
+          colors.atomNameSelectorUid,
+          colors.default,
         );
 
         break;
@@ -84,8 +86,8 @@ export function createAddToSummaryAtomName({
 
         addLogToSummary(
           `listener(%c${listenerUid}%c)`,
-          ZEDUX_LOGGER_COLORS.atomNameListenerUid,
-          ZEDUX_LOGGER_COLORS.default,
+          colors.atomNameListenerUid,
+          colors.default,
         );
 
         break;
@@ -96,8 +98,8 @@ export function createAddToSummaryAtomName({
 
         addLogToSummary(
           `rc(%c${componentName}%c-${componentUid})`,
-          ZEDUX_LOGGER_COLORS.atomNameReactComponentName,
-          ZEDUX_LOGGER_COLORS.default,
+          colors.atomNameReactComponentName,
+          colors.default,
         );
 
         break;

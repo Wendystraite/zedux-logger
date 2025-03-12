@@ -1,4 +1,3 @@
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { LogArgs } from './LogArgs.js';
 
 export function addToDetailsNewState(args: LogArgs): void {
@@ -7,6 +6,7 @@ export function addToDetailsNewState(args: LogArgs): void {
     what: { hasNewState = false, newState },
     options: {
       showInDetails: { showNewState },
+      colors,
     },
   } = args;
 
@@ -17,7 +17,7 @@ export function addToDetailsNewState(args: LogArgs): void {
   addLogToDetails({
     emoji: '➡️',
     log: '%cnew state',
-    colors: [ZEDUX_LOGGER_COLORS.groupNewState],
+    colors: [colors.groupNewState],
     data: newState,
   });
 }

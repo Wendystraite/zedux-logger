@@ -79,7 +79,7 @@ export function addZeduxLogger<E extends Ecosystem>(
   );
 
   ecosystem.on((eventMap) => {
-    const what = parseWhatHappened(ecosystem, eventMap);
+    const what = parseWhatHappened(ecosystem, eventMap, completeOptions);
 
     if (!canLogEvent({ what, options: completeOptions, subscribedTo })) {
       return;

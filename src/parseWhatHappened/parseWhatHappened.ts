@@ -8,12 +8,12 @@ import {
   type GraphNode,
 } from '@zedux/react';
 
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import {
   type AtomName,
   parseAtomName,
 } from '../parseAtomName/parseAtomName.js';
 import type { EventMap } from '../types/EventMap.js';
+import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
 export interface WhatHappened {
   eventMap: EventMap;
@@ -50,34 +50,37 @@ export interface WhatHappened {
 export function parseWhatHappened(
   ecosystem: Ecosystem,
   eventMap: EventMap,
+  options: Pick<CompleteZeduxLoggerOptions, 'colors'>,
 ): WhatHappened {
+  const { colors } = options;
+
   const w: WhatHappened = {
     eventMap,
     ecosystem,
     ecosystemName: ecosystem.id,
-    summary: ['unknown', '❓', ZEDUX_LOGGER_COLORS.unknown],
+    summary: ['unknown', '❓', colors.unknown],
   };
 
   if (eventMap.change !== undefined) {
-    handleEventChange(eventMap.change, w);
+    handleEventChange(eventMap.change, w, colors);
   } else if (eventMap.cycle !== undefined) {
-    handleEventCycle(eventMap.cycle, w);
+    handleEventCycle(eventMap.cycle, w, colors);
   } else if (eventMap.invalidate !== undefined) {
-    handleEventInvalidate(eventMap.invalidate, w);
+    handleEventInvalidate(eventMap.invalidate, w, colors);
   } else if (eventMap.promiseChange !== undefined)
-    handleEventPromiseChange(eventMap.promiseChange, w);
+    handleEventPromiseChange(eventMap.promiseChange, w, colors);
   if (eventMap.edge !== undefined) {
-    handleEventEdge(eventMap.edge, w);
+    handleEventEdge(eventMap.edge, w, colors);
   } else if (eventMap.error !== undefined) {
-    handleEventError(eventMap.error, w);
+    handleEventError(eventMap.error, w, colors);
   } else if (eventMap.resetStart !== undefined) {
-    handleEventResetStart(eventMap.resetStart, w);
+    handleEventResetStart(eventMap.resetStart, w, colors);
   } else if (eventMap.resetEnd !== undefined) {
-    handleEventResetEnd(eventMap.resetEnd, w);
+    handleEventResetEnd(eventMap.resetEnd, w, colors);
   } else if (eventMap.runStart !== undefined) {
-    handleEventRunStart(eventMap.runStart, w);
+    handleEventRunStart(eventMap.runStart, w, colors);
   } else if (eventMap.runEnd !== undefined) {
-    handleEventRunEnd(eventMap.runEnd, w);
+    handleEventRunEnd(eventMap.runEnd, w, colors);
   }
 
   if (w.hasNewState === false && w.node !== undefined) {
@@ -133,11 +136,12 @@ function getWaitingForNodes({
 function handleEventChange(
   change: NonNullable<EventMap['change']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { operation, reasons, source } = change;
   const newState = change.newState as unknown;
   const oldState = change.oldState as unknown;
-  w.summary = ['changed', '✏️', ZEDUX_LOGGER_COLORS.changed];
+  w.summary = ['changed', '✏️', colors.changed];
   w.operation = operation;
   w.node = source;
   w.reasons = reasons;
@@ -151,35 +155,32 @@ function handleEventChange(
 function handleEventCycle(
   cycle: NonNullable<EventMap['cycle']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { operation, reasons, source, newStatus, oldStatus } = cycle;
 
   if (newStatus === 'Initializing') {
-    w.summary = ['initializing', '⌛', ZEDUX_LOGGER_COLORS.initializing];
+    w.summary = ['initializing', '⌛', colors.initializing];
   } else if (oldStatus === 'Initializing' && newStatus === 'Active') {
     if (
       source instanceof AtomInstance &&
       source.promise instanceof Promise &&
       source._promiseStatus === 'loading'
     ) {
-      w.summary = [
-        'initializing promise',
-        '⌛',
-        ZEDUX_LOGGER_COLORS.initializing,
-      ];
+      w.summary = ['initializing promise', '⌛', colors.initializingPromise];
     } else {
-      w.summary = ['initialized', '⚡', ZEDUX_LOGGER_COLORS.initialized];
+      w.summary = ['initialized', '⚡', colors.initialized];
       if (source !== undefined) {
         w.hasNewState = true;
         w.newState = source.v;
       }
     }
   } else if (newStatus === 'Active') {
-    w.summary = ['active', '✅', ZEDUX_LOGGER_COLORS.active];
+    w.summary = ['active', '✅', colors.active];
   } else if (newStatus === 'Stale') {
-    w.summary = ['stale', '🕰️', ZEDUX_LOGGER_COLORS.stale];
+    w.summary = ['stale', '🕰️', colors.stale];
   } else {
-    w.summary = ['destroyed', '💥', ZEDUX_LOGGER_COLORS.destroyed];
+    w.summary = ['destroyed', '💥', colors.destroyed];
   }
 
   w.operation = operation;
@@ -191,9 +192,10 @@ function handleEventCycle(
 function handleEventInvalidate(
   invalidate: NonNullable<EventMap['invalidate']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { operation, reasons, source } = invalidate;
-  w.summary = ['invalidate', '🗑️', ZEDUX_LOGGER_COLORS.invalidate];
+  w.summary = ['invalidate', '🗑️', colors.invalidate];
   w.operation = operation;
   w.node = source;
   w.reasons = reasons;
@@ -203,28 +205,21 @@ function handleEventInvalidate(
 function handleEventPromiseChange(
   promiseChange: NonNullable<EventMap['promiseChange']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { operation, reasons, source } = promiseChange;
   const promiseStatus =
     source instanceof AtomInstance ? source._promiseStatus : undefined;
   if (promiseStatus === undefined) {
-    w.summary = ['promise changed', '✏️', ZEDUX_LOGGER_COLORS.promiseChange];
+    w.summary = ['promise changed', '✏️', colors.promiseChange];
   } else if (promiseStatus === 'loading') {
-    w.summary = [
-      'promise loading',
-      '⌛',
-      ZEDUX_LOGGER_COLORS.promiseChangeLoading,
-    ];
+    w.summary = ['promise loading', '⌛', colors.promiseChangeLoading];
   } else if (promiseStatus === 'success') {
-    w.summary = [
-      'promise success',
-      '✅',
-      ZEDUX_LOGGER_COLORS.promiseChangeSuccess,
-    ];
+    w.summary = ['promise success', '✅', colors.promiseChangeSuccess];
     w.hasNewState = true;
     w.newState = source?.v;
   } else {
-    w.summary = ['promise error', '❌', ZEDUX_LOGGER_COLORS.promiseChangeError];
+    w.summary = ['promise error', '❌', colors.promiseChangeError];
     w.hasNewState = true;
     w.newState = source?.v;
   }
@@ -234,14 +229,18 @@ function handleEventPromiseChange(
   w.event = promiseChange;
 }
 
-function handleEventEdge(edge: NonNullable<EventMap['edge']>, w: WhatHappened) {
+function handleEventEdge(
+  edge: NonNullable<EventMap['edge']>,
+  w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
+) {
   const { source, action, observer } = edge;
   if (action === 'add') {
-    w.summary = ['edge added', '📈', ZEDUX_LOGGER_COLORS.edgeCreated];
+    w.summary = ['edge added', '📈', colors.edgeCreated];
   } else if (action === 'update') {
-    w.summary = ['edge updated', '📈', ZEDUX_LOGGER_COLORS.edgeUpdated];
+    w.summary = ['edge updated', '📈', colors.edgeUpdated];
   } else {
-    w.summary = ['edge removed', '📉', ZEDUX_LOGGER_COLORS.edgeRemoved];
+    w.summary = ['edge removed', '📉', colors.edgeRemoved];
   }
   w.node = source;
   w.event = edge;
@@ -251,9 +250,10 @@ function handleEventEdge(edge: NonNullable<EventMap['edge']>, w: WhatHappened) {
 function handleEventError(
   error: NonNullable<EventMap['error']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { source, error: errorObj } = error;
-  w.summary = ['error', '❌', ZEDUX_LOGGER_COLORS.error];
+  w.summary = ['error', '❌', colors.error];
   w.node = source;
   w.event = error;
   w.error = errorObj;
@@ -262,20 +262,13 @@ function handleEventError(
 function handleEventResetStart(
   resetStart: NonNullable<EventMap['resetStart']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { isDestroy } = resetStart;
   if (isDestroy) {
-    w.summary = [
-      'destroying ecosystem',
-      '🧹',
-      ZEDUX_LOGGER_COLORS.ecosystemDestroyStart,
-    ];
+    w.summary = ['destroying ecosystem', '🧹', colors.ecosystemDestroyStart];
   } else {
-    w.summary = [
-      'resetting ecosystem',
-      '🧹',
-      ZEDUX_LOGGER_COLORS.ecosystemResetStart,
-    ];
+    w.summary = ['resetting ecosystem', '🧹', colors.ecosystemResetStart];
   }
   w.event = resetStart;
 }
@@ -283,20 +276,13 @@ function handleEventResetStart(
 function handleEventResetEnd(
   resetEnd: NonNullable<EventMap['resetEnd']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { isDestroy } = resetEnd;
   if (isDestroy) {
-    w.summary = [
-      'ecosystem destroyed',
-      '🧹',
-      ZEDUX_LOGGER_COLORS.ecosystemDestroyEnd,
-    ];
+    w.summary = ['ecosystem destroyed', '🧹', colors.ecosystemDestroyEnd];
   } else {
-    w.summary = [
-      'ecosystem reset',
-      '🧹',
-      ZEDUX_LOGGER_COLORS.ecosystemResetEnd,
-    ];
+    w.summary = ['ecosystem reset', '🧹', colors.ecosystemResetEnd];
   }
   w.event = resetEnd;
 }
@@ -304,9 +290,10 @@ function handleEventResetEnd(
 function handleEventRunStart(
   runStart: NonNullable<EventMap['runStart']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { source } = runStart;
-  w.summary = ['evaluating', '⚙️', ZEDUX_LOGGER_COLORS.evaluating];
+  w.summary = ['evaluating', '⚙️', colors.evaluating];
   w.node = source;
   w.event = runStart;
 }
@@ -314,9 +301,10 @@ function handleEventRunStart(
 function handleEventRunEnd(
   runEnd: NonNullable<EventMap['runEnd']>,
   w: WhatHappened,
+  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { source } = runEnd;
-  w.summary = ['evaluated', '⚙️', ZEDUX_LOGGER_COLORS.evaluated];
+  w.summary = ['evaluated', '⚙️', colors.evaluated];
   w.node = source;
   w.event = runEnd;
 }

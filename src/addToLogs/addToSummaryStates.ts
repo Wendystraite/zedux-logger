@@ -1,4 +1,3 @@
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import { stringifyState } from '../utils/stringifyState.js';
 import type { LogArgs } from './LogArgs.js';
 
@@ -15,6 +14,7 @@ export function addToSummaryStates(args: LogArgs): void {
     options: {
       console,
       showInSummary: { showOldState, showNewState },
+      colors,
     },
   } = args;
 
@@ -35,8 +35,8 @@ export function addToSummaryStates(args: LogArgs): void {
     if (oldStateString !== undefined) {
       addLogToSummary(
         `%cfrom %c${oldStateString}`,
-        ZEDUX_LOGGER_COLORS.default,
-        ZEDUX_LOGGER_COLORS.oldState,
+        colors.default,
+        colors.oldState,
       );
     }
   }
@@ -51,8 +51,8 @@ export function addToSummaryStates(args: LogArgs): void {
     if (newStateString !== undefined) {
       addLogToSummary(
         `%cto %c${newStateString}`,
-        ZEDUX_LOGGER_COLORS.default,
-        ZEDUX_LOGGER_COLORS.newState,
+        colors.default,
+        colors.newState,
       );
     }
   }

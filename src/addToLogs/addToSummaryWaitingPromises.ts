@@ -1,4 +1,3 @@
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
 import type { LogArgs } from './LogArgs.js';
 
 export function addToSummaryWaitingPromises(args: LogArgs): void {
@@ -7,6 +6,7 @@ export function addToSummaryWaitingPromises(args: LogArgs): void {
     what: { waitingForPromisesNodes },
     options: {
       showInSummary: { showWaitingPromises },
+      colors,
     },
   } = args;
 
@@ -20,6 +20,6 @@ export function addToSummaryWaitingPromises(args: LogArgs): void {
 
   addLogToSummary(
     `%c(waiting ${waitingForPromisesNodes.length} promise${waitingForPromisesNodes.length > 1 ? 's' : ''})`,
-    ZEDUX_LOGGER_COLORS.nodeWaitingAnotherNodePromise,
+    colors.waitingForPromisesNodes,
   );
 }
