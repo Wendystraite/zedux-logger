@@ -4,14 +4,26 @@ export function addToDetailsGraph(args: LogArgs): void {
   const {
     options: {
       showInDetails: { showGraph },
-      graphOptions: { groupCollapseGraph, showGraphByNamespaces },
+      graphOptions: {
+        showFlatGraph,
+        showBottomUpGraph,
+        showTopDownGraph,
+        groupCollapseGraph,
+        showByNamespacesGraph,
+      },
     },
-    newGraph,
-    oldGraph,
+    graph,
     addLogToDetails,
   } = args;
 
-  if (!showGraph || (oldGraph === undefined && newGraph === undefined)) {
+  if (
+    !showGraph ||
+    graph === undefined ||
+    (!showFlatGraph &&
+      !showBottomUpGraph &&
+      !showTopDownGraph &&
+      !showByNamespacesGraph)
+  ) {
     return;
   }
 
@@ -20,47 +32,21 @@ export function addToDetailsGraph(args: LogArgs): void {
     log: 'graph',
     groupCollapsedSubLogs: groupCollapseGraph,
     subLogs: [
-      newGraph !== undefined && {
-        log: 'new graph',
-        subLogs: [
-          showGraphByNamespaces && {
-            log: 'by-namespaces',
-            data: newGraph.byNamespaces,
-          },
-          {
-            log: 'flat',
-            data: newGraph.flat,
-          },
-          {
-            log: 'bottom-up',
-            data: newGraph.bottomUp,
-          },
-          {
-            log: 'top-down',
-            data: newGraph.topDown,
-          },
-        ],
+      showByNamespacesGraph && {
+        log: 'by-namespaces',
+        data: graph.byNamespaces,
       },
-      oldGraph !== undefined && {
-        log: 'old graph',
-        subLogs: [
-          showGraphByNamespaces && {
-            log: 'by-namespaces',
-            data: oldGraph.byNamespaces,
-          },
-          {
-            log: 'flat',
-            data: oldGraph.flat,
-          },
-          {
-            log: 'bottom-up',
-            data: oldGraph.bottomUp,
-          },
-          {
-            log: 'top-down',
-            data: oldGraph.topDown,
-          },
-        ],
+      showFlatGraph && {
+        log: 'flat',
+        data: graph.flat,
+      },
+      showTopDownGraph && {
+        log: 'top-down',
+        data: graph.topDown,
+      },
+      showBottomUpGraph && {
+        log: 'bottom-up',
+        data: graph.bottomUp,
       },
     ],
   });

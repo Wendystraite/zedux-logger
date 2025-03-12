@@ -1,19 +1,14 @@
-import {
-  type Ecosystem,
-  ExternalNode,
-  type GraphViewRecursive,
-} from '@zedux/react';
-import type { RefObject } from 'react';
+import { type Ecosystem, type GraphViewRecursive } from '@zedux/react';
 
-import type { EventMap } from '../types/EventMap.js';
 import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import { shouldIgnoreNodeInFlatGraph } from '../updateGraphIncrementally/utils/shouldIgnoreNodeInFlatGraph.js';
 import {
   type GraphByNamespaces,
-  graphByNamespaces,
-} from './graphByNamespaces.js';
+  generateGraphByNamespaces,
+} from './generateGraphByNamespaces.js';
 
 export interface Graph {
-  byNamespaces: GraphByNamespaces | undefined;
+  byNamespaces: GraphByNamespaces;
   flat: Record<
     string,
     {
@@ -28,70 +23,57 @@ export interface Graph {
 
 export function generateGraph(args: {
   ecosystem: Ecosystem;
-  eventMap: EventMap;
   options: CompleteZeduxLoggerOptions;
-  oldGraphRef: RefObject<Graph | undefined>;
 }): Graph | undefined {
   const {
     ecosystem,
-    eventMap,
     options: {
       console,
       showInDetails: { showGraph },
+      graphOptions,
       graphOptions: {
-        showGraphByNamespaces,
-        hideExternalNodesFromFlatGraph,
-        hideSignalsFromFlatGraph,
+        showTopDownGraph,
+        showBottomUpGraph,
+        showFlatGraph,
+        showByNamespacesGraph,
+        showExternalNodesInFlatGraph,
+        showSignalsInFlatGraph,
       },
     },
-    oldGraphRef,
   } = args;
 
-  let canGraph = false;
-  if (showGraph) {
-    if (eventMap.edge !== undefined) {
-      canGraph = true;
-    } else if (
-      eventMap.cycle?.oldStatus === 'Initializing' &&
-      eventMap.cycle.newStatus === 'Active'
-    ) {
-      canGraph = true;
-    } else if (eventMap.cycle?.newStatus === 'Destroyed') {
-      canGraph = true;
-    }
-  }
-
   let newGraph: Graph | undefined;
-  if (canGraph) {
+  if (showGraph) {
     try {
-      const flat = ecosystem.viewGraph('flat');
+      newGraph = { byNamespaces: {}, flat: {}, bottomUp: {}, topDown: {} };
 
-      newGraph = {
-        byNamespaces: showGraphByNamespaces
-          ? graphByNamespaces({
-              flat,
-              getNode: (id) => ecosystem.n.get(id),
-            })
-          : undefined,
-        flat,
-        bottomUp: ecosystem.viewGraph('bottom-up'),
-        topDown: ecosystem.viewGraph('top-down'),
-      };
-      oldGraphRef.current = newGraph;
+      if (showFlatGraph || showByNamespacesGraph) {
+        newGraph.flat = ecosystem.viewGraph('flat');
+      }
+      if (showByNamespacesGraph) {
+        newGraph.byNamespaces = generateGraphByNamespaces({
+          flat: newGraph.flat,
+          getNode: (id) => ecosystem.n.get(id),
+          options: graphOptions,
+        });
+      }
+      if (showBottomUpGraph) {
+        newGraph.bottomUp = ecosystem.viewGraph('bottom-up');
+      }
+      if (showTopDownGraph) {
+        newGraph.topDown = ecosystem.viewGraph('top-down');
+      }
     } catch (error) {
       console.warn('Failed to generate graph', error);
     }
   }
 
   if (
-    (hideExternalNodesFromFlatGraph || hideSignalsFromFlatGraph) &&
+    (!showExternalNodesInFlatGraph || !showSignalsInFlatGraph) &&
     newGraph !== undefined
   ) {
     for (const [, node] of ecosystem.n) {
-      if (hideExternalNodesFromFlatGraph && node instanceof ExternalNode) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete newGraph.flat[node.id];
-      } else if (hideSignalsFromFlatGraph && node.id.startsWith('@signal')) {
+      if (shouldIgnoreNodeInFlatGraph(node, graphOptions)) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newGraph.flat[node.id];
       }

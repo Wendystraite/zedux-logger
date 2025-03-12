@@ -12,8 +12,7 @@ export interface LogArgs {
 
   what: WhatHappened;
   options: CompleteZeduxLoggerOptions;
-  newGraph: Graph | undefined;
-  oldGraph: Graph | undefined;
+  graph: Graph | undefined;
   newSnapshot: unknown;
   oldSnapshot: unknown;
 }

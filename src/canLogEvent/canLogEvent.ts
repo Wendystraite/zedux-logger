@@ -13,7 +13,7 @@ export function canLogEvent(args: {
     what: { node, flags, event },
     options: {
       disableLoggingFlag,
-      filters: { hideExternalNodesChanges, hideSignalsChanges },
+      filters: { showExternalNodesChanges, showSignalsChanges },
     },
     subscribedTo,
   } = args;
@@ -25,11 +25,11 @@ export function canLogEvent(args: {
     return false;
   }
 
-  if (hideExternalNodesChanges && node instanceof ExternalNode) {
+  if (!showExternalNodesChanges && node instanceof ExternalNode) {
     return false;
   }
 
-  if (hideSignalsChanges && node?.id.startsWith('@signal') === true) {
+  if (!showSignalsChanges && node?.id.startsWith('@signal') === true) {
     return false;
   }
 

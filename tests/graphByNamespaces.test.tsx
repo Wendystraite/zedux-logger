@@ -13,12 +13,18 @@ import { createContext } from 'react';
 import { describe, expect, test } from 'vitest';
 
 import {
+  GRAPH_BY_NAMESPACES_NODE_TYPE,
+  type GraphByNamespaces,
+  generateGraphByNamespaces,
+} from '../src/generateGraph/generateGraphByNamespaces.js';
+import {
   type ListenerAtomName,
   type SelectorAtomName,
   type SignalAtomName,
   parseAtomName,
 } from '../src/parseAtomName/parseAtomName.js';
-import { graphByNamespaces } from '../src/generateGraph/graphByNamespaces.js';
+import { DEFAULT_ZEDUX_LOGGER_OPTIONS } from '../src/types/ZeduxLoggerOptions.js';
+import { defaults } from '../src/utils/defaults.js';
 
 describe('graphByNamespaces', () => {
   test('should create graph', () => {
@@ -84,18 +90,29 @@ describe('graphByNamespaces', () => {
     const listenerNodeId = (parseAtomName(listenerNode.id) as ListenerAtomName)
       .listenerUid;
 
-    const graph = graphByNamespaces({
+    const createFakeNode = (id: string, v: unknown) => {
+      return { id, v } as unknown as GraphNode; // mock
+    };
+
+    const graph = generateGraphByNamespaces({
       flat: ecosystem.viewGraph('flat'),
       getNode: (id: string) => {
-        return { id, v: ecosystem.n.get(id)?.v } as unknown as GraphNode; // mock
+        return createFakeNode(id, ecosystem.n.get(id)?.v);
       },
+      options: defaults(DEFAULT_ZEDUX_LOGGER_OPTIONS.graphOptions, {
+        showByNamespacesGraph: true,
+        showNodeDepsInGraphByNamespaces: true,
+        showNodesInGraphByNamespaces: true,
+        showNodeValueInGraphByNamespaces: true,
+      }),
     });
 
     expect(graph).toEqual({
       '@@listener': {
         [listenerNodeId]: {
+          type: GRAPH_BY_NAMESPACES_NODE_TYPE,
           id: `no-${listenerNodeId}`,
-          node: { id: `no-${listenerNodeId}`, v: undefined },
+          node: createFakeNode(`no-${listenerNodeId}`, undefined),
           value: undefined,
           dependencies: [
             {
@@ -110,8 +127,9 @@ describe('graphByNamespaces', () => {
       '@@rc': {
         Component: {
           [componentId]: {
+            type: GRAPH_BY_NAMESPACES_NODE_TYPE,
             id: `Component-:${componentId}:`,
-            node: { id: `Component-:${componentId}:`, v: undefined },
+            node: createFakeNode(`Component-:${componentId}:`, undefined),
             value: undefined,
             dependencies: [
               {
@@ -127,11 +145,12 @@ describe('graphByNamespaces', () => {
       '@@selector': {
         arrowFnSelector: {
           [arrowFnSelectorId]: {
+            type: GRAPH_BY_NAMESPACES_NODE_TYPE,
             id: `@@selector-arrowFnSelector-${arrowFnSelectorId}`,
-            node: {
-              id: `@@selector-arrowFnSelector-${arrowFnSelectorId}`,
-              v: 0,
-            },
+            node: createFakeNode(
+              `@@selector-arrowFnSelector-${arrowFnSelectorId}`,
+              0,
+            ),
             value: 0,
             dependencies: [
               {
@@ -145,11 +164,12 @@ describe('graphByNamespaces', () => {
         },
         namedFnSelector: {
           [namedFnSelectorId]: {
+            type: GRAPH_BY_NAMESPACES_NODE_TYPE,
             id: `@@selector-namedFnSelector-${namedFnSelectorId}`,
-            node: {
-              id: `@@selector-namedFnSelector-${namedFnSelectorId}`,
-              v: 0,
-            },
+            node: createFakeNode(
+              `@@selector-namedFnSelector-${namedFnSelectorId}`,
+              0,
+            ),
             value: 0,
             dependencies: [
               {
@@ -164,8 +184,9 @@ describe('graphByNamespaces', () => {
       },
       nested: {
         one: {
+          type: GRAPH_BY_NAMESPACES_NODE_TYPE,
           id: 'nested/one',
-          node: { id: 'nested/one', v: 0 },
+          node: createFakeNode('nested/one', 0),
           value: 0,
           dependencies: [],
           dependents: [],
@@ -173,16 +194,18 @@ describe('graphByNamespaces', () => {
         },
         three: {
           _: {
+            type: GRAPH_BY_NAMESPACES_NODE_TYPE,
             id: 'nested/three',
-            node: { id: 'nested/three', v: 0 },
+            node: createFakeNode('nested/three', 0),
             value: 0,
             dependencies: [],
             dependents: [],
             weight: 1,
           },
           four: {
+            type: GRAPH_BY_NAMESPACES_NODE_TYPE,
             id: 'nested/three/four',
-            node: { id: 'nested/three/four', v: 0 },
+            node: createFakeNode('nested/three/four', 0),
             value: 0,
             dependencies: [],
             dependents: [],
@@ -190,8 +213,9 @@ describe('graphByNamespaces', () => {
           },
         },
         two: {
+          type: GRAPH_BY_NAMESPACES_NODE_TYPE,
           id: 'nested/two',
-          node: { id: 'nested/two', v: 0 },
+          node: createFakeNode('nested/two', 0),
           value: 0,
           dependencies: [],
           dependents: [],
@@ -199,16 +223,18 @@ describe('graphByNamespaces', () => {
         },
       },
       simple: {
+        type: GRAPH_BY_NAMESPACES_NODE_TYPE,
         id: 'simple',
-        node: { id: 'simple', v: 0 },
+        node: createFakeNode('simple', 0),
         value: 0,
         dependencies: [],
         dependents: [],
         weight: 1,
       },
       something: {
+        type: GRAPH_BY_NAMESPACES_NODE_TYPE,
         id: 'something',
-        node: { id: 'something', v: 0 },
+        node: createFakeNode('something', 0),
         value: 0,
         dependencies: [],
         dependents: [
@@ -229,8 +255,9 @@ describe('graphByNamespaces', () => {
       },
       withSignal: {
         _: {
+          type: GRAPH_BY_NAMESPACES_NODE_TYPE,
           id: 'withSignal',
-          node: { id: 'withSignal', v: 0 },
+          node: createFakeNode('withSignal', 0),
           value: 0,
           dependencies: [
             {
@@ -242,8 +269,9 @@ describe('graphByNamespaces', () => {
           weight: 2,
         },
         [`@signal-${signalNodeId}`]: {
+          type: GRAPH_BY_NAMESPACES_NODE_TYPE,
           id: `@signal(withSignal)-${signalNodeId}`,
-          node: { id: `@signal(withSignal)-${signalNodeId}`, v: 0 },
+          node: createFakeNode(`@signal(withSignal)-${signalNodeId}`, 0),
           value: 0,
           dependencies: [],
           dependents: [
@@ -261,14 +289,18 @@ describe('graphByNamespaces', () => {
       },
       withScope: {
         '@@scope-"scope value"': {
+          type: GRAPH_BY_NAMESPACES_NODE_TYPE,
           id: 'withScope-@scope("scope value")',
-          node: { id: 'withScope-@scope("scope value")', v: 'scope value' },
+          node: createFakeNode(
+            'withScope-@scope("scope value")',
+            'scope value',
+          ),
           value: 'scope value',
           dependencies: [],
           dependents: [],
           weight: 1,
         },
       },
-    });
+    } satisfies GraphByNamespaces);
   });
 });

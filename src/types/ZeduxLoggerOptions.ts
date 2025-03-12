@@ -2,6 +2,9 @@ import type * as Zedux from '@zedux/react';
 
 import type { DeepRequired } from './DeepRequired.js';
 
+/**
+ * Default options for the Zedux logger.
+ */
 export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
   enabled: true,
   events: [
@@ -44,9 +47,15 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showSnapshot: true,
   },
   graphOptions: {
-    showGraphByNamespaces: true,
-    hideExternalNodesFromFlatGraph: true,
-    hideSignalsFromFlatGraph: true,
+    showTopDownGraph: true,
+    showBottomUpGraph: true,
+    showFlatGraph: true,
+    showByNamespacesGraph: true,
+    showNodesInGraphByNamespaces: false,
+    showNodeValueInGraphByNamespaces: false,
+    showNodeDepsInGraphByNamespaces: false,
+    showExternalNodesInFlatGraph: false,
+    showSignalsInFlatGraph: false,
     groupCollapseGraph: true,
   },
   snapshotOptions: {
@@ -56,14 +65,101 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     groupCollapseStateDiff: true,
   },
   filters: {
-    hideExternalNodesChanges: true,
-    hideSignalsChanges: true,
+    showExternalNodesChanges: false,
+    showSignalsChanges: false,
   },
   deobfuscateSingleLetters: {
     event: true,
     node: true,
     reasons: true,
     ecosystem: true,
+  },
+  debugOptions: {
+    logOptions: false,
+    checkIncrementalGraphConsistency: false,
+    useIncrementalGraph: false,
+  },
+};
+
+/**
+ * All options enabled for the Zedux logger.
+ */
+export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
+  enabled: true,
+  events: [
+    'change',
+    'cycle',
+    'edge',
+    'error',
+    'invalidate',
+    'promiseChange',
+    'resetEnd',
+    'resetStart',
+    'runEnd',
+    'runStart',
+  ],
+  disableLoggingFlag: null,
+  console,
+  oneLineLogs: true,
+  showInSummary: {
+    showEmoji: true,
+    showEcosystemName: true,
+    showAtomName: true,
+    showSummary: true,
+    showOperation: true,
+    showTtl: true,
+    showOldState: true,
+    showNewState: true,
+    showObserverName: true,
+    showWaitingPromises: true,
+  },
+  showInDetails: {
+    showEvent: true,
+    showOldState: true,
+    showNewState: true,
+    showWaitingPromises: true,
+    showStateDiff: true,
+    showReasons: true,
+    showError: true,
+    showNode: true,
+    showObserver: true,
+    showDependencies: true,
+    showEcosystem: true,
+    showGraph: true,
+    showSnapshot: true,
+  },
+  graphOptions: {
+    showTopDownGraph: true,
+    showBottomUpGraph: true,
+    showFlatGraph: true,
+    showByNamespacesGraph: true,
+    showNodesInGraphByNamespaces: true,
+    showNodeValueInGraphByNamespaces: true,
+    showNodeDepsInGraphByNamespaces: true,
+    showExternalNodesInFlatGraph: true,
+    showSignalsInFlatGraph: true,
+    groupCollapseGraph: true,
+  },
+  snapshotOptions: {
+    groupCollapseSnapshot: true,
+  },
+  diffOptions: {
+    groupCollapseStateDiff: true,
+  },
+  filters: {
+    showExternalNodesChanges: true,
+    showSignalsChanges: true,
+  },
+  deobfuscateSingleLetters: {
+    event: true,
+    node: true,
+    reasons: true,
+    ecosystem: true,
+  },
+  debugOptions: {
+    logOptions: true,
+    checkIncrementalGraphConsistency: true,
+    useIncrementalGraph: true,
   },
 };
 
@@ -267,22 +363,108 @@ export interface ZeduxLoggerOptions {
    */
   graphOptions?: {
     /**
-     * Show the graph by namespaces in the log's details.
+     * Show the flattened graph in the log's details.
+     *
+     * > An object containing every node in the graph in the top level (no
+     * > nesting). Each node has a list of dependency strings and a list of
+     * > dependent strings that point to other keys in the top-level object. This
+     * > is the only view that shows pseudo-nodes and is the best view for
+     * > programmatically working with the graph.
+     * @see https://zedux.dev/docs/walkthrough/the-graph#views
+     *
      * @default true
      */
-    showGraphByNamespaces?: boolean;
+    showFlatGraph?: boolean;
+
+    /**
+     * Show the top-down graph in the log's details.
+     *
+     * > An object containing every root node in the graph. Each node's
+     * > value is an object containing its dependents who, in turn, contain their
+     * > dependents, and so on till the leaf nodes.
+     * @see https://zedux.dev/docs/walkthrough/the-graph#views
+     *
+     * @default true
+     */
+    showTopDownGraph?: boolean;
+
+    /**
+     * Show the bottom-up graph in the log's details.
+     *
+     * > The inverse of Top-Down. An object containing every leaf node in the
+     * > graph. Each node's value is an object containing its dependencies who,
+     * > in turn, contain their dependencies, and so on till the root nodes.
+     * @see https://zedux.dev/docs/walkthrough/the-graph#views
+     *
+     * @default true
+     */
+    showBottomUpGraph?: boolean;
+
+    /**
+     * Show the graph by namespaces in the log's details.
+     *
+     * A variant of the flattened graph where the nodes are grouped by
+     * namespaces. Namespaces are the parts of the node's name separated by
+     * slashes and the special nodes types.
+     *
+     * - If a node has parameters or scope, it will be included in the graph
+     *   as a child.
+     * - If a node is a special node like a react component or a signal,
+     *   it will also be included in the graph as a child.
+     * - A special key "_" is used for nodes with the same namespaces
+     *   like an atom and his signal.
+     *
+     * For example :
+     *
+     * - A simple atom named `"a/b/c"` will create the following graph:
+     *   `{ a: { b: { c } } }`
+     * - A signal atom named `"@signal(a/b/c-["myParam"])-7layrpu"` will create
+     *   the following graph:
+     *   `{ a: { b: { c: { myParam: { "@signal-7layrpu" } } } } }`
+     * - A simple atom `"a"` and his signal "`@signal(a)-7layrpu"` will create
+     *   the following graph:
+     *   `{ a: { _: "a value", "@signal-7layrpu": "signal value" } }`
+     *
+     * Special node types included:
+     * - `@@rc` for react components
+     * - `@@selector` for selectors
+     * - `@@listener` for listeners
+     * - `@@scope` for scopes
+     * - `@signal` for signals
+     *
+     * @default true
+     */
+    showByNamespacesGraph?: boolean;
+
+    /**
+     * Show the nodes in the graph by namespaces in the log's details.
+     * @default false
+     */
+    showNodesInGraphByNamespaces?: boolean;
+
+    /**
+     * Show the nodes's values in the graph by namespaces in the log's details.
+     * @default false
+     */
+    showNodeValueInGraphByNamespaces?: boolean;
+
+    /**
+     * Show the nodes's dependencies and dependents in the graph by namespaces in the log's details.
+     * @default false
+     */
+    showNodeDepsInGraphByNamespaces?: boolean;
 
     /**
      * Hide in the flattened graph the nodes that are external to the ecosystem like react nodes.
-     * @default true
+     * @default false
      */
-    hideExternalNodesFromFlatGraph?: boolean;
+    showExternalNodesInFlatGraph?: boolean;
 
     /**
      * Hide in the flattened graph signals nodes.
-     * @default true
+     * @default false
      */
-    hideSignalsFromFlatGraph?: boolean;
+    showSignalsInFlatGraph?: boolean;
 
     /**
      * Collapse the log group in the log's details.
@@ -319,15 +501,15 @@ export interface ZeduxLoggerOptions {
   filters?: {
     /**
      * Hide events related to external nodes like react components.
-     * @default true
+     * @default false
      */
-    hideExternalNodesChanges?: boolean;
+    showExternalNodesChanges?: boolean;
 
     /**
      * Hide events related to signals nodes.
-     * @default true
+     * @default false
      */
-    hideSignalsChanges?: boolean;
+    showSignalsChanges?: boolean;
   };
 
   /**
@@ -358,6 +540,32 @@ export interface ZeduxLoggerOptions {
      * @default true
      */
     ecosystem?: boolean;
+  };
+
+  /**
+   * Options for debugging the logger.
+   */
+  debugOptions?: {
+    /**
+     * Log the logger's options.
+     * @default false
+     */
+    logOptions?: boolean;
+
+    /**
+     * Checks whenever the graph is consistent after each event.
+     * Will log an error if the graph is not consistent.
+     * @remarks This is a performance heavy operation recalculating and comparing the graph every event.
+     * @default false
+     */
+    checkIncrementalGraphConsistency?: boolean;
+
+    /**
+     * Use the incremental graph in the logger.
+     * This is disabled by default for now until it's more stable.
+     * @default false
+     */
+    useIncrementalGraph?: boolean;
   };
 }
 

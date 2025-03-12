@@ -53,6 +53,7 @@
   },
   "main": "dist/index.js",
   "dependencies": {
+    "immer": "^10.1.1",
     "microdiff": "^1.5.0",
     "remeda": "^2.20.2"
   }

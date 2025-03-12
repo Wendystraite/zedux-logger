@@ -4,8 +4,7 @@ export function addToDetailsDependencies(args: LogArgs): void {
   const {
     addLogToDetails,
     what: { node },
-    newGraph,
-    oldGraph,
+    graph,
     options: {
       showInDetails: { showDependencies },
     },
@@ -15,15 +14,15 @@ export function addToDetailsDependencies(args: LogArgs): void {
     return;
   }
 
-  const graph = (newGraph ?? oldGraph)?.flat[node.id];
+  const dependencies = graph?.flat[node.id]?.dependencies;
 
-  if (graph === undefined) {
+  if (dependencies === undefined) {
     return;
   }
 
   addLogToDetails({
     emoji: '🔗',
     log: 'dependencies',
-    data: graph.dependencies,
+    data: dependencies,
   });
 }

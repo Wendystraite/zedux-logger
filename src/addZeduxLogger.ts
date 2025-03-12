@@ -25,6 +25,7 @@ import { addToSummarySummary } from './addToLogs/addToSummarySummary.js';
 import { addToSummaryTtl } from './addToLogs/addToSummaryTtl.js';
 import { addToSummaryWaitingPromises } from './addToLogs/addToSummaryWaitingPromises.js';
 import { canLogEvent } from './canLogEvent/canLogEvent.js';
+import { checkIncrementalGraphConsistency } from './checkIncrementalGraphConsistency.js';
 import { type Graph, generateGraph } from './generateGraph/generateGraph.js';
 import { generateSnapshot } from './generateSnapshot/generateSnapshot.js';
 import { logLogArgs } from './log/logLogArgs.js';
@@ -34,6 +35,7 @@ import {
   DEFAULT_ZEDUX_LOGGER_OPTIONS,
   type ZeduxLoggerOptions,
 } from './types/ZeduxLoggerOptions.js';
+import { updateGraphIncrementally } from './updateGraphIncrementally/updateGraphIncrementally.js';
 import { defaults } from './utils/defaults.js';
 
 /**
@@ -51,11 +53,21 @@ export function addZeduxLogger<E extends Ecosystem>(
   options?: ZeduxLoggerOptions,
 ): E {
   const oldSnapshotRef: { current: unknown } = { current: undefined };
-  const oldGraphRef: { current: Graph | undefined } = {
+  const graphRef: { current: Graph | undefined } = { current: undefined };
+  const consistencyCheckTimeoutIdRef: { current: number | undefined } = {
     current: undefined,
   };
 
   const completeOptions = defaults(DEFAULT_ZEDUX_LOGGER_OPTIONS, options ?? {});
+
+  if (completeOptions.debugOptions.logOptions) {
+    completeOptions.console.log(
+      'Zedux Logger options for',
+      ecosystem.id,
+      ':',
+      completeOptions,
+    );
+  }
 
   if (!completeOptions.enabled) {
     return ecosystem;
@@ -81,13 +93,23 @@ export function addZeduxLogger<E extends Ecosystem>(
       oldSnapshotRef,
     });
 
-    const oldGraph = oldGraphRef.current;
-    const newGraph = generateGraph({
-      ecosystem,
-      eventMap,
-      options: completeOptions,
-      oldGraphRef,
-    });
+    if (completeOptions.showInDetails.showGraph) {
+      if (
+        graphRef.current === undefined ||
+        !completeOptions.debugOptions.useIncrementalGraph
+      ) {
+        graphRef.current = generateGraph({
+          ecosystem,
+          options: completeOptions,
+        });
+      } else {
+        graphRef.current = updateGraphIncrementally(
+          eventMap,
+          graphRef.current,
+          completeOptions.graphOptions,
+        );
+      }
+    }
 
     const logArgs: LogArgs = {
       logSummary: '',
@@ -105,8 +127,7 @@ export function addZeduxLogger<E extends Ecosystem>(
       },
       what,
       options: completeOptions,
-      oldGraph,
-      newGraph,
+      graph: graphRef.current,
       oldSnapshot,
       newSnapshot,
     };
@@ -136,6 +157,13 @@ export function addZeduxLogger<E extends Ecosystem>(
     addToDetailsSnapshot(logArgs);
 
     logLogArgs(logArgs);
+
+    checkIncrementalGraphConsistency({
+      ecosystem,
+      options: completeOptions,
+      graphRef,
+      consistencyCheckTimeoutIdRef,
+    });
   });
 
   return ecosystem;

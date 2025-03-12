@@ -13,6 +13,6 @@
     "verbatimModuleSyntax": true,
     "noEmit": true
   },
-  "include": ["tests/**/*"],
+  "include": ["tests/**/*", "benchmarks/**/*"],
   "files": ["vitest.config.ts", "eslint.config.ts"]
 }

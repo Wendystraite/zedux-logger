@@ -82,4 +82,62 @@ describe('defaults', () => {
 
     expect(result).toEqual({ a: [4, 5], b: 6 });
   });
+
+  it('should not override value when given value is undefined', () => {
+    const defaultValues = {
+      a: 1,
+      b: 2,
+      c: 3,
+    };
+    const values: { a?: number; b?: number; c?: number | null } = {
+      a: undefined,
+      b: 4,
+      c: null,
+    };
+
+    const result = defaults(defaultValues, values);
+
+    expect(result).toEqual({ a: 1, b: 4, c: null });
+  });
+
+  it('should handle mixing of different value types', () => {
+    const defaultValues = {
+      a: 'default',
+      b: 10,
+      c: true,
+      d: { nested: 'value' },
+    };
+    const values: {
+      a?: string;
+      b?: number;
+      c?: boolean;
+      d?: { nested?: string };
+    } = {
+      a: 'custom',
+      b: undefined,
+      c: false,
+      d: { nested: undefined },
+    };
+
+    const result = defaults(defaultValues, values);
+
+    expect(result).toEqual({
+      a: 'custom',
+      b: 10,
+      c: false,
+      d: { nested: 'value' },
+    });
+  });
+
+  it('should preserve null values from input', () => {
+    const defaultValues = { a: 1, b: { c: 2 } };
+    const values: {
+      a?: number | null;
+      b?: { c?: number | null } | null;
+    } = { a: null, b: null };
+
+    const result = defaults(defaultValues, values);
+
+    expect(result).toEqual({ a: null, b: null });
+  });
 });
