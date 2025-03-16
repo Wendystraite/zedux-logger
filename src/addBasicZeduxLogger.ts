@@ -1,4 +1,4 @@
-import type { Ecosystem } from '@zedux/react';
+import type { Cleanup, Ecosystem } from '@zedux/react';
 import { entries, find, isNonNullish, pipe, when } from 'remeda';
 
 /**
@@ -18,10 +18,10 @@ import { entries, find, isNonNullish, pipe, when } from 'remeda';
 export function addBasicZeduxLogger(
   ecosystem: Ecosystem,
   basicOptions?: { console: Pick<Console, 'log'> },
-): void {
+): Cleanup {
   const { console: consoleLike = console } = basicOptions ?? {};
 
-  ecosystem.on((eventMap) => {
+  return ecosystem.on((eventMap) => {
     const { type, event } = pipe(
       eventMap,
       entries(),

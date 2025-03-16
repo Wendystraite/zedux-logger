@@ -1,4 +1,4 @@
-import { type Ecosystem } from '@zedux/react';
+import { type Cleanup, type Ecosystem } from '@zedux/react';
 import { mapToObj } from 'remeda';
 
 import type { LogArgs, LogDetail } from './addToLogs/LogArgs.js';
@@ -48,10 +48,10 @@ import { defaults } from './utils/defaults.js';
  * const ecosystem = createEcosystem();
  * addZeduxLogger(ecosystem);
  */
-export function addZeduxLogger<E extends Ecosystem>(
-  ecosystem: E,
+export function addZeduxLogger(
+  ecosystem: Ecosystem,
   options?: ZeduxLoggerOptions,
-): E {
+): Cleanup {
   const oldSnapshotRef: { current: unknown } = { current: undefined };
   const graphRef: { current: Graph | undefined } = { current: undefined };
   const consistencyCheckTimeoutIdRef: { current: number | undefined } = {
@@ -70,7 +70,9 @@ export function addZeduxLogger<E extends Ecosystem>(
   }
 
   if (!completeOptions.enabled) {
-    return ecosystem;
+    return () => {
+      // noop
+    };
   }
 
   const subscribedTo: SubscribedTo = mapToObj(
@@ -78,7 +80,7 @@ export function addZeduxLogger<E extends Ecosystem>(
     (event) => [event, true],
   );
 
-  ecosystem.on((eventMap) => {
+  return ecosystem.on((eventMap) => {
     const what = parseWhatHappened(ecosystem, eventMap, completeOptions);
 
     if (!canLogEvent({ what, options: completeOptions, subscribedTo })) {
@@ -165,6 +167,4 @@ export function addZeduxLogger<E extends Ecosystem>(
       consistencyCheckTimeoutIdRef,
     });
   });
-
-  return ecosystem;
 }
