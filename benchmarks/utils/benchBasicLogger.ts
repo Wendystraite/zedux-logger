@@ -24,7 +24,7 @@ export function benchBasicLogger(): void {
 
       teardown() {
         cleanup();
-        ecosystem.destroy(true);
+        ecosystem.reset({ hydration: true, listeners: true, overrides: true });
       },
     },
   );

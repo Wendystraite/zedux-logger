@@ -12,8 +12,8 @@ export interface Graph {
   flat: Record<
     string,
     {
-      dependencies: Array<{ key: string; operation: string }>;
-      dependents: Array<{ key: string; operation: string }>;
+      observers: Array<{ key: string; operation: string }>;
+      sources: Array<{ key: string; operation: string }>;
       weight: number;
     }
   >;

@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import {
   type Ecosystem,
   EcosystemProvider,
-  type GraphNode,
+  type ZeduxNode,
   atom,
   createEcosystem,
   inject,
@@ -17,12 +17,8 @@ import {
   type GraphByNamespaces,
   generateGraphByNamespaces,
 } from '../src/generateGraph/generateGraphByNamespaces.js';
-import {
-  type ListenerAtomName,
-  type SelectorAtomName,
-  type SignalAtomName,
-  parseAtomName,
-} from '../src/parseAtomName/parseAtomName.js';
+import type { ParsedBuiltInNodeId } from '../src/parseAtomId/parseBuiltInNodeId.js';
+import { parseNodeId } from '../src/parseAtomId/parseNodeId.js';
 import { DEFAULT_ZEDUX_LOGGER_OPTIONS } from '../src/types/ZeduxLoggerOptions.js';
 import { defaults } from '../src/utils/defaults.js';
 
@@ -43,8 +39,8 @@ describe('graphByNamespaces', () => {
     const signalNode = ecosystem.getNode(
       atom('withSignal', () => injectSignal(0)),
     );
-    const signalNodeId = (parseAtomName(signalNode.S!.id) as SignalAtomName)
-      .signalUid;
+    const signalNodeId = (parseNodeId(signalNode.S!.id) as ParsedBuiltInNodeId)
+      .suffix;
 
     // Selectors
     const somethingAtom = atom('something', 0);
@@ -56,23 +52,23 @@ describe('graphByNamespaces', () => {
 
     const namedFnNode = ecosystem.getNode(namedFnSelector);
     const namedFnSelectorId = (
-      parseAtomName(namedFnNode.id) as SelectorAtomName
-    ).selectorUid;
+      parseNodeId(namedFnNode.id) as ParsedBuiltInNodeId
+    ).suffix;
 
     const arrowFnNode = ecosystem.getNode(arrowFnSelector);
     const arrowFnSelectorId = (
-      parseAtomName(arrowFnNode.id) as SelectorAtomName
-    ).selectorUid;
+      parseNodeId(arrowFnNode.id) as ParsedBuiltInNodeId
+    ).suffix;
 
     // Components
-    const componentId = 'r0';
-    function Component() {
+    const componentId = ':r0:';
+    function MyComponent() {
       useAtomValue(somethingAtom);
       return null;
     }
     render(
       <EcosystemProvider ecosystem={ecosystem}>
-        <Component />
+        <MyComponent />
       </EcosystemProvider>,
     );
 
@@ -84,14 +80,12 @@ describe('graphByNamespaces', () => {
 
     // Listeners
     signalNode.S?.on('change', () => {});
-    const listenerNode = Array.from(ecosystem.n.entries()).find(
-      ([nodeName]) => parseAtomName(nodeName).type === 'listener',
-    )![1];
-    const listenerNodeId = (parseAtomName(listenerNode.id) as ListenerAtomName)
-      .listenerUid;
+    const listenerNode = ecosystem.findAll('@listener')[0]!;
+    const listenerNodeId = (parseNodeId(listenerNode.id) as ParsedBuiltInNodeId)
+      .suffix;
 
     const createFakeNode = (id: string, v: unknown) => {
-      return { id, v } as unknown as GraphNode; // mock
+      return { id, v } as unknown as ZeduxNode; // mock
     };
 
     const graph = generateGraphByNamespaces({
@@ -108,76 +102,63 @@ describe('graphByNamespaces', () => {
     });
 
     expect(graph).toEqual({
-      '@@listener': {
-        [listenerNodeId]: {
-          type: GRAPH_BY_NAMESPACES_NODE_TYPE,
-          id: `no-${listenerNodeId}`,
-          node: createFakeNode(`no-${listenerNodeId}`, undefined),
-          value: undefined,
-          dependencies: [
-            {
-              key: `@signal(withSignal)-${signalNodeId}`,
-              operation: 'on',
-            },
-          ],
-          dependents: [],
-          weight: 2,
-        },
-      },
-      '@@rc': {
-        Component: {
+      '@component': {
+        MyComponent: {
           [componentId]: {
             type: GRAPH_BY_NAMESPACES_NODE_TYPE,
-            id: `Component-:${componentId}:`,
-            node: createFakeNode(`Component-:${componentId}:`, undefined),
+            id: `@component(MyComponent)-${componentId}`,
+            node: createFakeNode(
+              `@component(MyComponent)-${componentId}`,
+              undefined,
+            ),
             value: undefined,
-            dependencies: [
+            sources: [
               {
                 key: 'something',
                 operation: 'useAtomValue',
               },
             ],
-            dependents: [],
+            observers: [],
             weight: 2,
           },
         },
       },
-      '@@selector': {
+      '@selector': {
         arrowFnSelector: {
           [arrowFnSelectorId]: {
             type: GRAPH_BY_NAMESPACES_NODE_TYPE,
-            id: `@@selector-arrowFnSelector-${arrowFnSelectorId}`,
+            id: `@selector(arrowFnSelector)-${arrowFnSelectorId}`,
             node: createFakeNode(
-              `@@selector-arrowFnSelector-${arrowFnSelectorId}`,
+              `@selector(arrowFnSelector)-${arrowFnSelectorId}`,
               0,
             ),
             value: 0,
-            dependencies: [
+            sources: [
               {
                 key: 'something',
                 operation: 'get',
               },
             ],
-            dependents: [],
+            observers: [],
             weight: 2,
           },
         },
         namedFnSelector: {
           [namedFnSelectorId]: {
             type: GRAPH_BY_NAMESPACES_NODE_TYPE,
-            id: `@@selector-namedFnSelector-${namedFnSelectorId}`,
+            id: `@selector(namedFnSelector)-${namedFnSelectorId}`,
             node: createFakeNode(
-              `@@selector-namedFnSelector-${namedFnSelectorId}`,
+              `@selector(namedFnSelector)-${namedFnSelectorId}`,
               0,
             ),
             value: 0,
-            dependencies: [
+            sources: [
               {
                 key: 'something',
                 operation: 'get',
               },
             ],
-            dependents: [],
+            observers: [],
             weight: 2,
           },
         },
@@ -188,8 +169,8 @@ describe('graphByNamespaces', () => {
           id: 'nested/one',
           node: createFakeNode('nested/one', 0),
           value: 0,
-          dependencies: [],
-          dependents: [],
+          sources: [],
+          observers: [],
           weight: 1,
         },
         three: {
@@ -198,8 +179,8 @@ describe('graphByNamespaces', () => {
             id: 'nested/three',
             node: createFakeNode('nested/three', 0),
             value: 0,
-            dependencies: [],
-            dependents: [],
+            sources: [],
+            observers: [],
             weight: 1,
           },
           four: {
@@ -207,8 +188,8 @@ describe('graphByNamespaces', () => {
             id: 'nested/three/four',
             node: createFakeNode('nested/three/four', 0),
             value: 0,
-            dependencies: [],
-            dependents: [],
+            sources: [],
+            observers: [],
             weight: 1,
           },
         },
@@ -217,8 +198,8 @@ describe('graphByNamespaces', () => {
           id: 'nested/two',
           node: createFakeNode('nested/two', 0),
           value: 0,
-          dependencies: [],
-          dependents: [],
+          sources: [],
+          observers: [],
           weight: 1,
         },
       },
@@ -227,8 +208,8 @@ describe('graphByNamespaces', () => {
         id: 'simple',
         node: createFakeNode('simple', 0),
         value: 0,
-        dependencies: [],
-        dependents: [],
+        sources: [],
+        observers: [],
         weight: 1,
       },
       something: {
@@ -236,18 +217,18 @@ describe('graphByNamespaces', () => {
         id: 'something',
         node: createFakeNode('something', 0),
         value: 0,
-        dependencies: [],
-        dependents: [
+        sources: [],
+        observers: [
           {
-            key: `@@selector-namedFnSelector-${namedFnSelectorId}`,
+            key: `@selector(namedFnSelector)-${namedFnSelectorId}`,
             operation: 'get',
           },
           {
-            key: `@@selector-arrowFnSelector-${arrowFnSelectorId}`,
+            key: `@selector(arrowFnSelector)-${arrowFnSelectorId}`,
             operation: 'get',
           },
           {
-            key: `Component-:${componentId}:`,
+            key: `@component(MyComponent)-${componentId}`,
             operation: 'useAtomValue',
           },
         ],
@@ -259,36 +240,55 @@ describe('graphByNamespaces', () => {
           id: 'withSignal',
           node: createFakeNode('withSignal', 0),
           value: 0,
-          dependencies: [
+          sources: [
             {
               key: `@signal(withSignal)-${signalNodeId}`,
               operation: 'injectSignal',
             },
           ],
-          dependents: [],
+          observers: [],
           weight: 2,
         },
         [`@signal-${signalNodeId}`]: {
-          type: GRAPH_BY_NAMESPACES_NODE_TYPE,
-          id: `@signal(withSignal)-${signalNodeId}`,
-          node: createFakeNode(`@signal(withSignal)-${signalNodeId}`, 0),
-          value: 0,
-          dependencies: [],
-          dependents: [
-            {
-              key: 'withSignal',
-              operation: 'injectSignal',
-            },
-            {
-              key: `no-${listenerNodeId}`,
-              operation: 'on',
-            },
-          ],
-          weight: 1,
+          [`@listener-${listenerNodeId}`]: {
+            type: GRAPH_BY_NAMESPACES_NODE_TYPE,
+            id: `@listener(@signal(withSignal)-${signalNodeId})-${listenerNodeId}`,
+            node: createFakeNode(
+              `@listener(@signal(withSignal)-${signalNodeId})-${listenerNodeId}`,
+              undefined,
+            ),
+            value: undefined,
+            sources: [
+              {
+                key: `@signal(withSignal)-${signalNodeId}`,
+                operation: 'on',
+              },
+            ],
+            observers: [],
+            weight: 2,
+          },
+          _: {
+            type: GRAPH_BY_NAMESPACES_NODE_TYPE,
+            id: `@signal(withSignal)-${signalNodeId}`,
+            node: createFakeNode(`@signal(withSignal)-${signalNodeId}`, 0),
+            value: 0,
+            sources: [],
+            observers: [
+              {
+                key: 'withSignal',
+                operation: 'injectSignal',
+              },
+              {
+                key: `@listener(@signal(withSignal)-${signalNodeId})-${listenerNodeId}`,
+                operation: 'on',
+              },
+            ],
+            weight: 1,
+          },
         },
       },
       withScope: {
-        '@@scope-"scope value"': {
+        '@scope-"scope value"': {
           type: GRAPH_BY_NAMESPACES_NODE_TYPE,
           id: 'withScope-@scope("scope value")',
           node: createFakeNode(
@@ -296,8 +296,8 @@ describe('graphByNamespaces', () => {
             'scope value',
           ),
           value: 'scope value',
-          dependencies: [],
-          dependents: [],
+          sources: [],
+          observers: [],
           weight: 1,
         },
       },

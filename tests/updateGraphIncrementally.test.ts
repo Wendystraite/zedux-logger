@@ -1,4 +1,5 @@
 import {
+  type Cleanup,
   type Ecosystem,
   type EcosystemEvents,
   api,
@@ -51,11 +52,12 @@ describe.each([
   let ecosystem: Ecosystem;
   let graph: Graph;
   let events: Array<Partial<EcosystemEvents>>;
+  let cleanup: Cleanup;
   beforeEach(() => {
     ecosystem = createEcosystem();
     graph = { flat: {}, topDown: {}, bottomUp: {}, byNamespaces: {} };
     events = [];
-    ecosystem.on((eventMap: Partial<EcosystemEvents>) => {
+    cleanup = ecosystem.on((eventMap: Partial<EcosystemEvents>) => {
       // const { type, event } = pipe(
       //   eventMap,
       //   entries(),
@@ -142,7 +144,8 @@ describe.each([
   });
 
   afterEach(() => {
-    ecosystem.destroy(true);
+    cleanup();
+    ecosystem.reset();
   });
 
   function expectGraphEqualsToEcosystemGraph() {
@@ -196,13 +199,13 @@ describe.each([
     ]);
     expect(graph.flat).toEqual({
       '@atom/one': {
-        dependencies: [],
-        dependents: [],
+        sources: [],
+        observers: [],
         weight: 1,
       },
       '@atom/two': {
-        dependencies: [],
-        dependents: [],
+        sources: [],
+        observers: [],
         weight: 1,
       },
     });

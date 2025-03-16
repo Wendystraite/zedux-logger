@@ -93,12 +93,12 @@ function handleEdgeEvent({
       // );
 
       observerGraphNode.weight += 1;
-      observerGraphNode.dependencies.push({
+      observerGraphNode.sources.push({
         key: source.id,
         operation: observer.s.get(source)?.operation ?? '',
       });
       if (!shouldIgnoreSourceNode) {
-        sourceGraphNode.dependents.push({
+        sourceGraphNode.observers.push({
           key: observer.id,
           operation: source.o.get(observer)?.operation ?? '',
         });
@@ -107,18 +107,18 @@ function handleEdgeEvent({
     }
     case 'remove': {
       // console.log(
-      //   `[flat] remove "${source.id}" from the dependencies of "${observer.id}"`,
+      //   `[flat] remove "${source.id}" from the sources of "${observer.id}"`,
       // );
       // console.log(
-      //   `[flat] remove "${observer.id}" from the dependents of "${source.id}"`,
+      //   `[flat] remove "${observer.id}" from the observers of "${source.id}"`,
       // );
 
       observerGraphNode.weight -= 1;
-      observerGraphNode.dependencies = observerGraphNode.dependencies.filter(
+      observerGraphNode.sources = observerGraphNode.sources.filter(
         (dep) => dep.key !== source.id,
       );
       if (!shouldIgnoreSourceNode) {
-        sourceGraphNode.dependents = sourceGraphNode.dependents.filter(
+        sourceGraphNode.observers = sourceGraphNode.observers.filter(
           (dep) => dep.key !== observer.id,
         );
       }

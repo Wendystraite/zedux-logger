@@ -1,9 +1,9 @@
-import { ExternalNode, type GraphNode } from '@zedux/react';
+import { ExternalNode, type ZeduxNode } from '@zedux/react';
 
 import type { CompleteZeduxLoggerOptions } from '../../types/ZeduxLoggerOptions.js';
 
 export function shouldIgnoreNodeInFlatGraph(
-  node: GraphNode | undefined,
+  node: ZeduxNode | undefined,
   options: Pick<
     CompleteZeduxLoggerOptions['graphOptions'],
     'showExternalNodesInFlatGraph' | 'showSignalsInFlatGraph'

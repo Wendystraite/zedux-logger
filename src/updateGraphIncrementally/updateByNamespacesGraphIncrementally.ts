@@ -5,7 +5,7 @@ import {
   type GraphByNamespacesNode,
   isGraphByNamespacesNodeObject,
 } from '../generateGraph/generateGraphByNamespaces.js';
-import { parseAtomGroupNames } from '../parseAtomName/parseAtomGroupNames.js';
+import { parseNodeGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
 import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 import { addRecursiveGraphByNamespacesNodeToPath } from './utils/addRecursiveGraphByNamespacesNodeToPath.js';
 import { getDefaultByNamespacesGraphNode } from './utils/getDefaultByNamespacesGraphNode.js';
@@ -55,7 +55,7 @@ function handleCycleEvent({
   const { oldStatus, newStatus, source } = cycle;
   if (source !== undefined) {
     if (oldStatus === 'Initializing' && newStatus === 'Active') {
-      const sourceGroupNames = parseAtomGroupNames(source.id);
+      const sourceGroupNames = parseNodeGroupNames(source.id);
 
       // console.log(
       //   `[byNs] add the newly active "${source.id}" node to byNamespaces graph with group names: "${sourceGroupNames.join('/')}"`,
@@ -67,7 +67,7 @@ function handleCycleEvent({
         getDefaultByNamespacesGraphNode(source, options),
       );
     } else if (newStatus === 'Destroyed') {
-      const sourceGroupNames = parseAtomGroupNames(source.id);
+      const sourceGroupNames = parseNodeGroupNames(source.id);
 
       // console.log(
       //   `[byNs] remove the destroyed "${source.id}" node from byNamespaces graph with group names: "${sourceGroupNames.join('/')}"`,
@@ -94,8 +94,8 @@ function handleEdgeEvent({
 }): void {
   const { source, observer } = edge;
 
-  const sourceGroupNames = parseAtomGroupNames(source.id);
-  const observerGroupNames = parseAtomGroupNames(observer.id);
+  const sourceGroupNames = parseNodeGroupNames(source.id);
+  const observerGroupNames = parseNodeGroupNames(observer.id);
 
   let sourceGraphNode: GraphByNamespacesNode | undefined =
     getRecursiveGraphByNamespacesNodeToPath(draft, sourceGroupNames);
@@ -140,16 +140,16 @@ function handleEdgeEvent({
         if (observerGraphNode.weight !== undefined) {
           observerGraphNode.weight += 1;
         }
-        if (observerGraphNode.dependencies !== undefined) {
-          observerGraphNode.dependencies.push({
+        if (observerGraphNode.sources !== undefined) {
+          observerGraphNode.sources.push({
             key: source.id,
             operation: observer.s.get(source)?.operation ?? '',
           });
         }
       }
       if (isGraphByNamespacesNodeObject(sourceGraphNode)) {
-        if (sourceGraphNode.dependents !== undefined) {
-          sourceGraphNode.dependents.push({
+        if (sourceGraphNode.observers !== undefined) {
+          sourceGraphNode.observers.push({
             key: observer.id,
             operation: source.o.get(observer)?.operation ?? '',
           });
@@ -159,26 +159,25 @@ function handleEdgeEvent({
     }
     case 'remove': {
       // console.log(
-      //   `[byNs] remove "${source.id}" from the dependencies of "${observer.id}"`,
+      //   `[byNs] remove "${source.id}" from the sources of "${observer.id}"`,
       // );
       // console.log(
-      //   `[byNs] remove "${observer.id}" from the dependents of "${source.id}"`,
+      //   `[byNs] remove "${observer.id}" from the observers of "${source.id}"`,
       // );
 
       if (isGraphByNamespacesNodeObject(observerGraphNode)) {
         if (observerGraphNode.weight !== undefined) {
           observerGraphNode.weight -= 1;
         }
-        if (observerGraphNode.dependencies !== undefined) {
-          observerGraphNode.dependencies =
-            observerGraphNode.dependencies.filter(
-              (dep) => dep.key !== source.id,
-            );
+        if (observerGraphNode.sources !== undefined) {
+          observerGraphNode.sources = observerGraphNode.sources.filter(
+            (dep) => dep.key !== source.id,
+          );
         }
       }
       if (isGraphByNamespacesNodeObject(sourceGraphNode)) {
-        if (sourceGraphNode.dependents !== undefined) {
-          sourceGraphNode.dependents = sourceGraphNode.dependents.filter(
+        if (sourceGraphNode.observers !== undefined) {
+          sourceGraphNode.observers = sourceGraphNode.observers.filter(
             (dep) => dep.key !== observer.id,
           );
         }

@@ -10,17 +10,17 @@ export function canLogEvent(args: {
   subscribedTo: SubscribedTo;
 }): boolean {
   const {
-    what: { node, flags, event },
+    what: { node, tags, event },
     options: {
-      disableLoggingFlag,
+      disableLoggingTag,
       filters: { showExternalNodesChanges, showSignalsChanges },
     },
     subscribedTo,
   } = args;
 
   if (
-    disableLoggingFlag !== null &&
-    flags?.includes(disableLoggingFlag) === true
+    disableLoggingTag !== null &&
+    tags?.includes(disableLoggingTag) === true
   ) {
     return false;
   }

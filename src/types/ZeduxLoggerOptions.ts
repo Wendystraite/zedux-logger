@@ -21,8 +21,6 @@ const DEFAULT_ZEDUX_LOGGER_COLORS: CompleteZeduxLoggerOptions['colors'] = {
   default: MUTED_COLOR,
   ecosystemResetStart: ORANGE,
   ecosystemResetEnd: ORANGE,
-  ecosystemDestroyStart: RED,
-  ecosystemDestroyEnd: RED,
   initializing: PURPLE,
   initializingPromise: PURPLE,
   initialized: BLUE,
@@ -80,7 +78,7 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     'resetStart',
     'resetEnd',
   ],
-  disableLoggingFlag: null,
+  disableLoggingTag: null,
   console,
   oneLineLogs: false,
   colors: DEFAULT_ZEDUX_LOGGER_COLORS,
@@ -106,7 +104,8 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showError: true,
     showNode: true,
     showObserver: true,
-    showDependencies: true,
+    showSources: true,
+    showObservers: true,
     showEcosystem: true,
     showGraph: true,
     showSnapshot: true,
@@ -164,7 +163,7 @@ export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     'runEnd',
     'runStart',
   ],
-  disableLoggingFlag: null,
+  disableLoggingTag: null,
   console,
   oneLineLogs: true,
   colors: DEFAULT_ZEDUX_LOGGER_COLORS,
@@ -190,7 +189,8 @@ export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showError: true,
     showNode: true,
     showObserver: true,
-    showDependencies: true,
+    showSources: true,
+    showObservers: true,
     showEcosystem: true,
     showGraph: true,
     showSnapshot: true,
@@ -248,9 +248,9 @@ export interface ZeduxLoggerOptions {
   events?: Array<Zedux.EcosystemEvents[keyof Zedux.EcosystemEvents]['type']>;
 
   /**
-   * If this flag is present in an atom's flags, logging will be disabled for that atom.
+   * If this tag is present in an atom's tags, logging will be disabled for that atom.
    */
-  disableLoggingFlag?: string | null;
+  disableLoggingTag?: string | null;
 
   /**
    * Console-like object to use for logging.
@@ -273,14 +273,10 @@ export interface ZeduxLoggerOptions {
   colors?: {
     /** Default color used in all logs */
     default: string;
-    /** If `showInSummary.showSummary` is `true` ; when resetting ecosystem on {@link Zedux.ResetStartEvent} with isDestroy to `false` */
+    /** If `showInSummary.showSummary` is `true` ; when resetting ecosystem on {@link Zedux.ResetStartEvent} */
     ecosystemResetStart: string;
-    /** If `showInSummary.showSummary` is `true` ; after resetting ecosystem on {@link Zedux.ResetEndEvent} with isDestroy to `false` */
+    /** If `showInSummary.showSummary` is `true` ; after resetting ecosystem on {@link Zedux.ResetEndEvent} */
     ecosystemResetEnd: string;
-    /** If `showInSummary.showSummary` is `true` ; when destroying ecosystem on {@link Zedux.ResetStartEvent} with isDestroy to `true` */
-    ecosystemDestroyStart: string;
-    /** If `showInSummary.showSummary` is `true` ; after destroying ecosystem on {@link Zedux.ResetEndEvent} with isDestroy to `true` */
-    ecosystemDestroyEnd: string;
     /** If `showInSummary.showSummary` is `true` ; when initializing an atom on {@link Zedux.CycleEvent} with newStatus to `Initializing` */
     initializing: string;
     /** If `showInSummary.showSummary` is `true` ; when initializing an atom that has running promises as dependencies on {@link Zedux.CycleEvent} with newStatus to `Active` */
@@ -500,10 +496,16 @@ export interface ZeduxLoggerOptions {
     showObserver?: boolean;
 
     /**
-     * Show the dependencies of the node in the log's details.
+     * Show the sources of the node in the log's details.
      * @default true
      */
-    showDependencies?: boolean;
+    showSources?: boolean;
+
+    /**
+     * Show the observers of the node in the log's details.
+     * @default true
+     */
+    showObservers?: boolean;
 
     /**
      * Show the ecosystem in the log's details.
@@ -546,8 +548,8 @@ export interface ZeduxLoggerOptions {
      * Show the top-down graph in the log's details.
      *
      * > An object containing every root node in the graph. Each node's
-     * > value is an object containing its dependents who, in turn, contain their
-     * > dependents, and so on till the leaf nodes.
+     * > value is an object containing its observers who, in turn, contain their
+     * > observers, and so on till the leaf nodes.
      * @see https://zedux.dev/docs/walkthrough/the-graph#views
      *
      * @default true
@@ -558,8 +560,8 @@ export interface ZeduxLoggerOptions {
      * Show the bottom-up graph in the log's details.
      *
      * > The inverse of Top-Down. An object containing every leaf node in the
-     * > graph. Each node's value is an object containing its dependencies who,
-     * > in turn, contain their dependencies, and so on till the root nodes.
+     * > graph. Each node's value is an object containing its sources who,
+     * > in turn, contain their sources, and so on till the root nodes.
      * @see https://zedux.dev/docs/walkthrough/the-graph#views
      *
      * @default true
@@ -615,7 +617,7 @@ export interface ZeduxLoggerOptions {
     showNodeValueInGraphByNamespaces?: boolean;
 
     /**
-     * Show the nodes's dependencies and dependents in the graph by namespaces in the log's details.
+     * Show the nodes's sources and observers in the graph by namespaces in the log's details.
      * @default false
      */
     showNodeDepsInGraphByNamespaces?: boolean;

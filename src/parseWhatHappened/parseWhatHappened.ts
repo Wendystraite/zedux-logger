@@ -5,13 +5,11 @@ import {
   type Ecosystem,
   type EcosystemEvents,
   type EvaluationReason,
-  type GraphNode,
+  type ZeduxNode,
 } from '@zedux/react';
 
-import {
-  type AtomName,
-  parseAtomName,
-} from '../parseAtomName/parseAtomName.js';
+import { getParsedNodeIdGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
+import { type ParsedNodeId, parseNodeId } from '../parseAtomId/parseNodeId.js';
 import type { EventMap } from '../types/EventMap.js';
 import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
@@ -19,21 +17,25 @@ export interface WhatHappened {
   eventMap: EventMap;
 
   ecosystem: Ecosystem;
-  ecosystemName: string;
+  ecosystemName: string | undefined;
 
   summary: [what: string, emoji: string, color: string];
 
   operation?: string;
 
-  atomName?: AtomName;
+  nodeId?: string;
+  nodeIdParsed?: ParsedNodeId;
+  nodeIdGroupNames?: string[];
 
-  node?: GraphNode;
-  observer?: GraphNode;
-  observerAtomName?: AtomName;
+  node?: ZeduxNode;
+  observer?: ZeduxNode;
+  observerId?: string;
+  observerIdParsed?: ParsedNodeId;
+  observerIdGroupNames?: string[];
   template?: AnyAtomTemplate;
-  flags?: string[];
+  tags?: string[];
 
-  waitingForPromisesNodes?: GraphNode[];
+  waitingForPromisesNodes?: ZeduxNode[];
 
   reasons?: EvaluationReason[];
 
@@ -89,11 +91,15 @@ export function parseWhatHappened(
   }
 
   if (w.node !== undefined) {
-    w.atomName = parseAtomName(w.node.id);
+    w.nodeId = w.node.id;
+    w.nodeIdParsed = parseNodeId(w.nodeId);
+    w.nodeIdGroupNames = getParsedNodeIdGroupNames(w.nodeIdParsed);
   }
 
   if (w.observer?.id !== undefined) {
-    w.observerAtomName = parseAtomName(w.observer.id);
+    w.observerId = w.observer.id;
+    w.observerIdParsed = parseNodeId(w.observerId);
+    w.observerIdGroupNames = getParsedNodeIdGroupNames(w.observerIdParsed);
   }
 
   if (w.node?.template instanceof AtomTemplateBase) {
@@ -101,7 +107,7 @@ export function parseWhatHappened(
   }
 
   if (w.template !== undefined) {
-    w.flags = w.template.flags;
+    w.tags = w.template.tags;
   }
 
   if (w.node !== undefined) {
@@ -118,12 +124,12 @@ function getWaitingForNodes({
   node,
   skipNode,
 }: {
-  node: GraphNode;
+  node: ZeduxNode;
   skipNode: boolean;
-}): GraphNode[] {
-  const waitingNodes: GraphNode[] = [];
+}): ZeduxNode[] {
+  const waitingNodes: ZeduxNode[] = [];
   if (!skipNode) {
-    if (node instanceof AtomInstance && node._promiseStatus === 'loading') {
+    if (node instanceof AtomInstance && node.promiseStatus === 'loading') {
       waitingNodes.push(node);
     }
   }
@@ -165,7 +171,7 @@ function handleEventCycle(
     if (
       source instanceof AtomInstance &&
       source.promise instanceof Promise &&
-      source._promiseStatus === 'loading'
+      source.promiseStatus === 'loading'
     ) {
       w.summary = ['initializing promise', '⌛', colors.initializingPromise];
     } else {
@@ -209,7 +215,7 @@ function handleEventPromiseChange(
 ) {
   const { operation, reasons, source } = promiseChange;
   const promiseStatus =
-    source instanceof AtomInstance ? source._promiseStatus : undefined;
+    source instanceof AtomInstance ? source.promiseStatus : undefined;
   if (promiseStatus === undefined) {
     w.summary = ['promise changed', '✏️', colors.promiseChange];
   } else if (promiseStatus === 'loading') {
@@ -264,12 +270,7 @@ function handleEventResetStart(
   w: WhatHappened,
   colors: CompleteZeduxLoggerOptions['colors'],
 ) {
-  const { isDestroy } = resetStart;
-  if (isDestroy) {
-    w.summary = ['destroying ecosystem', '🧹', colors.ecosystemDestroyStart];
-  } else {
-    w.summary = ['resetting ecosystem', '🧹', colors.ecosystemResetStart];
-  }
+  w.summary = ['resetting ecosystem', '🧹', colors.ecosystemResetStart];
   w.event = resetStart;
 }
 
@@ -278,12 +279,7 @@ function handleEventResetEnd(
   w: WhatHappened,
   colors: CompleteZeduxLoggerOptions['colors'],
 ) {
-  const { isDestroy } = resetEnd;
-  if (isDestroy) {
-    w.summary = ['ecosystem destroyed', '🧹', colors.ecosystemDestroyEnd];
-  } else {
-    w.summary = ['ecosystem reset', '🧹', colors.ecosystemResetEnd];
-  }
+  w.summary = ['ecosystem reset', '🧹', colors.ecosystemResetEnd];
   w.event = resetEnd;
 }
 

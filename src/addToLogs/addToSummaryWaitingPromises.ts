@@ -19,7 +19,9 @@ export function addToSummaryWaitingPromises(args: LogArgs): void {
   }
 
   addLogToSummary(
-    `%c(waiting ${waitingForPromisesNodes.length} promise${waitingForPromisesNodes.length > 1 ? 's' : ''})`,
+    `%c(waiting %c${waitingForPromisesNodes.length} promise${waitingForPromisesNodes.length > 1 ? 's' : ''}%c)`,
+    colors.default,
     colors.waitingForPromisesNodes,
+    colors.default,
   );
 }

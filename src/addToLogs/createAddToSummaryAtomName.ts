@@ -1,12 +1,36 @@
-import type { AtomName } from '../parseAtomName/parseAtomName.js';
+import type { ParsedNodeId } from '../parseAtomId/parseNodeId.js';
+import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 import type { LogArgs } from './LogArgs.js';
+
+function getNodeIdNamespaces(
+  nodeId: string,
+  colors: Pick<
+    CompleteZeduxLoggerOptions['colors'],
+    'atomNameLastNamespace' | 'atomNameNamespace' | 'default'
+  >,
+) {
+  const namespaces = nodeId.split('/');
+  const namespacesStr = namespaces.map((ns) => `%c${ns}%c`).join('/');
+  const namespacesColors = namespaces
+    .map((_ns, idx) => [
+      idx >= namespaces.length - 1
+        ? colors.atomNameLastNamespace
+        : colors.atomNameNamespace,
+      colors.default,
+    ])
+    .flat();
+
+  return { namespacesStr, namespacesColors };
+}
 
 export function createAddToSummaryAtomName({
   show = true,
-  atomName,
+  nodeId,
+  nodeIdParsed,
 }: {
   show?: boolean;
-  atomName: AtomName | undefined;
+  nodeId: string | undefined;
+  nodeIdParsed: ParsedNodeId | undefined;
 }) {
   return function addToSummaryAtomName(args: LogArgs): void {
     const {
@@ -14,96 +38,89 @@ export function createAddToSummaryAtomName({
       options: { colors },
     } = args;
 
-    if (!show || atomName === undefined) {
+    if (!show) {
       return;
     }
 
-    switch (atomName.type) {
-      case 'user': {
-        const { namespaces, params, scope } = atomName;
-        const paramsStr = params !== undefined ? `[${params}]` : '';
-        const scopeStr = scope !== undefined ? `@scope(${scope})` : '';
-        const namespacesStr = namespaces.map((ns) => `%c${ns}%c`).join('/');
-        const namespacesColors = namespaces
-          .map((_ns, idx) => [
-            idx >= namespaces.length - 1
-              ? colors.atomNameLastNamespace
-              : colors.atomNameNamespace,
-            colors.default,
-          ])
-          .flat();
+    if (nodeIdParsed !== undefined) {
+      if (nodeIdParsed.type === '@atom') {
+        const { name, params, scope } = nodeIdParsed;
+
+        const { namespacesStr, namespacesColors } = getNodeIdNamespaces(
+          name,
+          colors,
+        );
+
+        const paramsStr = params !== undefined ? ` [${params}]` : '';
+
+        const scopeStr = scope !== undefined ? ` @scope(${scope})` : '';
 
         addLogToSummary(
-          `${namespacesStr}%c${paramsStr}%c${scopeStr}`,
+          `${namespacesStr}%c${paramsStr}%c${scopeStr}%c`,
           ...namespacesColors,
           colors.atomNameParams,
           colors.atomNameScope,
+          colors.default,
         );
+      } else {
+        const { type, wrapped, suffix, subNode } = nodeIdParsed;
 
-        break;
-      }
-      case 'signal': {
-        const { namespaces, params, signalUid } = atomName;
-        const paramsStr = params !== undefined ? `[${params}]` : '';
-        const namespacesStr = namespaces.map((ns) => `%c${ns}%c`).join('/');
-        const namespacesColors = namespaces
-          .map((_ns, idx) => [
-            idx >= namespaces.length - 1
-              ? colors.atomNameLastNamespace
-              : colors.atomNameNamespace,
+        const wrappedColor = {
+          '@signal': colors.default,
+          '@selector': colors.atomNameSelectorName,
+          '@listener': colors.default,
+          '@component': colors.atomNameReactComponentName,
+          '@memo': colors.default,
+          '@scope': colors.atomNameScope,
+          '@atom': colors.default,
+        }[type];
+
+        const suffixColor = {
+          '@signal': colors.atomNameSignalUid,
+          '@selector': colors.default,
+          '@listener': colors.atomNameListenerUid,
+          '@component': colors.default,
+          '@memo': colors.default,
+          '@scope': colors.default,
+          '@atom': colors.default,
+        }[type];
+
+        if (subNode !== undefined && subNode.type === '@atom') {
+          const {
+            namespacesStr: subNodeNamespacesStr,
+            namespacesColors: subNodeNamespacesColors,
+          } = getNodeIdNamespaces(subNode.name, colors);
+
+          const subNodeParamsStr =
+            subNode.params !== undefined ? `[${subNode.params}]` : '';
+
+          const subNodeScopeStr =
+            subNode.scope !== undefined ? `@scope(${subNode.scope})` : '';
+
+          addLogToSummary(
+            `%c${type}(${subNodeNamespacesStr}%c${subNodeParamsStr}%c${subNodeScopeStr}%c)${suffix ? `-%c${suffix}` : '%c'}%c`,
             colors.default,
-          ])
-          .flat();
-
-        addLogToSummary(
-          `signal(${namespacesStr}%c${paramsStr}%c-%c${signalUid}%c)`,
-          ...namespacesColors,
-          colors.atomNameParams,
-          colors.default,
-          colors.atomNameSignalUid,
-          colors.default,
-        );
-
-        break;
+            ...subNodeNamespacesColors,
+            colors.atomNameParams,
+            colors.atomNameScope,
+            colors.default,
+            suffixColor,
+            colors.default,
+          );
+        } else {
+          addLogToSummary(
+            `%c${type}(%c${wrapped}%c)${suffix ? `-%c${suffix}` : '%c'}%c`,
+            colors.default,
+            wrappedColor,
+            colors.default,
+            suffixColor,
+            colors.default,
+          );
+        }
       }
-      case 'selector': {
-        const { selectorName, selectorUid, params } = atomName;
-        const paramsStr = params !== undefined ? `[${params}]` : '';
-
-        addLogToSummary(
-          `selector(%c${selectorName}%c${paramsStr}%c-%c${selectorUid}%c)`,
-          colors.atomNameSelectorName,
-          colors.atomNameParams,
-          colors.default,
-          colors.atomNameSelectorUid,
-          colors.default,
-        );
-
-        break;
-      }
-      case 'listener': {
-        const { listenerUid } = atomName;
-
-        addLogToSummary(
-          `listener(%c${listenerUid}%c)`,
-          colors.atomNameListenerUid,
-          colors.default,
-        );
-
-        break;
-      }
-      case 'component':
-      default: {
-        const { componentName, componentUid } = atomName;
-
-        addLogToSummary(
-          `rc(%c${componentName}%c-${componentUid})`,
-          colors.atomNameReactComponentName,
-          colors.default,
-        );
-
-        break;
-      }
+    } else if (nodeId !== undefined) {
+      addLogToSummary(nodeId);
+      return;
     }
   };
 }

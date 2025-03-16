@@ -1,4 +1,4 @@
-import type { GraphNode } from '@zedux/react';
+import type { ZeduxNode } from '@zedux/react';
 
 import {
   GRAPH_BY_NAMESPACES_NODE_TYPE,
@@ -8,7 +8,7 @@ import type { CompleteZeduxLoggerOptions } from '../../types/ZeduxLoggerOptions.
 import { getDefaultFlatGraphNode } from './getDefaultGraphNode.js';
 
 export function getDefaultByNamespacesGraphNode(
-  node: GraphNode,
+  node: ZeduxNode,
   {
     showNodeDepsInGraphByNamespaces,
     showNodeValueInGraphByNamespaces,

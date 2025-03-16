@@ -21,11 +21,14 @@ importers:
         specifier: link:../..
         version: link:../..
       '@zedux/core':
-        specifier: 2.0.0-beta.4
-        version: 2.0.0-beta.4
+        specifier: 2.0.0-rc.0
+        version: 2.0.0-rc.0
       '@zedux/react':
-        specifier: 2.0.0-beta.4
-        version: 2.0.0-beta.4(react@19.0.0)
+        specifier: 2.0.0-rc.0
+        version: 2.0.0-rc.0(react@19.0.0)
+      '@zedux/stores':
+        specifier: 2.0.0-rc.0
+        version: 2.0.0-rc.0
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -680,16 +683,19 @@ packages:
     peerDependencies:
       vite: ^4 || ^5 || ^6
 
-  '@zedux/atoms@2.0.0-beta.4':
-    resolution: {integrity: sha512-gorpS4ViP8Uf0dDJpInqwzcbdbZaPfVKN9TFKDkzajMrOPA9/Nw+rASQR8gP0f9mwsdrPgKBF/GK96g8JTzuYw==}
+  '@zedux/atoms@2.0.0-rc.0':
+    resolution: {integrity: sha512-UB0r9HCpL2/xmoGyGj565FCIAJLW/4Fzpr5RQF0YCgZYjL+lPrdW56n3ceDYnRfdURWMCk9fJjOumRQ1MjgsPQ==}
 
-  '@zedux/core@2.0.0-beta.4':
-    resolution: {integrity: sha512-qG5P+pCflLBU3iofUwnwt1uEmvtRt/T0U5tqCer1XCZ4alJgx18nkDfaHcLUj0rz9dh+DlP9dE02+MpiQSmG1g==}
+  '@zedux/core@2.0.0-rc.0':
+    resolution: {integrity: sha512-BZKUp9RPw7kiRO1nGhMQzFUcdJkIvMIybOJvwR+bgRa4wmtH1R/EcSZEuVv3ARw0IIJnGZP62W8V+5TEujh3AA==}
 
-  '@zedux/react@2.0.0-beta.4':
-    resolution: {integrity: sha512-CAPdTFcW7Rpelx+sI28X1pgeOwdw5IndIDdBv6tvwmHorW+Yeg5EVkefdBWO3q1NM26IN7JKv2THUWU2Vv6IiQ==}
+  '@zedux/react@2.0.0-rc.0':
+    resolution: {integrity: sha512-DmRr9LEqAOv1H1jP+kjM2Jj8Wfhtnfj9PJqokmWKZ3hC99SOFaFLEsD1d8fzXjbF5DQQiehfMnrBrvb8vFWq6Q==}
     peerDependencies:
-      react: '>=19.0.0'
+      react: '>=18.0.0'
+
+  '@zedux/stores@2.0.0-rc.0':
+    resolution: {integrity: sha512-jOmCezmYPo191fEdfAvJ9zLPIWIWvcubyDYUsUFbHZ9nJWybOTaOpmKm3u4lF9W5AbGxqQASPJTt1godhZUAPA==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -1745,16 +1751,19 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  '@zedux/atoms@2.0.0-beta.4':
-    dependencies:
-      '@zedux/core': 2.0.0-beta.4
+  '@zedux/atoms@2.0.0-rc.0': {}
 
-  '@zedux/core@2.0.0-beta.4': {}
+  '@zedux/core@2.0.0-rc.0': {}
 
-  '@zedux/react@2.0.0-beta.4(react@19.0.0)':
+  '@zedux/react@2.0.0-rc.0(react@19.0.0)':
     dependencies:
-      '@zedux/atoms': 2.0.0-beta.4
+      '@zedux/atoms': 2.0.0-rc.0
       react: 19.0.0
+
+  '@zedux/stores@2.0.0-rc.0':
+    dependencies:
+      '@zedux/atoms': 2.0.0-rc.0
+      '@zedux/core': 2.0.0-rc.0
 
   acorn-jsx@5.3.2(acorn@8.14.0):
     dependencies:

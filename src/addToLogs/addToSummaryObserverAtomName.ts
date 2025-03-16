@@ -6,11 +6,12 @@ export function addToSummaryObserverAtomName(args: LogArgs): void {
     options: {
       showInSummary: { showObserverName },
     },
-    what: { observerAtomName },
+    what: { observerId, observerIdParsed },
   } = args;
 
   createAddToSummaryAtomName({
     show: showObserverName,
-    atomName: observerAtomName,
+    nodeId: observerId,
+    nodeIdParsed: observerIdParsed,
   })(args);
 }

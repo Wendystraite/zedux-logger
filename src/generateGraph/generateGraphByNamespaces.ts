@@ -1,7 +1,7 @@
-import { GraphNode } from '@zedux/react';
+import { ZeduxNode } from '@zedux/react';
 import { entries, groupBy, map, pipe } from 'remeda';
 
-import { parseAtomGroupNames } from '../parseAtomName/parseAtomGroupNames.js';
+import { parseNodeGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
 import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
 export const GRAPH_BY_NAMESPACES_NODE_TYPE: unique symbol = Symbol('nsNode');
@@ -13,16 +13,16 @@ export interface GraphByNamespaces {
 
 export type GraphByNamespacesNode =
   | GraphByNamespaces
-  | GraphNode['id']
+  | ZeduxNode['id']
   | GraphByNamespacesNodeObject;
 
 export interface GraphByNamespacesNodeObject {
   type: GraphByNamespacesNodeType;
-  id: GraphNode['id'];
+  id: ZeduxNode['id'];
   value?: unknown;
-  node?: GraphNode | undefined;
-  dependencies?: Array<{ key: string; operation: string }>;
-  dependents?: Array<{ key: string; operation: string }>;
+  node?: ZeduxNode | undefined;
+  sources?: Array<{ key: string; operation: string }>;
+  observers?: Array<{ key: string; operation: string }>;
   weight?: number;
 }
 
@@ -38,12 +38,12 @@ export function isGraphByNamespacesNodeObject(
 }
 
 export function generateGraphByNamespaces(args: {
-  getNode(this: void, id: string): GraphNode | undefined;
+  getNode(this: void, id: string): ZeduxNode | undefined;
   flat: Record<
     string,
     {
-      dependencies: Array<{ key: string; operation: string }>;
-      dependents: Array<{ key: string; operation: string }>;
+      observers: Array<{ key: string; operation: string }>;
+      sources: Array<{ key: string; operation: string }>;
       weight: number;
     }
   >;
@@ -70,7 +70,7 @@ export function generateGraphByNamespaces(args: {
   const nodes = pipe(
     entries(flat),
     map(([id, deps]): { groupNames: string[]; data: GraphByNamespacesNode } => {
-      const groupNames = parseAtomGroupNames(id);
+      const groupNames = parseNodeGroupNames(id);
       const node = getNode(id);
       return {
         groupNames,

@@ -8,6 +8,7 @@ export function addToSummaryEmoji(args: LogArgs): void {
     },
     options: {
       showInSummary: { showEmoji },
+      colors,
     },
   } = args;
 
@@ -15,5 +16,5 @@ export function addToSummaryEmoji(args: LogArgs): void {
     return;
   }
 
-  addLogToSummary(`[${summaryEmoji}]`);
+  addLogToSummary(`%c[${summaryEmoji}]`, colors.default);
 }

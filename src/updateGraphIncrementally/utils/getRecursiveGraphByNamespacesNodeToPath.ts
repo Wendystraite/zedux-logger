@@ -1,4 +1,4 @@
-import type { GraphNode } from '@zedux/react';
+import type { ZeduxNode } from '@zedux/react';
 
 import {
   type GraphByNamespaces,
@@ -9,7 +9,7 @@ import {
 export function getRecursiveGraphByNamespacesNodeToPath(
   graph: GraphByNamespaces,
   groupNames: string[],
-): GraphNode['id'] | GraphByNamespacesNodeObject | undefined {
+): ZeduxNode['id'] | GraphByNamespacesNodeObject | undefined {
   let currentPath: GraphByNamespaces = graph;
 
   for (

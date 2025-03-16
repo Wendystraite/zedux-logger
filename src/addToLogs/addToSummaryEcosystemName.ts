@@ -10,7 +10,7 @@ export function addToSummaryEcosystemName(args: LogArgs): void {
     },
   } = args;
 
-  if (!showEcosystemName) {
+  if (!showEcosystemName || ecosystemName === undefined) {
     return;
   }
 
