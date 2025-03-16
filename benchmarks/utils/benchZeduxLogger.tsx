@@ -25,7 +25,10 @@ const DEFAULT_ZEDUX_LOGGER_BENCH_OPTIONS: CompleteZeduxLoggerOptions = defaults(
 
 export function benchZeduxLogger(
   name: string,
-  options: Pick<ZeduxLoggerOptions, 'oneLineLogs'> &
+  options: Pick<
+    ZeduxLoggerOptions,
+    'oneLineLogs' | 'deobfuscateSingleLetters'
+  > &
     Pick<
       NonNullable<ZeduxLoggerOptions['showInDetails']>,
       'showGraph' | 'showSnapshot'

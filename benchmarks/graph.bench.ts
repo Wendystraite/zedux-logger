@@ -14,7 +14,9 @@ describe('graph', () => {
   // no graph
 
   const defaultOptions = {
+    deobfuscateSingleLetters: false,
     showSnapshot: false,
+    showGraph: false,
   };
 
   benchZeduxLogger('no graph', {

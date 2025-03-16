@@ -6,7 +6,7 @@ import { mockConsole } from './utils/mockConsole';
 
 mockConsole();
 
-describe('one line logs', () => {
+describe('deobfuscate', () => {
   benchBasicLogger();
 
   const defaultOptions = {
@@ -15,15 +15,15 @@ describe('one line logs', () => {
     showGraph: false,
   };
 
-  benchZeduxLogger('grouped logs', {
+  benchZeduxLogger('no deobfuscate', {
     ...defaultOptions,
 
-    oneLineLogs: false,
+    deobfuscateSingleLetters: false,
   });
 
-  benchZeduxLogger('one lines logs', {
+  benchZeduxLogger('deobfuscate', {
     ...defaultOptions,
 
-    oneLineLogs: true,
+    deobfuscateSingleLetters: true,
   });
 });
