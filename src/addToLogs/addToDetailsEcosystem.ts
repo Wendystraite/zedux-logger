@@ -8,6 +8,7 @@ export function addToDetailsEcosystem(args: LogArgs): void {
     options: {
       showInDetails: { showEcosystem },
       deobfuscateSingleLetters,
+      deobfuscateSingleLettersOptions,
     },
   } = args;
 
@@ -18,8 +19,10 @@ export function addToDetailsEcosystem(args: LogArgs): void {
   addLogToDetails({
     emoji: '🌍',
     log: 'ecosystem',
-    data: deobfuscateSingleLetters.ecosystem
-      ? deobfuscateEcosystem(ecosystem)
-      : ecosystem,
+    data:
+      deobfuscateSingleLetters &&
+      deobfuscateSingleLettersOptions.deobfuscateEcosystem
+        ? deobfuscateEcosystem(ecosystem)
+        : ecosystem,
   });
 }

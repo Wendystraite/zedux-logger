@@ -8,6 +8,7 @@ export function addToDetailsReasons(args: LogArgs): void {
     options: {
       showInDetails: { showReasons },
       deobfuscateSingleLetters,
+      deobfuscateSingleLettersOptions,
     },
   } = args;
 
@@ -24,9 +25,11 @@ export function addToDetailsReasons(args: LogArgs): void {
     addLogToDetails({
       emoji: '💡',
       log: 'reasons',
-      data: deobfuscateSingleLetters.reasons
-        ? deobfuscateReasons(reasons)
-        : reasons,
+      data:
+        deobfuscateSingleLetters &&
+        deobfuscateSingleLettersOptions.deobfuscateReasons
+          ? deobfuscateReasons(reasons)
+          : reasons,
     });
   }
 }

@@ -8,6 +8,7 @@ export function addToDetailsEvent(args: LogArgs): void {
     options: {
       showInDetails: { showEvent },
       deobfuscateSingleLetters,
+      deobfuscateSingleLettersOptions,
     },
   } = args;
 
@@ -18,6 +19,10 @@ export function addToDetailsEvent(args: LogArgs): void {
   addLogToDetails({
     emoji: '📢',
     log: `event(${event.type})`,
-    data: deobfuscateSingleLetters.event ? deobfuscateEvent(event) : event,
+    data:
+      deobfuscateSingleLetters &&
+      deobfuscateSingleLettersOptions.deobfuscateEvents
+        ? deobfuscateEvent(event)
+        : event,
   });
 }

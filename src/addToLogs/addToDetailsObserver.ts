@@ -8,6 +8,7 @@ export function addToDetailsObserver(args: LogArgs): void {
     options: {
       showInDetails: { showObserver },
       deobfuscateSingleLetters,
+      deobfuscateSingleLettersOptions,
     },
   } = args;
 
@@ -18,6 +19,10 @@ export function addToDetailsObserver(args: LogArgs): void {
   addLogToDetails({
     emoji: '🔗',
     log: 'observer',
-    data: deobfuscateSingleLetters.node ? deobfuscateNode(observer) : observer,
+    data:
+      deobfuscateSingleLetters &&
+      deobfuscateSingleLettersOptions.deobfuscateGraphNodes
+        ? deobfuscateNode(observer)
+        : observer,
   });
 }

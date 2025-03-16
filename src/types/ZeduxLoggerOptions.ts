@@ -133,11 +133,12 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showExternalNodesChanges: false,
     showSignalsChanges: false,
   },
-  deobfuscateSingleLetters: {
-    event: true,
-    node: true,
-    reasons: true,
-    ecosystem: true,
+  deobfuscateSingleLetters: true,
+  deobfuscateSingleLettersOptions: {
+    deobfuscateEvents: true,
+    deobfuscateGraphNodes: true,
+    deobfuscateReasons: true,
+    deobfuscateEcosystem: true,
   },
   debugOptions: {
     logOptions: false,
@@ -216,11 +217,12 @@ export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showExternalNodesChanges: true,
     showSignalsChanges: true,
   },
-  deobfuscateSingleLetters: {
-    event: true,
-    node: true,
-    reasons: true,
-    ecosystem: true,
+  deobfuscateSingleLetters: true,
+  deobfuscateSingleLettersOptions: {
+    deobfuscateEvents: true,
+    deobfuscateGraphNodes: true,
+    deobfuscateReasons: true,
+    deobfuscateEcosystem: true,
   },
   debugOptions: {
     logOptions: true,
@@ -679,31 +681,37 @@ export interface ZeduxLoggerOptions {
   /**
    * Deobfuscate the single letters public apis presents in the zedux objects
    * like the ecosystem or the nodes.
+   * @default true
    */
-  deobfuscateSingleLetters?: {
+  deobfuscateSingleLetters?: boolean;
+
+  /**
+   * Options to deobfuscate the single letters public apis presents in the zedux objects.
+   */
+  deobfuscateSingleLettersOptions?: {
     /**
      * Deobfuscate zedux's {@link Zedux.EcosystemEvents}
      * @default true
      */
-    event?: boolean;
+    deobfuscateEvents?: boolean;
 
     /**
      * Deobfuscate zedux's {@link Zedux.GraphNode}
      * @default true
      */
-    node?: boolean;
+    deobfuscateGraphNodes?: boolean;
 
     /**
      * Deobfuscate zedux's {@link Zedux.EvaluationReason}
      * @default true
      */
-    reasons?: boolean;
+    deobfuscateReasons?: boolean;
 
     /**
      * Deobfuscate zedux's {@link Zedux.Ecosystem}
      * @default true
      */
-    ecosystem?: boolean;
+    deobfuscateEcosystem?: boolean;
   };
 
   /**

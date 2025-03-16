@@ -8,6 +8,7 @@ export function addToDetailsNode(args: LogArgs): void {
     options: {
       showInDetails: { showNode },
       deobfuscateSingleLetters,
+      deobfuscateSingleLettersOptions,
     },
   } = args;
 
@@ -18,6 +19,10 @@ export function addToDetailsNode(args: LogArgs): void {
   addLogToDetails({
     emoji: '🔗',
     log: 'node',
-    data: deobfuscateSingleLetters.node ? deobfuscateNode(node) : node,
+    data:
+      deobfuscateSingleLetters &&
+      deobfuscateSingleLettersOptions.deobfuscateGraphNodes
+        ? deobfuscateNode(node)
+        : node,
   });
 }
