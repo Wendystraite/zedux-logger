@@ -1,4 +1,4 @@
-import { type Ecosystem, createEcosystem } from '@zedux/react';
+import { type Cleanup, type Ecosystem, createEcosystem } from '@zedux/react';
 import { bench } from 'vitest';
 
 import { addZeduxLogger } from '../../src/addZeduxLogger';
@@ -57,6 +57,7 @@ export function benchZeduxLogger(
   } = options;
 
   let ecosystem: Ecosystem;
+  let cleanup: Cleanup;
 
   bench(
     `zedux logger ${name}`,
@@ -69,7 +70,7 @@ export function benchZeduxLogger(
       setup() {
         ecosystem = createEcosystem({ id: `bench[${name}]` });
 
-        addZeduxLogger(
+        cleanup = addZeduxLogger(
           ecosystem,
           defaults(DEFAULT_ZEDUX_LOGGER_BENCH_OPTIONS, {
             oneLineLogs,
@@ -86,6 +87,7 @@ export function benchZeduxLogger(
       },
 
       teardown() {
+        cleanup();
         ecosystem.destroy(true);
       },
     },

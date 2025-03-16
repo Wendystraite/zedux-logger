@@ -1,4 +1,4 @@
-import { type Ecosystem, createEcosystem } from '@zedux/react';
+import { type Cleanup, type Ecosystem, createEcosystem } from '@zedux/react';
 import { bench } from 'vitest';
 
 import { addBasicZeduxLogger } from '../../src/addBasicZeduxLogger';
@@ -7,6 +7,7 @@ import { DEFAULT_BENCH_OPTIONS } from './defaultBenchOptions';
 
 export function benchBasicLogger(): void {
   let ecosystem: Ecosystem;
+  let cleanup: Cleanup;
 
   bench(
     'basic zedux logger',
@@ -18,11 +19,11 @@ export function benchBasicLogger(): void {
 
       setup() {
         ecosystem = createEcosystem({ id: `bench[basic zedux logger]` });
-
-        addBasicZeduxLogger(ecosystem);
+        cleanup = addBasicZeduxLogger(ecosystem);
       },
 
       teardown() {
+        cleanup();
         ecosystem.destroy(true);
       },
     },
