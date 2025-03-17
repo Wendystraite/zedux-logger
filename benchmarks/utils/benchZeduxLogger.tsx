@@ -1,4 +1,5 @@
-import { type Cleanup, type Ecosystem, createEcosystem } from '@zedux/react';
+import { cleanup as testingLibraryCleanup } from '@testing-library/react';
+import { type Ecosystem, createEcosystem } from '@zedux/react';
 import { bench } from 'vitest';
 
 import { addZeduxLogger } from '../../src/addZeduxLogger';
@@ -57,37 +58,39 @@ export function benchZeduxLogger(
   } = options;
 
   let ecosystem: Ecosystem;
-  let cleanup: Cleanup;
 
   bench(
     `zedux logger ${name}`,
     () => {
+      addZeduxLogger(
+        ecosystem,
+        defaults(DEFAULT_ZEDUX_LOGGER_BENCH_OPTIONS, {
+          oneLineLogs,
+          showInDetails: { showGraph, showSnapshot },
+          graphOptions: {
+            showBottomUpGraph,
+            showFlatGraph,
+            showTopDownGraph,
+            showByNamespacesGraph,
+          },
+          debugOptions: { useIncrementalGraph },
+        }),
+      );
+
       runBench(ecosystem);
+
+      testingLibraryCleanup();
+      ecosystem.reset({ hydration: true, listeners: true, overrides: true });
     },
     {
       ...DEFAULT_BENCH_OPTIONS,
 
       setup() {
         ecosystem = createEcosystem({ id: `bench[${name}]` });
-
-        cleanup = addZeduxLogger(
-          ecosystem,
-          defaults(DEFAULT_ZEDUX_LOGGER_BENCH_OPTIONS, {
-            oneLineLogs,
-            showInDetails: { showGraph, showSnapshot },
-            graphOptions: {
-              showBottomUpGraph,
-              showFlatGraph,
-              showTopDownGraph,
-              showByNamespacesGraph,
-            },
-            debugOptions: { useIncrementalGraph },
-          }),
-        );
       },
 
       teardown() {
-        cleanup();
+        testingLibraryCleanup();
         ecosystem.reset({ hydration: true, listeners: true, overrides: true });
       },
     },
