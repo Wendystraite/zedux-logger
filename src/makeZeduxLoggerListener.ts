@@ -101,7 +101,7 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       logSummaryColors: [],
       details: [],
       addLogToSummary(log: string, ...colors: string[]): void {
-        if (log !== '') {
+        if (logArgs.logSummary.length > 0) {
           logArgs.logSummary += ' ';
         }
         logArgs.logSummary += log;

@@ -64,7 +64,7 @@ describe('addZeduxLogger', () => {
     expect(consoleMock.log).toHaveBeenCalledTimes(1);
     expect(consoleMock.log.mock.calls).toMatchObject([
       [
-        ' [⚡] simple atom initialized to 0',
+        '[⚡] simple atom initialized to 0',
         {
           '➡️ new-state': 0,
           '🌍 ecosystem': {},
@@ -105,13 +105,13 @@ describe('addZeduxLogger', () => {
       expect(consoleMock.log).toHaveBeenCalledTimes(2);
       expect(consoleMock.log.mock.calls).toMatchObject([
         [
-          ' [⚙️] simple atom evaluating',
+          '[⚙️] simple atom evaluating',
           {
             '📢 event(runStart)': {},
           },
         ],
         [
-          ' [⚙️] simple atom evaluated in 0.00ms', // Timers are faked
+          '[⚙️] simple atom evaluated in 0.00ms', // Timers are faked
           {
             '📢 event(runEnd)': {},
             '⏱️ Execution-time': '0ms', // Timers are faked
@@ -140,13 +140,13 @@ describe('addZeduxLogger', () => {
       expect(consoleMock.log).toHaveBeenCalledTimes(2);
       expect(consoleMock.log.mock.calls).toMatchObject([
         [
-          ' [⚙️] simple atom evaluating',
+          '[⚙️] simple atom evaluating',
           {
             '📢 event(runStart)': {},
           },
         ],
         [
-          ' [⚙️] simple atom evaluated',
+          '[⚙️] simple atom evaluated',
           {
             '📢 event(runEnd)': {},
           },
