@@ -17,11 +17,9 @@ describe('logLogArgs', () => {
     vi.clearAllMocks();
   });
 
-  const options = { console };
-
   it('should call console.groupCollapsed with correct parameters', () => {
     logLogArgs({
-      options,
+      options: { console, oneLineLogs: false, showColors: true },
       logSummary: 'Test Summary',
       logSummaryColors: ['color1', 'color2'],
       details: [],
@@ -35,7 +33,7 @@ describe('logLogArgs', () => {
 
   it('should call console.log for each detail', () => {
     logLogArgs({
-      options,
+      options: { console, oneLineLogs: false, showColors: true },
       logSummary: 'Test Summary',
       logSummaryColors: [],
       details: [
@@ -54,7 +52,7 @@ describe('logLogArgs', () => {
 
   it('should work with nested details', () => {
     logLogArgs({
-      options,
+      options: { console, oneLineLogs: false, showColors: true },
       logSummary: 'Test Summary',
       logSummaryColors: [],
       details: [

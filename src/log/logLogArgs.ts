@@ -5,28 +5,31 @@ import { logLogDetail } from './logLogDetail.js';
 
 export function logLogArgs(
   logArgs: Pick<LogArgs, 'logSummary' | 'logSummaryColors' | 'details'> & {
-    options: Pick<LogArgs['options'], 'oneLineLogs' | 'console'>;
+    options: Pick<LogArgs['options'], 'showColors' | 'oneLineLogs' | 'console'>;
   },
 ): void {
   const {
     logSummary,
     logSummaryColors,
     details,
-    options: { console, oneLineLogs },
+    options,
+    options: { showColors, console, oneLineLogs },
   } = logArgs;
 
-  if (oneLineLogs) {
-    console.log(logSummary, ...logSummaryColors, flattenLogDetails(details));
+  let resultingLogSummary: string[];
+  if (showColors) {
+    resultingLogSummary = [logSummary, ...logSummaryColors];
   } else {
-    consoleGroup(
-      console,
-      'groupCollapsed',
-      [logSummary, ...logSummaryColors],
-      () => {
-        for (const detail of details) {
-          logLogDetail(console, detail);
-        }
-      },
-    );
+    resultingLogSummary = [logSummary.replaceAll('%c', '')];
+  }
+
+  if (oneLineLogs) {
+    console.log(...resultingLogSummary, flattenLogDetails(details));
+  } else {
+    consoleGroup(console, 'groupCollapsed', resultingLogSummary, () => {
+      for (const detail of details) {
+        logLogDetail(console, detail, options);
+      }
+    });
   }
 }

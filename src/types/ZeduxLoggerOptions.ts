@@ -81,6 +81,7 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
   disableLoggingTag: null,
   console,
   oneLineLogs: false,
+  showColors: true,
   colors: DEFAULT_ZEDUX_LOGGER_COLORS,
   showInSummary: {
     showEmoji: true,
@@ -166,6 +167,7 @@ export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
   disableLoggingTag: null,
   console,
   oneLineLogs: true,
+  showColors: true,
   colors: DEFAULT_ZEDUX_LOGGER_COLORS,
   showInSummary: {
     showEmoji: true,
@@ -266,6 +268,12 @@ export interface ZeduxLoggerOptions {
    * @default false
    */
   oneLineLogs?: boolean;
+
+  /**
+   * Show colors in the logs.
+   * @default true
+   */
+  showColors?: boolean;
 
   /**
    * Colors used in the logs.
