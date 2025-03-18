@@ -49,8 +49,29 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
 
     const what = parseWhatHappened(ecosystem, eventMap, options);
 
-    if (!canLogEvent({ what, options, subscribedTo })) {
-      return;
+    const canLog = canLogEvent({ what, options, subscribedTo });
+
+    const currentGraph = graphRef.current;
+
+    const doUpdateGraphIncrementally =
+      options.showInDetails.showGraph &&
+      currentGraph !== undefined &&
+      options.debugOptions.useIncrementalGraph;
+
+    const doGenerateNewGraph =
+      canLog && options.showInDetails.showGraph && !doUpdateGraphIncrementally;
+
+    if (doUpdateGraphIncrementally) {
+      graphRef.current = updateGraphIncrementally(
+        eventMap,
+        currentGraph,
+        options.graphOptions,
+      );
+    } else if (doGenerateNewGraph) {
+      graphRef.current = generateGraph({
+        ecosystem,
+        options,
+      });
     }
 
     const oldSnapshot = oldSnapshotRef.current;
@@ -61,22 +82,8 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       oldSnapshotRef,
     });
 
-    if (options.showInDetails.showGraph) {
-      if (
-        graphRef.current === undefined ||
-        !options.debugOptions.useIncrementalGraph
-      ) {
-        graphRef.current = generateGraph({
-          ecosystem,
-          options,
-        });
-      } else {
-        graphRef.current = updateGraphIncrementally(
-          eventMap,
-          graphRef.current,
-          options.graphOptions,
-        );
-      }
+    if (!canLog) {
+      return;
     }
 
     const logArgs: LogArgs = {
