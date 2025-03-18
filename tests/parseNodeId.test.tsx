@@ -603,6 +603,32 @@ describe('parseNodeId', () => {
     expect(parseNodeId(undefined)).toBeUndefined();
   });
 
+  it('should parse node id with spaces', () => {
+    expect(parseNodeId('atom with spaces')).toEqual({
+      id: 'atom with spaces',
+      name: 'atom with spaces',
+      params: undefined,
+      scope: undefined,
+      type: '@atom',
+    });
+  });
+
+  it('should parse built-in node id with spaces', () => {
+    expect(parseNodeId('@signal(with spaces)')).toEqual({
+      id: '@signal(with spaces)',
+      subNode: {
+        id: 'with spaces',
+        name: 'with spaces',
+        params: undefined,
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: undefined,
+      type: '@signal',
+      wrapped: 'with spaces',
+    });
+  });
+
   it.each(TESTS)('%s should be parsed', (nodeId, expectedAtomNames) => {
     expect(parseNodeId(nodeId)).toEqual(expectedAtomNames);
   });

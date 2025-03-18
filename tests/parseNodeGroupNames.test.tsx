@@ -118,6 +118,20 @@ describe('parseNodeGroupNames', () => {
     expect(TESTS.map(([nodeId]) => nodeId)).toEqual(LOTS_OF_ATOMS_IDS);
   });
 
+  it('should parse node id with spaces and slashes', () => {
+    expect(parseNodeGroupNames('a simple atom/with/slashes')).toEqual([
+      'a simple atom',
+      'with',
+      'slashes',
+    ]);
+  });
+
+  it('should parse built-in node id with spaces and slashes', () => {
+    expect(
+      parseNodeGroupNames('@signal(a simple atom/with/slashes)-42'),
+    ).toEqual(['a simple atom', 'with', 'slashes', '@signal-42']);
+  });
+
   it.each(TESTS)('%s should be parsed', (nodeId, expectedNodeIds) => {
     expect(parseNodeGroupNames(nodeId)).toEqual(expectedNodeIds);
   });
