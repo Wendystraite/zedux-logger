@@ -6,6 +6,7 @@ describe('logLogArgs', () => {
   const consoleMock = {
     log: vi.spyOn(console, 'log').mockImplementation(() => undefined),
     warn: vi.spyOn(console, 'warn').mockImplementation(() => undefined),
+    error: vi.spyOn(console, 'error').mockImplementation(() => undefined),
     group: vi.spyOn(console, 'group').mockImplementation(() => undefined),
     groupCollapsed: vi
       .spyOn(console, 'groupCollapsed')

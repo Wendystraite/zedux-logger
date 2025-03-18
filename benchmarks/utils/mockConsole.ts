@@ -8,6 +8,7 @@ const TO_MOCK: {
 } = {
   log: 'log',
   warn: 'warn',
+  error: 'error',
   group: 'group',
   groupCollapsed: 'groupCollapsed',
   groupEnd: 'groupEnd',

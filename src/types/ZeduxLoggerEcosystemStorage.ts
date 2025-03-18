@@ -1,3 +1,5 @@
+import type { ZeduxNode } from '@zedux/react';
+
 import type { Graph } from '../generateGraph/generateGraph.js';
 import type { SubscribedTo } from './SubscribedTo.js';
 import type {
@@ -12,4 +14,5 @@ export interface ZeduxLoggerEcosystemStorage {
   originalOptions: ZeduxLoggerOptions | undefined;
   completeOptions: CompleteZeduxLoggerOptions;
   subscribedTo: SubscribedTo;
+  runStartTimeMapping: Map<ZeduxNode, /** performance.now() */ number>;
 }

@@ -23,5 +23,6 @@ export function getDefaultZeduxLoggerEcosystemStorage(
     originalOptions: options,
     completeOptions,
     subscribedTo,
+    runStartTimeMapping: new Map(),
   };
 }

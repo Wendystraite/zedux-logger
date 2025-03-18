@@ -1,5 +1,6 @@
 import type * as Zedux from '@zedux/react';
 
+import type { LogArgs } from '../addToLogs/LogArgs.js';
 import type { DeepRequired } from './DeepRequired.js';
 
 /**
@@ -43,6 +44,9 @@ const DEFAULT_ZEDUX_LOGGER_COLORS: CompleteZeduxLoggerOptions['colors'] = {
   waitingForPromisesNodes: PURPLE,
   ecosystemName: GRAY,
   operation: NORMAL_COLOR,
+  executionTimeNormal: NORMAL_COLOR,
+  executionTimeSlow: AMBER,
+  executionTimeVerySlow: RED,
   atomNameNamespace: MUTED_COLOR,
   atomNameLastNamespace: NORMAL_COLOR,
   atomNameParams: MUTED_COLOR,
@@ -94,6 +98,7 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showNewState: true,
     showObserverName: true,
     showWaitingPromises: true,
+    showExecutionTime: true,
   },
   showInDetails: {
     showEvent: true,
@@ -110,6 +115,15 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showEcosystem: true,
     showGraph: true,
     showSnapshot: true,
+    showExecutionTime: true,
+  },
+  executionTimeOptions: {
+    slowThresholdMs: 50,
+    verySlowThresholdMs: 100,
+    warnInConsoleIfSlow: true,
+    errorInConsoleIfVerySlow: true,
+    onSlowEvaluation: null,
+    onVerySlowEvaluation: null,
   },
   graphOptions: {
     showTopDownGraph: true,
@@ -180,6 +194,7 @@ export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showNewState: true,
     showObserverName: true,
     showWaitingPromises: true,
+    showExecutionTime: true,
   },
   showInDetails: {
     showEvent: true,
@@ -196,6 +211,15 @@ export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showEcosystem: true,
     showGraph: true,
     showSnapshot: true,
+    showExecutionTime: true,
+  },
+  executionTimeOptions: {
+    slowThresholdMs: 50,
+    verySlowThresholdMs: 100,
+    warnInConsoleIfSlow: true,
+    errorInConsoleIfVerySlow: true,
+    onSlowEvaluation: null,
+    onVerySlowEvaluation: null,
   },
   graphOptions: {
     showTopDownGraph: true,
@@ -259,7 +283,7 @@ export interface ZeduxLoggerOptions {
    */
   console?: Pick<
     Console,
-    'log' | 'warn' | 'group' | 'groupCollapsed' | 'groupEnd'
+    'log' | 'warn' | 'error' | 'group' | 'groupCollapsed' | 'groupEnd'
   >;
 
   /**
@@ -329,6 +353,12 @@ export interface ZeduxLoggerOptions {
     ecosystemName: string;
     /** If `showInSummary.showOperation` is `true` ; color of the zedux operation's name ({@link Zedux.EventBase['operation']}) */
     operation: string;
+    /** If `showInSummary.showExecutionTime` is `true` ; color of the time taken between {@link Zedux.RunStartEvent} and {@link Zedux.RunEndEvent} if `executionTimeOptions.slowThresholdMs` is not exceeded */
+    executionTimeNormal: string;
+    /** If `showInSummary.showExecutionTime` is `true` ; color of the time taken between {@link Zedux.RunStartEvent} and {@link Zedux.RunEndEvent} if `executionTimeOptions.slowThresholdMs` is exceeded */
+    executionTimeSlow: string;
+    /** If `showInSummary.showExecutionTime` is `true` ; color of the time taken between {@link Zedux.RunStartEvent} and {@link Zedux.RunEndEvent} if `executionTimeOptions.verySlowThresholdMs` is exceeded */
+    executionTimeVerySlow: string;
     /** Color for atom namespace parts except the last one */
     atomNameNamespace: string;
     /** Color for the last part of atom namespace */
@@ -437,6 +467,15 @@ export interface ZeduxLoggerOptions {
      * @default true
      */
     showWaitingPromises?: boolean;
+
+    /**
+     * Measure the time taken between {@link Zedux.RunStartEvent} and {@link Zedux.RunEndEvent}.
+     * Performance is measured in milliseconds with {@link performance.now}.
+     * Shown in summary rounded to 2 decimal places.
+     * Shown in details with more precision.
+     * @default true
+     */
+    showExecutionTime?: boolean;
   };
 
   /**
@@ -532,6 +571,76 @@ export interface ZeduxLoggerOptions {
      * @default true
      */
     showSnapshot?: boolean;
+
+    /**
+     * Measure the time taken between {@link Zedux.RunStartEvent} and {@link Zedux.RunEndEvent}.
+     * Performance is measured in milliseconds with {@link performance.now}.
+     * Shown in summary rounded to 2 decimal places.
+     * Shown in details with more precision.
+     * @default true
+     */
+    showExecutionTime?: boolean;
+  };
+
+  /**
+   * Options for the execution performance measured in the logs.
+   */
+  executionTimeOptions?: {
+    /**
+     * Threshold in milliseconds for what's considered a slow evaluation.
+     * @default 50
+     */
+    slowThresholdMs?: number;
+
+    /**
+     * Threshold in milliseconds for what's considered a very slow evaluation.
+     * @default 100
+     */
+    verySlowThresholdMs?: number;
+
+    /**
+     * Log a warning in the console if the evaluation is slow (execution time is above the slowThresholdMs).
+     * Will warn even if showExecutionTime is false.
+     * @default true
+     */
+    warnInConsoleIfSlow?: boolean;
+
+    /**
+     * Log an error in the console if the evaluation is very slow (execution time is above the verySlowThresholdMs).
+     * Will error even if showExecutionTime is false.
+     * @default true
+     */
+    errorInConsoleIfVerySlow?: boolean;
+
+    /**
+     * Callback called when the evaluation is slow.
+     * Will be called even if showExecutionTime is false.
+     * @param node slow node
+     * @param executionTimeMs time in milliseconds the evaluation took. Measured with {@link performance.now}.
+     * @param logArgs additional data about the log
+     */
+    onSlowEvaluation?:
+      | ((
+          node: Zedux.ZeduxNode,
+          executionTimeMs: number,
+          logArgs: LogArgs,
+        ) => void)
+      | null;
+
+    /**
+     * Callback called when the evaluation is very slow.
+     * Will be called even if showExecutionTime is false.
+     * @param node slow node
+     * @param executionTimeMs time in milliseconds the evaluation took. Measured with {@link performance.now}.
+     * @param logArgs additional data about the log
+     */
+    onVerySlowEvaluation?:
+      | ((
+          node: Zedux.ZeduxNode,
+          executionTimeMs: number,
+          logArgs: LogArgs,
+        ) => void)
+      | null;
   };
 
   /**
