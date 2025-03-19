@@ -73,15 +73,18 @@ const DEFAULT_ZEDUX_LOGGER_COLORS: CompleteZeduxLoggerOptions['colors'] = {
  */
 export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
   enabled: true,
-  events: [
-    'change',
-    'cycle',
-    'invalidate',
-    'promiseChange',
-    'error',
-    'resetStart',
-    'resetEnd',
-  ],
+  eventsToShow: {
+    change: true,
+    cycle: true,
+    edge: false,
+    error: true,
+    invalidate: true,
+    promiseChange: true,
+    resetStart: true,
+    resetEnd: true,
+    runStart: false,
+    runEnd: false,
+  },
   disableLoggingTag: null,
   console,
   oneLineLogs: false,
@@ -166,23 +169,23 @@ export const DEFAULT_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
  */
 export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
   enabled: true,
-  events: [
-    'change',
-    'cycle',
-    'edge',
-    'error',
-    'invalidate',
-    'promiseChange',
-    'resetEnd',
-    'resetStart',
-    'runEnd',
-    'runStart',
-  ],
-  disableLoggingTag: null,
-  console,
+  eventsToShow: {
+    change: true,
+    cycle: true,
+    edge: true,
+    error: true,
+    invalidate: true,
+    promiseChange: true,
+    resetStart: true,
+    resetEnd: true,
+    runStart: true,
+    runEnd: true,
+  },
+  disableLoggingTag: DEFAULT_ZEDUX_LOGGER_OPTIONS.disableLoggingTag,
+  console: DEFAULT_ZEDUX_LOGGER_OPTIONS.console,
   oneLineLogs: true,
   showColors: true,
-  colors: DEFAULT_ZEDUX_LOGGER_COLORS,
+  colors: DEFAULT_ZEDUX_LOGGER_OPTIONS.colors,
   showInSummary: {
     showEmoji: true,
     showEcosystemName: true,
@@ -214,12 +217,16 @@ export const ALL_ENABLED_ZEDUX_LOGGER_OPTIONS: CompleteZeduxLoggerOptions = {
     showExecutionTime: true,
   },
   executionTimeOptions: {
-    slowThresholdMs: 50,
-    verySlowThresholdMs: 100,
+    slowThresholdMs:
+      DEFAULT_ZEDUX_LOGGER_OPTIONS.executionTimeOptions.slowThresholdMs,
+    verySlowThresholdMs:
+      DEFAULT_ZEDUX_LOGGER_OPTIONS.executionTimeOptions.verySlowThresholdMs,
     warnInConsoleIfSlow: true,
     errorInConsoleIfVerySlow: true,
-    onSlowEvaluation: null,
-    onVerySlowEvaluation: null,
+    onSlowEvaluation:
+      DEFAULT_ZEDUX_LOGGER_OPTIONS.executionTimeOptions.onSlowEvaluation,
+    onVerySlowEvaluation:
+      DEFAULT_ZEDUX_LOGGER_OPTIONS.executionTimeOptions.onVerySlowEvaluation,
   },
   graphOptions: {
     showTopDownGraph: true,
@@ -268,10 +275,113 @@ export interface ZeduxLoggerOptions {
   enabled?: boolean;
 
   /**
-   * List of Zedux events to log.
-   * @default ["change","cycle","invalidate","promiseChange","error","resetStart","resetEnd"]
+   * Zedux events to show.
+   * Internally the logger is listening to all ecosystem's events and filtering them.
+   * @see {@link Zedux.EcosystemEvents}
    */
-  events?: Array<Zedux.EcosystemEvents[keyof Zedux.EcosystemEvents]['type']>;
+  eventsToShow?: {
+    /**
+     * Log {@link Zedux.ChangeEvent}.
+     *
+     * Example :
+     * - "[✏️] test atom changed from 0 to 1"
+     *
+     * @default true
+     */
+    change?: boolean;
+
+    /**
+     * Log {@link Zedux.CycleEvent}.
+     *
+     * Examples :
+     * - "[⚡] simple atom initialized to 0"
+     * - "[🕰️] simple atom stale"
+     * - "[💥] simple atom destroyed"
+     *
+     * @default true
+     */
+    cycle?: boolean;
+
+    /**
+     * Log {@link Zedux.EdgeEvent}.
+     *
+     * Example :
+     * - "[📈] sourceAtom edge added targetAtom"
+     *
+     * @default false
+     */
+    edge?: boolean;
+
+    /**
+     * Log {@link Zedux.ErrorEvent}.
+     *
+     * Example :
+     * - "[❌] errorAtom error"
+     *
+     * @default true
+     */
+    error?: boolean;
+
+    /**
+     * Log {@link Zedux.InvalidateEvent}.
+     *
+     * Example :
+     * - "[🗑️] test atom invalidate"
+     *
+     * @default true
+     */
+    invalidate?: boolean;
+
+    /**
+     * Log {@link Zedux.PromiseChangeEvent}.
+     *
+     * Example :
+     * - "[⌛] async promise loading"
+     *
+     * @default true
+     */
+    promiseChange?: boolean;
+
+    /**
+     * Log {@link Zedux.ResetStartEvent}.
+     *
+     * Example :
+     * - "[🧹] resetting ecosystem"
+     *
+     * @default true
+     */
+    resetStart?: boolean;
+
+    /**
+     * Log {@link Zedux.ResetEndEvent}.
+     *
+     * Example :
+     * - "[🧹] ecosystem reset"
+     *
+     * @default true
+     */
+    resetEnd?: boolean;
+
+    /**
+     * Log {@link Zedux.RunStartEvent}.
+     *
+     * Example :
+     * - "[⚙️] simple atom evaluating"
+     *
+     * @default false
+     */
+    runStart?: boolean;
+
+    /**
+     * Log {@link Zedux.RunEndEvent}.
+     *
+     * Example :
+     * - "[⚙️] simple atom evaluated in 3ms"
+     *
+     * @default false
+     */
+    runEnd?: boolean;
+  };
 
   /**
    * If this tag is present in an atom's tags, logging will be disabled for that atom.

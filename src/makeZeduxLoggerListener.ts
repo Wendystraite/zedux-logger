@@ -51,13 +51,12 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       graphRef,
       oldSnapshotRef,
       completeOptions: options,
-      subscribedTo,
       runStartTimeMapping,
     } = storage;
 
     const what = parseWhatHappened(ecosystem, eventMap, options);
 
-    const canLog = canLogEvent({ what, options, subscribedTo });
+    const canLog = canLogEvent({ what, options });
 
     const currentGraph = graphRef.current;
 

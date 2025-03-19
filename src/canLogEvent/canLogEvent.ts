@@ -1,21 +1,19 @@
 import { ExternalNode } from '@zedux/react';
 
 import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
-import type { SubscribedTo } from '../types/SubscribedTo.js';
 import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
 
 export function canLogEvent(args: {
   what: WhatHappened;
   options: CompleteZeduxLoggerOptions;
-  subscribedTo: SubscribedTo;
 }): boolean {
   const {
     what: { node, tags, event },
     options: {
       disableLoggingTag,
       filters: { showExternalNodesChanges, showSignalsChanges },
+      eventsToShow,
     },
-    subscribedTo,
   } = args;
 
   if (
@@ -33,7 +31,7 @@ export function canLogEvent(args: {
     return false;
   }
 
-  if (event?.type === undefined || !subscribedTo[event.type]) {
+  if (event?.type === undefined || !eventsToShow[event.type]) {
     return false;
   }
 
