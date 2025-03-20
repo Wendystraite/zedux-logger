@@ -26,7 +26,7 @@ import { addToSummaryStates } from './addToLogs/addToSummaryStates.js';
 import { addToSummarySummary } from './addToLogs/addToSummarySummary.js';
 import { addToSummaryTtl } from './addToLogs/addToSummaryTtl.js';
 import { addToSummaryWaitingPromises } from './addToLogs/addToSummaryWaitingPromises.js';
-import { canLogEvent } from './canLogEvent/canLogEvent.js';
+import { calculateCanLogEventWithOptions } from './calculateCanLogEventWithOptions.js';
 import { checkIncrementalGraphConsistency } from './checkIncrementalGraphConsistency.js';
 import { calculateExecutionTime } from './executionTime/calculateExecutionTime.js';
 import { warnExecutionTimeIfSlow } from './executionTime/warnExecutionTimeIfSlow.js';
@@ -46,53 +46,57 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       getZeduxLoggerEcosystemStorage(ecosystem) ??
       getDefaultZeduxLoggerEcosystemStorage();
 
-    const {
-      consistencyCheckTimeoutIdRef,
-      graphRef,
-      oldSnapshotRef,
-      completeOptions: options,
-      runStartTimeMapping,
-    } = storage;
+    const what = parseWhatHappened(ecosystem, eventMap);
 
-    const what = parseWhatHappened(ecosystem, eventMap, options);
+    const { canLog, localOptions } = calculateCanLogEventWithOptions(
+      what.node,
+      storage,
+      what,
+    );
 
-    const canLog = canLogEvent({ what, options });
-
-    const currentGraph = graphRef.current;
+    const currentGraph = storage.graph;
 
     const doUpdateGraphIncrementally =
-      options.showInDetails.showGraph &&
-      currentGraph !== undefined &&
-      options.debugOptions.useIncrementalGraph;
+      storage.calculateIncrementalGraph && currentGraph !== undefined;
 
-    const doGenerateNewGraph =
-      canLog && options.showInDetails.showGraph && !doUpdateGraphIncrementally;
+    const doGenerateNewGraphInstead =
+      !storage.calculateIncrementalGraph && storage.calculateGraph && canLog;
 
     if (doUpdateGraphIncrementally) {
-      graphRef.current = updateGraphIncrementally(
+      storage.graph = updateGraphIncrementally({
         eventMap,
-        currentGraph,
-        options.graphOptions,
-      );
-    } else if (doGenerateNewGraph) {
-      graphRef.current = generateGraph({
+        graph: currentGraph,
+        calculateBottomUpGraph: storage.calculateBottomUpGraph,
+        calculateByNamespacesGraph: storage.calculateByNamespacesGraph,
+        calculateFlatGraph: storage.calculateFlatGraph,
+        calculateTopDownGraph: storage.calculateTopDownGraph,
+        globalGraphOptions: storage.completeGlobalOptions.graphOptions,
+      });
+    } else if (doGenerateNewGraphInstead) {
+      storage.graph = generateGraph({
         ecosystem,
-        options,
+        calculateBottomUpGraph: storage.calculateBottomUpGraph,
+        calculateByNamespacesGraph: storage.calculateByNamespacesGraph,
+        calculateFlatGraph: storage.calculateFlatGraph,
+        calculateGraph: storage.calculateGraph,
+        calculateTopDownGraph: storage.calculateTopDownGraph,
+        console: localOptions.console,
+        globalGraphOptions: storage.completeGlobalOptions.graphOptions,
       });
     }
 
     const runExecutionTimeMs = calculateExecutionTime(
       what,
-      options,
-      runStartTimeMapping,
+      storage,
+      localOptions,
     );
 
-    const oldSnapshot = oldSnapshotRef.current;
+    const oldSnapshot = storage.snapshot;
     const newSnapshot = generateSnapshot({
       ecosystem,
       eventMap,
-      options,
-      oldSnapshotRef,
+      localOptions,
+      storage,
     });
 
     const logArgs: LogArgs = {
@@ -111,8 +115,9 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       },
       storage,
       what,
-      options,
-      graph: graphRef.current,
+      globalOptions: storage.completeGlobalOptions,
+      options: localOptions,
+      graph: storage.graph,
       oldSnapshot,
       newSnapshot,
       runExecutionTimeMs,
@@ -153,9 +158,7 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
 
     checkIncrementalGraphConsistency({
       ecosystem,
-      options,
-      graphRef,
-      consistencyCheckTimeoutIdRef,
+      storage,
     });
   };
 }

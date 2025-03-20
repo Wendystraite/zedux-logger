@@ -1,33 +1,31 @@
 import { type EcosystemEvents } from '@zedux/react';
 
 import type { Graph } from '../generateGraph/generateGraph.js';
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
 import { getDefaultFlatGraphNode } from './utils/getDefaultGraphNode.js';
 import { shouldIgnoreNodeInFlatGraph } from './utils/shouldIgnoreNodeInFlatGraph.js';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
 
-export function updateFlatGraphIncrementally({
-  eventMap,
-  flatGraph,
-  options,
-}: {
+export function updateFlatGraphIncrementally(args: {
   eventMap: Partial<EcosystemEvents>;
   flatGraph: Graph['flat'];
-  options: Pick<
-    CompleteZeduxLoggerOptions['graphOptions'],
-    'showExternalNodesInFlatGraph' | 'showSignalsInFlatGraph'
-  >;
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
 }): void {
-  const { cycle, edge } = eventMap;
+  const {
+    eventMap: { cycle, edge },
+    flatGraph,
+    globalGraphOptions,
+  } = args;
+
   if (cycle === undefined && edge === undefined) {
     return;
   }
 
   const shouldIgnoreSourceNode = shouldIgnoreNodeInFlatGraph(
     (cycle ?? edge)!.source,
-    options,
+    globalGraphOptions,
   );
 
   if (cycle) {
@@ -37,16 +35,17 @@ export function updateFlatGraphIncrementally({
   }
 }
 
-function handleCycleEvent({
-  cycle,
-  draft,
-  shouldIgnoreSourceNode,
-}: {
+function handleCycleEvent(args: {
   cycle: NonNullable<EcosystemEvents['cycle']>;
   draft: Graph['flat'];
   shouldIgnoreSourceNode: boolean;
 }): void {
-  const { oldStatus, newStatus, source } = cycle;
+  const {
+    cycle: { oldStatus, newStatus, source },
+    draft,
+    shouldIgnoreSourceNode,
+  } = args;
+
   if (source !== undefined && !shouldIgnoreSourceNode) {
     if (oldStatus === 'Initializing' && newStatus === 'Active') {
       // console.log(
@@ -64,16 +63,16 @@ function handleCycleEvent({
   }
 }
 
-function handleEdgeEvent({
-  edge,
-  draft,
-  shouldIgnoreSourceNode,
-}: {
+function handleEdgeEvent(args: {
   edge: NonNullable<EcosystemEvents['edge']>;
   draft: Graph['flat'];
   shouldIgnoreSourceNode: boolean;
 }): void {
-  const { source, observer } = edge;
+  const {
+    edge: { action, source, observer },
+    draft,
+    shouldIgnoreSourceNode,
+  } = args;
 
   if (!shouldIgnoreSourceNode) {
     draft[source.id] ??= getDefaultFlatGraphNode();
@@ -83,7 +82,7 @@ function handleEdgeEvent({
   const sourceGraphNode = draft[source.id]!;
   const observerGraphNode = draft[observer.id]!;
 
-  switch (edge.action) {
+  switch (action) {
     case 'add': {
       // console.log(
       //   `[flat] add "${source.id}" as a new dependency to "${observer.id}"`,

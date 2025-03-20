@@ -1,26 +1,26 @@
 import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
 import type { ZeduxLoggerEcosystemStorage } from '../types/ZeduxLoggerEcosystemStorage.js';
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
 
 export function calculateExecutionTime(
   what: WhatHappened,
-  options: CompleteZeduxLoggerOptions,
-  runStartTimeMapping: ZeduxLoggerEcosystemStorage['runStartTimeMapping'],
+  storage: ZeduxLoggerEcosystemStorage,
+  localOptions: CompleteZeduxLoggerLocalOptions,
 ): number | undefined {
   if (
-    options.showInSummary.showExecutionTime ||
-    options.showInDetails.showExecutionTime ||
-    options.executionTimeOptions.warnInConsoleIfSlow ||
-    options.executionTimeOptions.errorInConsoleIfVerySlow ||
-    options.executionTimeOptions.onSlowEvaluation ||
-    options.executionTimeOptions.onVerySlowEvaluation
+    localOptions.showInSummary.showExecutionTime ||
+    localOptions.showInDetails.showExecutionTime ||
+    localOptions.executionTimeOptions.warnInConsoleIfSlow ||
+    localOptions.executionTimeOptions.errorInConsoleIfVerySlow ||
+    localOptions.executionTimeOptions.onSlowEvaluation ||
+    localOptions.executionTimeOptions.onVerySlowEvaluation
   ) {
     if (what.event?.type === 'runStart') {
       const startTime = performance.now();
-      runStartTimeMapping.set(what.event.source, startTime);
+      storage.runStartTimeMapping.set(what.event.source, startTime);
     } else if (what.event?.type === 'runEnd') {
-      const startTime = runStartTimeMapping.get(what.event.source);
-      runStartTimeMapping.delete(what.event.source);
+      const startTime = storage.runStartTimeMapping.get(what.event.source);
+      storage.runStartTimeMapping.delete(what.event.source);
       if (startTime !== undefined) {
         const endTime = performance.now();
         return endTime - startTime;

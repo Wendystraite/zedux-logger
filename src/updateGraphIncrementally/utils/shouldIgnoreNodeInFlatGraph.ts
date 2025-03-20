@@ -1,20 +1,20 @@
 import { ExternalNode, type ZeduxNode } from '@zedux/react';
 
-import type { CompleteZeduxLoggerOptions } from '../../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerGlobalOptions } from '../../types/ZeduxLoggerGlobalOptions.js';
 
 export function shouldIgnoreNodeInFlatGraph(
   node: ZeduxNode | undefined,
-  options: Pick<
-    CompleteZeduxLoggerOptions['graphOptions'],
-    'showExternalNodesInFlatGraph' | 'showSignalsInFlatGraph'
-  >,
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'],
 ): boolean {
-  if (!options.showExternalNodesInFlatGraph && node instanceof ExternalNode) {
+  if (
+    !globalGraphOptions.showExternalNodesInFlatGraph &&
+    node instanceof ExternalNode
+  ) {
     return true;
   }
 
   if (
-    !options.showSignalsInFlatGraph &&
+    !globalGraphOptions.showSignalsInFlatGraph &&
     node?.id.startsWith('@signal') === true
   ) {
     return true;

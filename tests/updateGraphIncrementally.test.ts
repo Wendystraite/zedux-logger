@@ -11,43 +11,37 @@ import {
 } from '@zedux/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { DEFAULT_ZEDUX_LOGGER_GLOBAL_OPTIONS } from '../src/consts/default-zedux-logger-global-options';
 import { type Graph, generateGraph } from '../src/generateGraph/generateGraph';
-import { DEFAULT_ZEDUX_LOGGER_OPTIONS } from '../src/types/ZeduxLoggerOptions';
 import { updateGraphIncrementally } from '../src/updateGraphIncrementally/updateGraphIncrementally';
 import { defaults } from '../src/utils/defaults';
 
 describe.each([
   {
-    hideExternalNodesFromFlatGraph: false,
-    hideSignalsFromFlatGraph: false,
+    showExternalNodesInFlatGraph: true,
+    showSignalsInFlatGraph: true,
     description: 'with all nodes visible',
   },
   {
-    hideExternalNodesFromFlatGraph: true,
-    hideSignalsFromFlatGraph: false,
+    showExternalNodesInFlatGraph: false,
+    showSignalsInFlatGraph: true,
     description: 'with external nodes hidden',
   },
   {
-    hideExternalNodesFromFlatGraph: false,
-    hideSignalsFromFlatGraph: true,
+    showExternalNodesInFlatGraph: true,
+    showSignalsInFlatGraph: false,
     description: 'with signals hidden',
   },
   {
-    hideExternalNodesFromFlatGraph: true,
-    hideSignalsFromFlatGraph: true,
+    showExternalNodesInFlatGraph: false,
+    showSignalsInFlatGraph: false,
     description: 'with both external nodes and signals hidden',
   },
-])('updateGraphIncrementally $description', (_options) => {
-  const completeOptions = defaults(DEFAULT_ZEDUX_LOGGER_OPTIONS, {
-    graphOptions: {
-      showBottomUpGraph: true,
-      showTopDownGraph: true,
-      showFlatGraph: true,
-      showByNamespacesGraph: true,
-      ..._options,
-    },
-  });
-  const options = completeOptions.graphOptions;
+])('updateGraphIncrementally $description', (testGraphOptions) => {
+  const completeGlobalGraphOptions = defaults(
+    DEFAULT_ZEDUX_LOGGER_GLOBAL_OPTIONS.graphOptions,
+    testGraphOptions,
+  );
 
   let ecosystem: Ecosystem;
   let graph: Graph;
@@ -119,7 +113,15 @@ describe.each([
       // }
 
       events.push(eventMap);
-      graph = updateGraphIncrementally(eventMap, graph, options);
+      graph = updateGraphIncrementally({
+        eventMap,
+        graph,
+        calculateBottomUpGraph: true,
+        calculateByNamespacesGraph: true,
+        calculateFlatGraph: true,
+        calculateTopDownGraph: true,
+        globalGraphOptions: completeGlobalGraphOptions,
+      });
 
       // if (eventMap.cycle !== undefined || eventMap.edge !== undefined) {
       //   console.log('GOT BY NS      =', graph.byNamespaces);
@@ -151,9 +153,13 @@ describe.each([
   function expectGraphEqualsToEcosystemGraph() {
     const generated = generateGraph({
       ecosystem,
-      options: defaults(DEFAULT_ZEDUX_LOGGER_OPTIONS, {
-        graphOptions: options,
-      }),
+      globalGraphOptions: completeGlobalGraphOptions,
+      console,
+      calculateBottomUpGraph: true,
+      calculateByNamespacesGraph: true,
+      calculateFlatGraph: true,
+      calculateGraph: true,
+      calculateTopDownGraph: true,
     });
 
     expect(graph.flat).toEqual(generated?.flat);
@@ -170,7 +176,15 @@ describe.each([
       byNamespaces: {},
     };
     const eventMap: Partial<EcosystemEvents> = {};
-    const result = updateGraphIncrementally(eventMap, graph, options);
+    const result = updateGraphIncrementally({
+      eventMap,
+      graph,
+      calculateBottomUpGraph: true,
+      calculateByNamespacesGraph: true,
+      calculateFlatGraph: true,
+      calculateTopDownGraph: true,
+      globalGraphOptions: completeGlobalGraphOptions,
+    });
     expect(result).toBe(graph);
   });
 

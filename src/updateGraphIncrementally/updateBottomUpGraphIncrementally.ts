@@ -4,14 +4,15 @@ import type { Graph } from '../generateGraph/generateGraph.js';
 import { deletePath } from '../utils/deletePath.js';
 import { addRecursiveGraphNodeToPath } from './utils/addRecursiveGraphNodeToPath.js';
 
-export function updateBottomUpGraphIncrementally({
-  eventMap,
-  bottomUpGraph,
-}: {
+export function updateBottomUpGraphIncrementally(args: {
   eventMap: Partial<EcosystemEvents>;
   bottomUpGraph: Graph['bottomUp'];
 }): void {
-  const { cycle, edge } = eventMap;
+  const {
+    eventMap: { cycle, edge },
+    bottomUpGraph,
+  } = args;
+
   if (cycle === undefined && edge === undefined) {
     return;
   }
@@ -23,14 +24,15 @@ export function updateBottomUpGraphIncrementally({
   }
 }
 
-function handleCycleEvent({
-  cycle,
-  draft,
-}: {
+function handleCycleEvent(args: {
   cycle: NonNullable<EcosystemEvents['cycle']>;
   draft: Graph['bottomUp'];
 }): void {
-  const { oldStatus, newStatus, source } = cycle;
+  const {
+    cycle: { oldStatus, newStatus, source },
+    draft,
+  } = args;
+
   if (source !== undefined) {
     if (oldStatus === 'Initializing' && newStatus === 'Active') {
       if (source.o.size <= 0) {
@@ -70,16 +72,16 @@ function handleCycleEvent({
   }
 }
 
-function handleEdgeEvent({
-  edge,
-  draft,
-}: {
+function handleEdgeEvent(args: {
   edge: NonNullable<EcosystemEvents['edge']>;
   draft: Graph['bottomUp'];
 }): void {
-  const { source, observer } = edge;
+  const {
+    edge: { action, source, observer },
+    draft,
+  } = args;
 
-  switch (edge.action) {
+  switch (action) {
     case 'add': {
       if (draft[source.id] !== undefined) {
         // console.log(

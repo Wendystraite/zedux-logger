@@ -2,7 +2,7 @@ import { ZeduxNode } from '@zedux/react';
 import { entries, groupBy, map, pipe } from 'remeda';
 
 import { parseNodeGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
 
 export const GRAPH_BY_NAMESPACES_NODE_TYPE: unique symbol = Symbol('nsNode');
 export type GraphByNamespacesNodeType = typeof GRAPH_BY_NAMESPACES_NODE_TYPE;
@@ -47,17 +47,12 @@ export function generateGraphByNamespaces(args: {
       weight: number;
     }
   >;
-  options: Pick<
-    CompleteZeduxLoggerOptions['graphOptions'],
-    | 'showNodesInGraphByNamespaces'
-    | 'showNodeValueInGraphByNamespaces'
-    | 'showNodeDepsInGraphByNamespaces'
-  >;
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
 }): GraphByNamespaces {
   const {
     getNode,
     flat,
-    options: {
+    globalGraphOptions: {
       showNodesInGraphByNamespaces,
       showNodeValueInGraphByNamespaces,
       showNodeDepsInGraphByNamespaces,

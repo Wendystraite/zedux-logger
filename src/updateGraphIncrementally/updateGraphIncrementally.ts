@@ -3,59 +3,55 @@ import { produce } from 'immer';
 
 import type { Graph } from '../generateGraph/generateGraph.js';
 import type { GraphByNamespaces } from '../generateGraph/generateGraphByNamespaces.js';
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
 import { updateBottomUpGraphIncrementally } from './updateBottomUpGraphIncrementally.js';
 import { updateByNamespacesGraphIncrementally } from './updateByNamespacesGraphIncrementally.js';
 import { updateFlatGraphIncrementally } from './updateFlatGraphIncrementally.js';
 import { updateTopDownGraphIncrementally } from './updateTopDownGraphIncrementally.js';
 
-export function updateGraphIncrementally(
-  eventMap: Partial<EcosystemEvents>,
-  graph: Graph,
-  options: Pick<
-    CompleteZeduxLoggerOptions['graphOptions'],
-    | 'showExternalNodesInFlatGraph'
-    | 'showSignalsInFlatGraph'
-    | 'showByNamespacesGraph'
-    | 'showTopDownGraph'
-    | 'showBottomUpGraph'
-    | 'showFlatGraph'
-    | 'showNodeDepsInGraphByNamespaces'
-    | 'showNodeValueInGraphByNamespaces'
-    | 'showNodesInGraphByNamespaces'
-  >,
-): Graph {
+export function updateGraphIncrementally(args: {
+  eventMap: Partial<EcosystemEvents>;
+  graph: Graph;
+  calculateFlatGraph: boolean;
+  calculateTopDownGraph: boolean;
+  calculateBottomUpGraph: boolean;
+  calculateByNamespacesGraph: boolean;
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
+}): Graph {
   const {
-    showTopDownGraph,
-    showBottomUpGraph,
-    showFlatGraph,
-    showByNamespacesGraph,
-  } = options;
+    eventMap,
+    graph,
+    calculateBottomUpGraph,
+    calculateByNamespacesGraph,
+    calculateFlatGraph,
+    calculateTopDownGraph,
+    globalGraphOptions,
+  } = args;
   return produce(graph, (draft) => {
-    if (showFlatGraph) {
+    if (calculateFlatGraph) {
       updateFlatGraphIncrementally({
         eventMap,
         flatGraph: draft.flat,
-        options,
+        globalGraphOptions,
       });
     }
-    if (showTopDownGraph) {
+    if (calculateTopDownGraph) {
       updateTopDownGraphIncrementally({
         eventMap,
         topDownGraph: draft.topDown,
       });
     }
-    if (showBottomUpGraph) {
+    if (calculateBottomUpGraph) {
       updateBottomUpGraphIncrementally({
         eventMap,
         bottomUpGraph: draft.bottomUp,
       });
     }
-    if (showByNamespacesGraph) {
+    if (calculateByNamespacesGraph) {
       updateByNamespacesGraphIncrementally({
         eventMap,
         byNamespacesGraph: draft.byNamespaces as GraphByNamespaces,
-        options,
+        globalGraphOptions,
       });
     }
   });

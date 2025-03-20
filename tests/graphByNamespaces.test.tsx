@@ -12,6 +12,7 @@ import {
 import { createContext } from 'react';
 import { describe, expect, test } from 'vitest';
 
+import { DEFAULT_ZEDUX_LOGGER_GLOBAL_OPTIONS } from '../src/consts/default-zedux-logger-global-options.js';
 import {
   GRAPH_BY_NAMESPACES_NODE_TYPE,
   type GraphByNamespaces,
@@ -19,7 +20,6 @@ import {
 } from '../src/generateGraph/generateGraphByNamespaces.js';
 import type { ParsedBuiltInNodeId } from '../src/parseAtomId/parseBuiltInNodeId.js';
 import { parseNodeId } from '../src/parseAtomId/parseNodeId.js';
-import { DEFAULT_ZEDUX_LOGGER_OPTIONS } from '../src/types/ZeduxLoggerOptions.js';
 import { defaults } from '../src/utils/defaults.js';
 
 describe('graphByNamespaces', () => {
@@ -93,12 +93,14 @@ describe('graphByNamespaces', () => {
       getNode: (id: string) => {
         return createFakeNode(id, ecosystem.n.get(id)?.v);
       },
-      options: defaults(DEFAULT_ZEDUX_LOGGER_OPTIONS.graphOptions, {
-        showByNamespacesGraph: true,
-        showNodeDepsInGraphByNamespaces: true,
-        showNodesInGraphByNamespaces: true,
-        showNodeValueInGraphByNamespaces: true,
-      }),
+      globalGraphOptions: defaults(
+        DEFAULT_ZEDUX_LOGGER_GLOBAL_OPTIONS.graphOptions,
+        {
+          showNodeDepsInGraphByNamespaces: true,
+          showNodesInGraphByNamespaces: true,
+          showNodeValueInGraphByNamespaces: true,
+        },
+      ),
     });
 
     expect(graph).toEqual({

@@ -10,15 +10,12 @@ export function flattenLogDetails(
   return flattenedLogs;
 }
 
-function flattenLogDetailsInternal({
-  flattenedLogs,
-  logDetails,
-  parentLog = '',
-}: {
+function flattenLogDetailsInternal(args: {
   flattenedLogs: Record<string, unknown>;
   logDetails: Array<LogDetail | false | undefined>;
   parentLog?: string;
 }): void {
+  const { flattenedLogs, logDetails, parentLog = '' } = args;
   for (const logDetail of logDetails) {
     if (isTruthy(logDetail)) {
       let log = '';

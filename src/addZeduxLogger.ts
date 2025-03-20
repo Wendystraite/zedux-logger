@@ -22,16 +22,16 @@ export function addZeduxLogger(
   const storage = getDefaultZeduxLoggerEcosystemStorage(options);
   setZeduxLoggerEcosystemStorage(ecosystem, storage);
 
-  if (storage.completeOptions.debugOptions.logOptions) {
-    storage.completeOptions.console.log(
+  if (storage.completeMergedOptions.debugOptions.logOptions) {
+    storage.completeMergedOptions.console.log(
       'Zedux Logger options for',
       ecosystem.id,
       ':',
-      storage.completeOptions,
+      storage.completeMergedOptions,
     );
   }
 
-  if (!storage.completeOptions.enabled) {
+  if (!storage.completeMergedOptions.enabled) {
     return () => {
       // noop
     };

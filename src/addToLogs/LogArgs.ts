@@ -1,7 +1,8 @@
 import type { Graph } from '../generateGraph/generateGraph.js';
 import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
 import type { ZeduxLoggerEcosystemStorage } from '../types/ZeduxLoggerEcosystemStorage.js';
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
+import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
 
 export interface LogArgs {
   logSummary: string;
@@ -13,7 +14,8 @@ export interface LogArgs {
 
   storage: ZeduxLoggerEcosystemStorage;
   what: WhatHappened;
-  options: CompleteZeduxLoggerOptions;
+  globalOptions: CompleteZeduxLoggerGlobalOptions;
+  options: CompleteZeduxLoggerLocalOptions;
   graph: Graph | undefined;
   newSnapshot: unknown;
   oldSnapshot: unknown;

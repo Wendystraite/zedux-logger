@@ -11,7 +11,7 @@ import {
 import { getParsedNodeIdGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
 import { type ParsedNodeId, parseNodeId } from '../parseAtomId/parseNodeId.js';
 import type { EventMap } from '../types/EventMap.js';
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { ZeduxLoggerColors } from '../types/ZeduxLoggerColors.js';
 
 export interface WhatHappened {
   eventMap: EventMap;
@@ -19,7 +19,9 @@ export interface WhatHappened {
   ecosystem: Ecosystem;
   ecosystemName: string | undefined;
 
-  summary: [what: string, emoji: string, color: string];
+  summaryWhat: string;
+  summaryEmoji: string;
+  getSummaryColor(this: void, colors: ZeduxLoggerColors): string;
 
   operation?: string;
 
@@ -52,37 +54,36 @@ export interface WhatHappened {
 export function parseWhatHappened(
   ecosystem: Ecosystem,
   eventMap: EventMap,
-  options: Pick<CompleteZeduxLoggerOptions, 'colors'>,
 ): WhatHappened {
-  const { colors } = options;
-
   const w: WhatHappened = {
     eventMap,
     ecosystem,
     ecosystemName: ecosystem.id,
-    summary: ['unknown', '❓', colors.unknown],
+    summaryWhat: 'unknown',
+    summaryEmoji: '❓',
+    getSummaryColor: (colors) => colors.unknown,
   };
 
   if (eventMap.change !== undefined) {
-    handleEventChange(eventMap.change, w, colors);
+    handleEventChange(eventMap.change, w);
   } else if (eventMap.cycle !== undefined) {
-    handleEventCycle(eventMap.cycle, w, colors);
+    handleEventCycle(eventMap.cycle, w);
   } else if (eventMap.invalidate !== undefined) {
-    handleEventInvalidate(eventMap.invalidate, w, colors);
+    handleEventInvalidate(eventMap.invalidate, w);
   } else if (eventMap.promiseChange !== undefined)
-    handleEventPromiseChange(eventMap.promiseChange, w, colors);
+    handleEventPromiseChange(eventMap.promiseChange, w);
   if (eventMap.edge !== undefined) {
-    handleEventEdge(eventMap.edge, w, colors);
+    handleEventEdge(eventMap.edge, w);
   } else if (eventMap.error !== undefined) {
-    handleEventError(eventMap.error, w, colors);
+    handleEventError(eventMap.error, w);
   } else if (eventMap.resetStart !== undefined) {
-    handleEventResetStart(eventMap.resetStart, w, colors);
+    handleEventResetStart(eventMap.resetStart, w);
   } else if (eventMap.resetEnd !== undefined) {
-    handleEventResetEnd(eventMap.resetEnd, w, colors);
+    handleEventResetEnd(eventMap.resetEnd, w);
   } else if (eventMap.runStart !== undefined) {
-    handleEventRunStart(eventMap.runStart, w, colors);
+    handleEventRunStart(eventMap.runStart, w);
   } else if (eventMap.runEnd !== undefined) {
-    handleEventRunEnd(eventMap.runEnd, w, colors);
+    handleEventRunEnd(eventMap.runEnd, w);
   }
 
   if (w.hasNewState === false && w.node !== undefined) {
@@ -120,13 +121,11 @@ export function parseWhatHappened(
   return w;
 }
 
-function getWaitingForNodes({
-  node,
-  skipNode,
-}: {
+function getWaitingForNodes(args: {
   node: ZeduxNode;
   skipNode: boolean;
 }): ZeduxNode[] {
+  const { node, skipNode } = args;
   const waitingNodes: ZeduxNode[] = [];
   if (!skipNode) {
     if (node instanceof AtomInstance && node.promiseStatus === 'loading') {
@@ -142,12 +141,13 @@ function getWaitingForNodes({
 function handleEventChange(
   change: NonNullable<EventMap['change']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { operation, reasons, source } = change;
   const newState = change.newState as unknown;
   const oldState = change.oldState as unknown;
-  w.summary = ['changed', '✏️', colors.changed];
+  w.summaryWhat = 'changed';
+  w.summaryEmoji = '✏️';
+  w.getSummaryColor = (colors) => colors.changed;
   w.operation = operation;
   w.node = source;
   w.reasons = reasons;
@@ -161,32 +161,43 @@ function handleEventChange(
 function handleEventCycle(
   cycle: NonNullable<EventMap['cycle']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { operation, reasons, source, newStatus, oldStatus } = cycle;
 
   if (newStatus === 'Initializing') {
-    w.summary = ['initializing', '⌛', colors.initializing];
+    w.summaryWhat = 'initializing';
+    w.summaryEmoji = '⌛';
+    w.getSummaryColor = (colors) => colors.initializing;
   } else if (oldStatus === 'Initializing' && newStatus === 'Active') {
     if (
       source instanceof AtomInstance &&
       source.promise instanceof Promise &&
       source.promiseStatus === 'loading'
     ) {
-      w.summary = ['initializing promise', '⌛', colors.initializingPromise];
+      w.summaryWhat = 'initializing promise';
+      w.summaryEmoji = '⌛';
+      w.getSummaryColor = (colors) => colors.initializingPromise;
     } else {
-      w.summary = ['initialized', '⚡', colors.initialized];
+      w.summaryWhat = 'initialized';
+      w.summaryEmoji = '⚡';
+      w.getSummaryColor = (colors) => colors.initialized;
       if (source !== undefined) {
         w.hasNewState = true;
         w.newState = source.v;
       }
     }
   } else if (newStatus === 'Active') {
-    w.summary = ['active', '✅', colors.active];
+    w.summaryWhat = 'active';
+    w.summaryEmoji = '✅';
+    w.getSummaryColor = (colors) => colors.active;
   } else if (newStatus === 'Stale') {
-    w.summary = ['stale', '🕰️', colors.stale];
+    w.summaryWhat = 'stale';
+    w.summaryEmoji = '🕰️';
+    w.getSummaryColor = (colors) => colors.stale;
   } else {
-    w.summary = ['destroyed', '💥', colors.destroyed];
+    w.summaryWhat = 'destroyed';
+    w.summaryEmoji = '💥';
+    w.getSummaryColor = (colors) => colors.destroyed;
   }
 
   w.operation = operation;
@@ -198,10 +209,11 @@ function handleEventCycle(
 function handleEventInvalidate(
   invalidate: NonNullable<EventMap['invalidate']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { operation, reasons, source } = invalidate;
-  w.summary = ['invalidate', '🗑️', colors.invalidate];
+  w.summaryWhat = 'invalidate';
+  w.summaryEmoji = '🗑️';
+  w.getSummaryColor = (colors) => colors.invalidate;
   w.operation = operation;
   w.node = source;
   w.reasons = reasons;
@@ -211,21 +223,28 @@ function handleEventInvalidate(
 function handleEventPromiseChange(
   promiseChange: NonNullable<EventMap['promiseChange']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { operation, reasons, source } = promiseChange;
   const promiseStatus =
     source instanceof AtomInstance ? source.promiseStatus : undefined;
   if (promiseStatus === undefined) {
-    w.summary = ['promise changed', '✏️', colors.promiseChange];
+    w.summaryWhat = 'promise changed';
+    w.summaryEmoji = '✏️';
+    w.getSummaryColor = (colors) => colors.promiseChange;
   } else if (promiseStatus === 'loading') {
-    w.summary = ['promise loading', '⌛', colors.promiseChangeLoading];
+    w.summaryWhat = 'promise loading';
+    w.summaryEmoji = '⌛';
+    w.getSummaryColor = (colors) => colors.promiseChangeLoading;
   } else if (promiseStatus === 'success') {
-    w.summary = ['promise success', '✅', colors.promiseChangeSuccess];
+    w.summaryWhat = 'promise success';
+    w.summaryEmoji = '✅';
+    w.getSummaryColor = (colors) => colors.promiseChangeSuccess;
     w.hasNewState = true;
     w.newState = source?.v;
   } else {
-    w.summary = ['promise error', '❌', colors.promiseChangeError];
+    w.summaryWhat = 'promise error';
+    w.summaryEmoji = '❌';
+    w.getSummaryColor = (colors) => colors.promiseChangeError;
     w.hasNewState = true;
     w.newState = source?.v;
   }
@@ -235,18 +254,20 @@ function handleEventPromiseChange(
   w.event = promiseChange;
 }
 
-function handleEventEdge(
-  edge: NonNullable<EventMap['edge']>,
-  w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
-) {
+function handleEventEdge(edge: NonNullable<EventMap['edge']>, w: WhatHappened) {
   const { source, action, observer } = edge;
   if (action === 'add') {
-    w.summary = ['edge added', '📈', colors.edgeCreated];
+    w.summaryWhat = 'edge added';
+    w.summaryEmoji = '📈';
+    w.getSummaryColor = (colors) => colors.edgeCreated;
   } else if (action === 'update') {
-    w.summary = ['edge updated', '📈', colors.edgeUpdated];
+    w.summaryWhat = 'edge updated';
+    w.summaryEmoji = '📈';
+    w.getSummaryColor = (colors) => colors.edgeUpdated;
   } else {
-    w.summary = ['edge removed', '📉', colors.edgeRemoved];
+    w.summaryWhat = 'edge removed';
+    w.summaryEmoji = '📉';
+    w.getSummaryColor = (colors) => colors.edgeRemoved;
   }
   w.node = source;
   w.event = edge;
@@ -256,10 +277,11 @@ function handleEventEdge(
 function handleEventError(
   error: NonNullable<EventMap['error']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { source, error: errorObj } = error;
-  w.summary = ['error', '❌', colors.error];
+  w.summaryWhat = 'error';
+  w.summaryEmoji = '❌';
+  w.getSummaryColor = (colors) => colors.error;
   w.node = source;
   w.event = error;
   w.error = errorObj;
@@ -268,28 +290,31 @@ function handleEventError(
 function handleEventResetStart(
   resetStart: NonNullable<EventMap['resetStart']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
-  w.summary = ['resetting ecosystem', '🧹', colors.ecosystemResetStart];
+  w.summaryWhat = 'resetting ecosystem';
+  w.summaryEmoji = '🧹';
+  w.getSummaryColor = (colors) => colors.ecosystemResetStart;
   w.event = resetStart;
 }
 
 function handleEventResetEnd(
   resetEnd: NonNullable<EventMap['resetEnd']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
-  w.summary = ['ecosystem reset', '🧹', colors.ecosystemResetEnd];
+  w.summaryWhat = 'ecosystem reset';
+  w.summaryEmoji = '🧹';
+  w.getSummaryColor = (colors) => colors.ecosystemResetEnd;
   w.event = resetEnd;
 }
 
 function handleEventRunStart(
   runStart: NonNullable<EventMap['runStart']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { source } = runStart;
-  w.summary = ['evaluating', '⚙️', colors.evaluating];
+  w.summaryWhat = 'evaluating';
+  w.summaryEmoji = '⚙️';
+  w.getSummaryColor = (colors) => colors.evaluating;
   w.node = source;
   w.event = runStart;
 }
@@ -297,10 +322,11 @@ function handleEventRunStart(
 function handleEventRunEnd(
   runEnd: NonNullable<EventMap['runEnd']>,
   w: WhatHappened,
-  colors: CompleteZeduxLoggerOptions['colors'],
 ) {
   const { source } = runEnd;
-  w.summary = ['evaluated', '⚙️', colors.evaluated];
+  w.summaryWhat = 'evaluated';
+  w.summaryEmoji = '⚙️';
+  w.getSummaryColor = (colors) => colors.evaluated;
   w.node = source;
   w.event = runEnd;
 }

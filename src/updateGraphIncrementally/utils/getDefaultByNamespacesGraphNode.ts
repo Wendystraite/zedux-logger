@@ -4,22 +4,19 @@ import {
   GRAPH_BY_NAMESPACES_NODE_TYPE,
   type GraphByNamespacesNode,
 } from '../../generateGraph/generateGraphByNamespaces.js';
-import type { CompleteZeduxLoggerOptions } from '../../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerGlobalOptions } from '../../types/ZeduxLoggerGlobalOptions.js';
 import { getDefaultFlatGraphNode } from './getDefaultGraphNode.js';
 
 export function getDefaultByNamespacesGraphNode(
   node: ZeduxNode,
-  {
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'],
+): GraphByNamespacesNode {
+  const {
     showNodeDepsInGraphByNamespaces,
     showNodeValueInGraphByNamespaces,
     showNodesInGraphByNamespaces,
-  }: Pick<
-    CompleteZeduxLoggerOptions['graphOptions'],
-    | 'showNodeDepsInGraphByNamespaces'
-    | 'showNodeValueInGraphByNamespaces'
-    | 'showNodesInGraphByNamespaces'
-  >,
-): GraphByNamespacesNode {
+  } = globalGraphOptions;
+
   const onlyShowId =
     !showNodesInGraphByNamespaces &&
     !showNodeValueInGraphByNamespaces &&

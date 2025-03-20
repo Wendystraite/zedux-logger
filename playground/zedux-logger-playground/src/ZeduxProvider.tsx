@@ -11,13 +11,11 @@ export function ZeduxProvider({ children }: PropsWithChildren) {
   const ecosystem = useMemo(() => {
     const ecosystem = createEcosystem();
     addZeduxLogger(ecosystem, {
-      graphOptions: {
-        showExternalNodesInFlatGraph: true,
-        showSignalsInFlatGraph: true,
-      },
-      filters: {
-        showExternalNodesChanges: true,
-        showSignalsChanges: true,
+      options: {
+        graphOptions: {
+          showExternalNodesInFlatGraph: true,
+          showSignalsInFlatGraph: true,
+        },
       },
     });
 

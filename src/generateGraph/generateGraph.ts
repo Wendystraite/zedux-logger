@@ -1,6 +1,7 @@
 import { type Ecosystem, type GraphViewRecursive } from '@zedux/react';
 
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
+import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
 import { shouldIgnoreNodeInFlatGraph } from '../updateGraphIncrementally/utils/shouldIgnoreNodeInFlatGraph.js';
 import {
   type GraphByNamespaces,
@@ -23,44 +24,44 @@ export interface Graph {
 
 export function generateGraph(args: {
   ecosystem: Ecosystem;
-  options: CompleteZeduxLoggerOptions;
+  calculateFlatGraph: boolean;
+  calculateByNamespacesGraph: boolean;
+  calculateBottomUpGraph: boolean;
+  calculateTopDownGraph: boolean;
+  calculateGraph: boolean;
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
+  console: CompleteZeduxLoggerLocalOptions['console'];
 }): Graph | undefined {
   const {
     ecosystem,
-    options: {
-      console,
-      showInDetails: { showGraph },
-      graphOptions,
-      graphOptions: {
-        showTopDownGraph,
-        showBottomUpGraph,
-        showFlatGraph,
-        showByNamespacesGraph,
-        showExternalNodesInFlatGraph,
-        showSignalsInFlatGraph,
-      },
-    },
+    calculateBottomUpGraph,
+    calculateByNamespacesGraph,
+    calculateFlatGraph,
+    calculateGraph,
+    calculateTopDownGraph,
+    globalGraphOptions,
+    console,
   } = args;
 
   let newGraph: Graph | undefined;
-  if (showGraph) {
+  if (calculateGraph) {
     try {
       newGraph = { byNamespaces: {}, flat: {}, bottomUp: {}, topDown: {} };
 
-      if (showFlatGraph || showByNamespacesGraph) {
+      if (calculateFlatGraph || calculateByNamespacesGraph) {
         newGraph.flat = ecosystem.viewGraph('flat');
       }
-      if (showByNamespacesGraph) {
+      if (calculateByNamespacesGraph) {
         newGraph.byNamespaces = generateGraphByNamespaces({
           flat: newGraph.flat,
           getNode: (id) => ecosystem.n.get(id),
-          options: graphOptions,
+          globalGraphOptions,
         });
       }
-      if (showBottomUpGraph) {
+      if (calculateBottomUpGraph) {
         newGraph.bottomUp = ecosystem.viewGraph('bottom-up');
       }
-      if (showTopDownGraph) {
+      if (calculateTopDownGraph) {
         newGraph.topDown = ecosystem.viewGraph('top-down');
       }
     } catch (error) {
@@ -69,11 +70,12 @@ export function generateGraph(args: {
   }
 
   if (
-    (!showExternalNodesInFlatGraph || !showSignalsInFlatGraph) &&
+    (!globalGraphOptions.showExternalNodesInFlatGraph ||
+      !globalGraphOptions.showSignalsInFlatGraph) &&
     newGraph !== undefined
   ) {
     for (const [, node] of ecosystem.n) {
-      if (shouldIgnoreNodeInFlatGraph(node, graphOptions)) {
+      if (shouldIgnoreNodeInFlatGraph(node, globalGraphOptions)) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newGraph.flat[node.id];
       }

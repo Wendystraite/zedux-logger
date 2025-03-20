@@ -2,66 +2,72 @@ import type { Ecosystem } from '@zedux/react';
 import microdiff, { type Difference } from 'microdiff';
 import { isDeepEqual } from 'remeda';
 
-import { type Graph, generateGraph } from './generateGraph/generateGraph.js';
-import type { CompleteZeduxLoggerOptions } from './types/ZeduxLoggerOptions.js';
+import { generateGraph } from './generateGraph/generateGraph.js';
+import type { ZeduxLoggerEcosystemStorage } from './types/ZeduxLoggerEcosystemStorage.js';
+import type { CompleteZeduxLoggerLocalOptions } from './types/ZeduxLoggerLocalOptions.js';
 
-export function checkIncrementalGraphConsistency({
-  ecosystem,
-  options,
-  graphRef,
-  consistencyCheckTimeoutIdRef,
-}: {
+export function checkIncrementalGraphConsistency(args: {
   ecosystem: Ecosystem;
-  options: CompleteZeduxLoggerOptions;
-  graphRef: { current: Graph | undefined };
-  consistencyCheckTimeoutIdRef: { current: number | undefined };
+  storage: ZeduxLoggerEcosystemStorage;
 }) {
   const {
-    debugOptions: { checkIncrementalGraphConsistency, useIncrementalGraph },
-  } = options;
+    ecosystem,
+    storage,
+    storage: {
+      completeMergedOptions: {
+        debugOptions: { checkIncrementalGraphConsistency, useIncrementalGraph },
+      },
+    },
+  } = args;
 
   if (!checkIncrementalGraphConsistency || !useIncrementalGraph) {
     return;
   }
 
-  if (consistencyCheckTimeoutIdRef.current !== undefined) {
-    clearTimeout(consistencyCheckTimeoutIdRef.current);
+  if (storage.consistencyCheckTimeoutId !== undefined) {
+    clearTimeout(storage.consistencyCheckTimeoutId);
   }
 
-  consistencyCheckTimeoutIdRef.current = setTimeout(
+  storage.consistencyCheckTimeoutId = setTimeout(
     () => {
-      consistencyCheckTimeoutIdRef.current = undefined;
+      storage.consistencyCheckTimeoutId = undefined;
 
-      const graph = graphRef.current;
+      const graph = storage.graph;
 
       const expectedGraph = generateGraph({
         ecosystem,
-        options,
+        calculateBottomUpGraph: storage.calculateBottomUpGraph,
+        calculateByNamespacesGraph: storage.calculateByNamespacesGraph,
+        calculateFlatGraph: storage.calculateFlatGraph,
+        calculateGraph: storage.calculateGraph,
+        calculateTopDownGraph: storage.calculateTopDownGraph,
+        console: storage.completeMergedOptions.console,
+        globalGraphOptions: storage.completeMergedOptions.graphOptions,
       });
 
       checkGraphConsistency({
         type: 'bottomUp',
         expected: expectedGraph?.bottomUp,
         got: graph?.bottomUp,
-        options,
+        options: storage.completeMergedOptions,
       });
       checkGraphConsistency({
         type: 'topDown',
         expected: expectedGraph?.topDown,
         got: graph?.topDown,
-        options,
+        options: storage.completeMergedOptions,
       });
       checkGraphConsistency({
         type: 'flat',
         expected: expectedGraph?.flat,
         got: graph?.flat,
-        options,
+        options: storage.completeMergedOptions,
       });
       checkGraphConsistency({
         type: 'byNamespaces',
         expected: expectedGraph?.byNamespaces,
         got: graph?.byNamespaces,
-        options,
+        options: storage.completeMergedOptions,
       });
     },
 
@@ -71,17 +77,14 @@ export function checkIncrementalGraphConsistency({
   );
 }
 
-function checkGraphConsistency({
-  type,
-  expected,
-  got,
-  options,
-}: {
+function checkGraphConsistency(args: {
   type: 'flat' | 'topDown' | 'bottomUp' | 'byNamespaces';
   expected: Record<string, unknown> | undefined;
   got: Record<string, unknown> | undefined;
-  options: CompleteZeduxLoggerOptions;
+  options: Pick<CompleteZeduxLoggerLocalOptions, 'console'>;
 }) {
+  const { type, expected, got, options } = args;
+
   if (
     expected !== undefined &&
     got !== undefined &&

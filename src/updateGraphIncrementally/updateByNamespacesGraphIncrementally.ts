@@ -6,53 +6,45 @@ import {
   isGraphByNamespacesNodeObject,
 } from '../generateGraph/generateGraphByNamespaces.js';
 import { parseNodeGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
 import { addRecursiveGraphByNamespacesNodeToPath } from './utils/addRecursiveGraphByNamespacesNodeToPath.js';
 import { getDefaultByNamespacesGraphNode } from './utils/getDefaultByNamespacesGraphNode.js';
 import { getRecursiveGraphByNamespacesNodeToPath } from './utils/getRecursiveGraphByNamespacesNodeToPath.js';
 import { removeRecursiveGraphByNamespacesNodeToPath } from './utils/removeRecursiveGraphByNamespacesNodeToPath.js';
 
-export function updateByNamespacesGraphIncrementally({
-  eventMap,
-  byNamespacesGraph,
-  options,
-}: {
+export function updateByNamespacesGraphIncrementally(args: {
   eventMap: Partial<EcosystemEvents>;
   byNamespacesGraph: NonNullable<Graph['byNamespaces']>;
-  options: Pick<
-    CompleteZeduxLoggerOptions['graphOptions'],
-    | 'showNodeDepsInGraphByNamespaces'
-    | 'showNodeValueInGraphByNamespaces'
-    | 'showNodesInGraphByNamespaces'
-  >;
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
 }): void {
-  const { cycle, edge } = eventMap;
+  const {
+    eventMap: { cycle, edge },
+    byNamespacesGraph,
+    globalGraphOptions,
+  } = args;
+
   if (cycle === undefined && edge === undefined) {
     return;
   }
 
   if (cycle) {
-    handleCycleEvent({ cycle, draft: byNamespacesGraph, options });
+    handleCycleEvent({ cycle, draft: byNamespacesGraph, globalGraphOptions });
   } else if (edge) {
-    handleEdgeEvent({ edge, draft: byNamespacesGraph, options });
+    handleEdgeEvent({ edge, draft: byNamespacesGraph, globalGraphOptions });
   }
 }
 
-function handleCycleEvent({
-  cycle,
-  draft,
-  options,
-}: {
+function handleCycleEvent(args: {
   cycle: NonNullable<EcosystemEvents['cycle']>;
   draft: NonNullable<Graph['byNamespaces']>;
-  options: Pick<
-    CompleteZeduxLoggerOptions['graphOptions'],
-    | 'showNodeDepsInGraphByNamespaces'
-    | 'showNodeValueInGraphByNamespaces'
-    | 'showNodesInGraphByNamespaces'
-  >;
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
 }): void {
-  const { oldStatus, newStatus, source } = cycle;
+  const {
+    cycle: { oldStatus, newStatus, source },
+    draft,
+    globalGraphOptions,
+  } = args;
+
   if (source !== undefined) {
     if (oldStatus === 'Initializing' && newStatus === 'Active') {
       const sourceGroupNames = parseNodeGroupNames(source.id);
@@ -64,7 +56,7 @@ function handleCycleEvent({
       addRecursiveGraphByNamespacesNodeToPath(
         draft,
         sourceGroupNames,
-        getDefaultByNamespacesGraphNode(source, options),
+        getDefaultByNamespacesGraphNode(source, globalGraphOptions),
       );
     } else if (newStatus === 'Destroyed') {
       const sourceGroupNames = parseNodeGroupNames(source.id);
@@ -78,21 +70,16 @@ function handleCycleEvent({
   }
 }
 
-function handleEdgeEvent({
-  edge,
-  draft,
-  options,
-}: {
+function handleEdgeEvent(args: {
   edge: NonNullable<EcosystemEvents['edge']>;
   draft: NonNullable<Graph['byNamespaces']>;
-  options: Pick<
-    CompleteZeduxLoggerOptions['graphOptions'],
-    | 'showNodeDepsInGraphByNamespaces'
-    | 'showNodeValueInGraphByNamespaces'
-    | 'showNodesInGraphByNamespaces'
-  >;
+  globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
 }): void {
-  const { source, observer } = edge;
+  const {
+    edge: { action, source, observer },
+    draft,
+    globalGraphOptions,
+  } = args;
 
   const sourceGroupNames = parseNodeGroupNames(source.id);
   const observerGroupNames = parseNodeGroupNames(observer.id);
@@ -111,7 +98,7 @@ function handleEdgeEvent({
     sourceGraphNode = addRecursiveGraphByNamespacesNodeToPath(
       draft,
       sourceGroupNames,
-      getDefaultByNamespacesGraphNode(source, options),
+      getDefaultByNamespacesGraphNode(source, globalGraphOptions),
     );
   }
 
@@ -123,11 +110,11 @@ function handleEdgeEvent({
     observerGraphNode = addRecursiveGraphByNamespacesNodeToPath(
       draft,
       observerGroupNames,
-      getDefaultByNamespacesGraphNode(observer, options),
+      getDefaultByNamespacesGraphNode(observer, globalGraphOptions),
     );
   }
 
-  switch (edge.action) {
+  switch (action) {
     case 'add': {
       // console.log(
       //   `[byNs] add "${source.id}" as a new dependency to "${observer.id}"`,

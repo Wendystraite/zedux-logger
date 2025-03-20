@@ -3,10 +3,9 @@ import type { LogArgs } from './LogArgs.js';
 export function addToSummarySummary(args: LogArgs): void {
   const {
     addLogToSummary,
-    what: {
-      summary: [summary, , summaryColor],
-    },
+    what: { summaryWhat, getSummaryColor },
     options: {
+      colors,
       showInSummary: { showSummary },
     },
   } = args;
@@ -15,5 +14,5 @@ export function addToSummarySummary(args: LogArgs): void {
     return;
   }
 
-  addLogToSummary(`%c${summary}`, summaryColor);
+  addLogToSummary(`%c${summaryWhat}`, getSummaryColor(colors));
 }

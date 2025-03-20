@@ -1,12 +1,12 @@
 import { sliceString } from 'remeda';
 
-import type { CompleteZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
 
 export function stringifyState(args: {
   showStateOption: boolean;
   state: unknown;
   hasState: boolean;
-  console: CompleteZeduxLoggerOptions['console'];
+  console: CompleteZeduxLoggerLocalOptions['console'];
 }): string | undefined {
   const { showStateOption, state, hasState, console } = args;
   let stateString: string | undefined;

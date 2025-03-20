@@ -1,4 +1,5 @@
 import {
+  type Ecosystem,
   api,
   atom,
   createEcosystem,
@@ -18,7 +19,7 @@ import { configDefaults } from 'vitest/config';
 
 import { addZeduxLogger } from '../src/addZeduxLogger.js';
 import { getZeduxLoggerEcosystemStorage } from '../src/storage/getZeduxLoggerEcosystemStorage.js';
-import type { ZeduxLoggerOptions } from '../src/types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerLocalOptions } from '../src/types/ZeduxLoggerLocalOptions.js';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -28,7 +29,7 @@ afterEach(() => {
 describe('addZeduxLogger', () => {
   let ecosystem: ReturnType<typeof createEcosystem>;
   let consoleMock: Record<
-    keyof NonNullable<ZeduxLoggerOptions['console']>,
+    keyof CompleteZeduxLoggerLocalOptions['console'],
     Mock
   >;
 
@@ -62,8 +63,10 @@ describe('addZeduxLogger', () => {
 
   it('should not log when disabled', () => {
     addZeduxLogger(ecosystem, {
-      console: consoleMock,
-      enabled: false,
+      options: {
+        console: consoleMock,
+        enabled: false,
+      },
     });
 
     ecosystem.getNode(atom('simple atom', 0));
@@ -78,7 +81,9 @@ describe('addZeduxLogger', () => {
 
   it('should cleanup listener when cleanup function is called', () => {
     const cleanup = addZeduxLogger(ecosystem, {
-      console: consoleMock,
+      options: {
+        console: consoleMock,
+      },
     });
 
     cleanup();
@@ -92,9 +97,11 @@ describe('addZeduxLogger', () => {
   describe('colors', () => {
     it('should log with colors', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: true,
-        oneLineLogs: true,
+        options: {
+          console: consoleMock,
+          showColors: true,
+          oneLineLogs: true,
+        },
       });
 
       ecosystem.getNode(atom('simple atom', 0));
@@ -118,9 +125,11 @@ describe('addZeduxLogger', () => {
 
     it('should log without colors', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+        },
       });
 
       ecosystem.getNode(atom('simple atom', 0));
@@ -140,9 +149,11 @@ describe('addZeduxLogger', () => {
   describe('logs', () => {
     it('should log in one line', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+        },
       });
 
       ecosystem.getNode(atom('simple atom', 0));
@@ -174,9 +185,11 @@ describe('addZeduxLogger', () => {
 
     it('should log in groups', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: false,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: false,
+        },
       });
 
       ecosystem.getNode(atom('simple atom', 0));
@@ -209,9 +222,11 @@ describe('addZeduxLogger', () => {
   describe('details', () => {
     it('should show details', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+        },
       });
 
       ecosystem.getNode(atom('simple atom', 0));
@@ -241,12 +256,14 @@ describe('addZeduxLogger', () => {
   describe('events logging', () => {
     it('should log change events', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          change: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
         },
       });
 
@@ -266,12 +283,14 @@ describe('addZeduxLogger', () => {
 
     it('should log cycle events', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          cycle: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            cycle: true,
+          },
         },
       });
 
@@ -297,12 +316,14 @@ describe('addZeduxLogger', () => {
 
     it('should log edge events', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          edge: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            edge: true,
+          },
         },
       });
 
@@ -325,12 +346,14 @@ describe('addZeduxLogger', () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          error: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            error: true,
+          },
         },
       });
 
@@ -362,12 +385,14 @@ describe('addZeduxLogger', () => {
 
     it('should log invalidate events', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          invalidate: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            invalidate: true,
+          },
         },
       });
 
@@ -387,12 +412,14 @@ describe('addZeduxLogger', () => {
 
     it('should log promiseChange events', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          promiseChange: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            promiseChange: true,
+          },
         },
       });
 
@@ -419,13 +446,15 @@ describe('addZeduxLogger', () => {
 
     it('should log resetStart and resetEnd events', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          resetStart: true,
-          resetEnd: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            resetStart: true,
+            resetEnd: true,
+          },
         },
       });
 
@@ -449,13 +478,15 @@ describe('addZeduxLogger', () => {
 
     it('should log runStart and runEnd events', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          runStart: true,
-          runEnd: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            runStart: true,
+            runEnd: true,
+          },
         },
       });
 
@@ -485,13 +516,15 @@ describe('addZeduxLogger', () => {
       });
 
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          runStart: true,
-          runEnd: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            runStart: true,
+            runEnd: true,
+          },
         },
       });
 
@@ -522,15 +555,17 @@ describe('addZeduxLogger', () => {
 
     it('should not log execution time', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        showInSummary: { showExecutionTime: false },
-        showInDetails: { showExecutionTime: false },
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          runStart: true,
-          runEnd: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInSummary: { showExecutionTime: false },
+          showInDetails: { showExecutionTime: false },
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            runStart: true,
+            runEnd: true,
+          },
         },
       });
 
@@ -560,13 +595,15 @@ describe('addZeduxLogger', () => {
 
     it('should not leak timers', () => {
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          runStart: true,
-          runEnd: true,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            runStart: true,
+            runEnd: true,
+          },
         },
       });
 
@@ -586,19 +623,21 @@ describe('addZeduxLogger', () => {
       const onVerySlowEvaluationMock = vi.fn();
 
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          runStart: true,
-          runEnd: true,
-        },
-        executionTimeOptions: {
-          slowThresholdMs: 0,
-          warnInConsoleIfSlow: true,
-          onSlowEvaluation: onSlowEvaluationMock,
-          onVerySlowEvaluation: onVerySlowEvaluationMock,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            runStart: true,
+            runEnd: true,
+          },
+          executionTimeOptions: {
+            slowThresholdMs: 0,
+            warnInConsoleIfSlow: true,
+            onSlowEvaluation: onSlowEvaluationMock,
+            onVerySlowEvaluation: onVerySlowEvaluationMock,
+          },
         },
       });
 
@@ -627,21 +666,23 @@ describe('addZeduxLogger', () => {
       const onVerySlowEvaluationMock = vi.fn();
 
       addZeduxLogger(ecosystem, {
-        console: consoleMock,
-        showColors: false,
-        oneLineLogs: true,
-        eventsToShow: {
-          ...ALL_EVENTS_DISABLED,
-          runStart: true,
-          runEnd: true,
-        },
-        executionTimeOptions: {
-          slowThresholdMs: 0,
-          verySlowThresholdMs: 0,
-          warnInConsoleIfSlow: true,
-          errorInConsoleIfVerySlow: true,
-          onSlowEvaluation: onSlowEvaluationMock,
-          onVerySlowEvaluation: onVerySlowEvaluationMock,
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            runStart: true,
+            runEnd: true,
+          },
+          executionTimeOptions: {
+            slowThresholdMs: 0,
+            verySlowThresholdMs: 0,
+            warnInConsoleIfSlow: true,
+            errorInConsoleIfVerySlow: true,
+            onSlowEvaluation: onSlowEvaluationMock,
+            onVerySlowEvaluation: onVerySlowEvaluationMock,
+          },
         },
       });
 
@@ -659,6 +700,504 @@ describe('addZeduxLogger', () => {
 
       expect(onSlowEvaluationMock).not.toHaveBeenCalled();
       expect(onVerySlowEvaluationMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('filters', () => {
+    it('should log only included nodes', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: ['includedAtom'],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const includedAtom = atom('includedAtom', 0);
+      const excludedAtom = atom('excludedAtom', 0);
+
+      ecosystem.getNode(includedAtom).set(1);
+      ecosystem.getNode(excludedAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] includedAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should exclude nodes based on filters', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            exclude: ['excludedAtom'],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const includedAtom = atom('includedAtom', 0);
+      const excludedAtom = atom('excludedAtom', 0);
+
+      ecosystem.getNode(includedAtom).set(1);
+      ecosystem.getNode(excludedAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] includedAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should prioritize exclude over include', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: ['testAtom'],
+            exclude: ['testAtom'],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const testAtom = atom('testAtom', 0);
+      ecosystem.getNode(testAtom).set(1);
+
+      expect(consoleMock.log).not.toHaveBeenCalled();
+    });
+
+    it('should apply custom options for included nodes', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: ['customOptionsAtom'],
+            options: {
+              showColors: false,
+              oneLineLogs: true,
+            },
+          },
+        ],
+        options: {
+          console: consoleMock,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const customOptionsAtom = atom('customOptionsAtom', 0);
+      ecosystem.getNode(customOptionsAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] customOptionsAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should log nodes matching a regex include filter', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: [/^regexIncluded/],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const regexIncludedAtom = atom('regexIncludedAtom', 0);
+      const nonMatchingAtom = atom('nonMatchingAtom', 0);
+
+      ecosystem.getNode(regexIncludedAtom).set(1);
+      ecosystem.getNode(nonMatchingAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] regexIncludedAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should exclude nodes matching a regex exclude filter', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            exclude: [/^regexExcluded/],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const regexExcludedAtom = atom('regexExcludedAtom', 0);
+      const includedAtom = atom('includedAtom', 0);
+
+      ecosystem.getNode(regexExcludedAtom).set(1);
+      ecosystem.getNode(includedAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] includedAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should apply filters based on node type', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: [{ type: '@atom' }],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const atomNode = atom('atomNode', 0);
+      const signalNode = atom('signalNode', () => injectSignal(0));
+
+      ecosystem.getNode(atomNode).set(1);
+      ecosystem.getNode(signalNode).S?.set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] atomNode changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+        [
+          '[✏️] signalNode changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should handle multiple filters with different include and exclude rules', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: ['includedAtom'], // includedAtom
+          },
+          {
+            exclude: ['excludedAtom'], // otherAtom
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const includedAtom = atom('includedAtom', 0);
+      const excludedAtom = atom('excludedAtom', 0);
+      const otherAtom = atom('otherAtom', 0);
+
+      ecosystem.getNode(includedAtom).set(1);
+      ecosystem.getNode(excludedAtom).set(1);
+      ecosystem.getNode(otherAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] includedAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+        [
+          '[✏️] otherAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should log nodes matching a tag filter', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: [{ tag: 'important' }],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const taggedAtom = atom('taggedAtom', 0, { tags: ['important'] });
+      const untaggedAtom = atom('untaggedAtom', 0);
+
+      ecosystem.getNode(taggedAtom).set(1);
+      ecosystem.getNode(untaggedAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] taggedAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should log nodes matching a template filter', () => {
+      const includedAtom = atom('includedAtom', 0);
+      const excludedAtom = atom('excludedAtom', 0);
+
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: [includedAtom],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      ecosystem.getNode(includedAtom).set(1);
+      ecosystem.getNode(excludedAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] includedAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should log nodes matching a selector filter', () => {
+      const someAtom = atom('someAtom', 0);
+      const includedSelector = ({ get }: Ecosystem) => get(someAtom);
+      const excludedSelector = ({ get }: Ecosystem) => get(someAtom);
+
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: [includedSelector],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            cycle: true,
+          },
+        },
+      });
+
+      ecosystem.getNode(includedSelector);
+      ecosystem.getNode(excludedSelector);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] @selector(includedSelector)-1 initialized to 0',
+          expect.objectContaining({
+            '📢 event(cycle)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should not generate flat graph when the global option is disabled', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          graphOptions: {
+            showFlatGraph: false,
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('simple atom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] simple atom initialized to 0',
+          expect.not.objectContaining({
+            '📈 graph.flat': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should generate flat graph when the global option is enabled', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          graphOptions: {
+            showFlatGraph: true,
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('simple atom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] simple atom initialized to 0',
+          expect.objectContaining({
+            '📈 graph.flat': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should generate flat graph when a filter option is enabled', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          graphOptions: {
+            showFlatGraph: false,
+          },
+        },
+        filters: [
+          {
+            options: {
+              graphOptions: {
+                showFlatGraph: true,
+              },
+            },
+          },
+        ],
+      });
+
+      ecosystem.getNode(atom('simple atom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] simple atom initialized to 0',
+          expect.objectContaining({
+            '📈 graph.flat': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should generate snapshot when a filter option is enabled', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInDetails: {
+            showSnapshot: false,
+          },
+        },
+        filters: [
+          {
+            options: {
+              showInDetails: {
+                showSnapshot: true,
+              },
+            },
+          },
+        ],
+      });
+
+      ecosystem.getNode(atom('simple atom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] simple atom initialized to 0',
+          expect.objectContaining({
+            '📸 snapshot.new-snapshot': expect.any(Object),
+          }),
+        ],
+      ]);
     });
   });
 });
