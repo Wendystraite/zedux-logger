@@ -1,14 +1,22 @@
-import type * as Zedux from '@zedux/react';
+import type { AnyAtomTemplate, NodeType, SelectorTemplate } from '@zedux/react';
+
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 
 export type ZeduxLoggerNodeFilter =
-  /** Node's name */
+  /** Node's id (weakly match) */
   | string
-  | RegExp
+  | { idMatch: string | RegExp | Array<string | RegExp> }
+  /** Node's id (strictly match) */
+  | { idEqual: string | string[] }
   /** Node's type */
-  | { type: Zedux.NodeType }
-  /** Template */
-  | Zedux.AnyAtomTemplate
-  /** Selector */
-  | Zedux.SelectorTemplate
+  | NodeType
+  | { type: NodeType | NodeType[] }
+  /** Template / Selector */
+  | {
+      template:
+        | AnyAtomTemplate
+        | SelectorTemplate
+        | Array<AnyAtomTemplate | SelectorTemplate>;
+    }
   /** Tag */
-  | { tag: string | RegExp };
+  | { tag: string | RegExp | Array<string | RegExp> };

@@ -1,10 +1,10 @@
 import type { ZeduxNode } from '@zedux/react';
 
-import { doesZeduxLoggerNodeFilterMatch } from './doesZeduxLoggerNodeFilterMatch.js';
-import type { ZeduxLoggerEcosystemStorage } from './types/ZeduxLoggerEcosystemStorage.js';
-import type { CompleteZeduxLoggerLocalOptions } from './types/ZeduxLoggerLocalOptions.js';
+import type { ZeduxLoggerEcosystemStorage } from '../types/ZeduxLoggerEcosystemStorage.js';
+import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
+import { doesZeduxNodeMatchesLoggerFilter } from './doesZeduxNodeMatchesLoggerFilter.js';
 
-export function getNodeLocalOptions(
+export function findLocalLoggerOptionsOfZeduxNode(
   node: ZeduxNode,
   filters: ZeduxLoggerEcosystemStorage['filters'],
 ): CompleteZeduxLoggerLocalOptions | undefined {
@@ -13,7 +13,7 @@ export function getNodeLocalOptions(
       filter.exclude !== undefined &&
       filter.exclude.length > 0 &&
       filter.exclude.some((filter) => {
-        return doesZeduxLoggerNodeFilterMatch(filter, node);
+        return doesZeduxNodeMatchesLoggerFilter(node, filter);
       });
 
     if (!isExcluded) {
@@ -21,7 +21,7 @@ export function getNodeLocalOptions(
         filter.include === undefined ||
         filter.include.length <= 0 ||
         filter.include.some((filter) => {
-          return doesZeduxLoggerNodeFilterMatch(filter, node);
+          return doesZeduxNodeMatchesLoggerFilter(node, filter);
         });
 
       if (isIncluded) {

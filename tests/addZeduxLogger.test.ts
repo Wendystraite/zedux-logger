@@ -738,6 +738,92 @@ describe('addZeduxLogger', () => {
       ]);
     });
 
+    it('should filter node id that weakly match', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: ['included', { idMatch: 'other' }],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const includedAtom = atom('includedAtom', 0);
+      const excludedAtom = atom('excludedAtom', 0);
+      const otherAtom = atom('otherAtom', 0);
+
+      ecosystem.getNode(includedAtom).set(1);
+      ecosystem.getNode(excludedAtom).set(1);
+      ecosystem.getNode(otherAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] includedAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+        [
+          '[✏️] otherAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should filter node id that strictly match', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: [{ idEqual: ['foo', 'bar'] }],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const fooAtom = atom('foo', 0);
+      const barAtom = atom('bar', 0);
+      const excludedFooAtom = atom('foobar', 0);
+      const excludedBarAtom = atom('otherAtom', 0);
+
+      ecosystem.getNode(fooAtom).set(1);
+      ecosystem.getNode(barAtom).set(1);
+      ecosystem.getNode(excludedFooAtom).set(1);
+      ecosystem.getNode(excludedBarAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] foo changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+        [
+          '[✏️] bar changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
     it('should exclude nodes based on filters', () => {
       addZeduxLogger(ecosystem, {
         filters: [
@@ -834,7 +920,7 @@ describe('addZeduxLogger', () => {
       addZeduxLogger(ecosystem, {
         filters: [
           {
-            include: [/^regexIncluded/],
+            include: [{ idMatch: /^regexIncluded/ }],
           },
         ],
         options: {
@@ -868,7 +954,7 @@ describe('addZeduxLogger', () => {
       addZeduxLogger(ecosystem, {
         filters: [
           {
-            exclude: [/^regexExcluded/],
+            exclude: [{ idMatch: /^regexExcluded/ }],
           },
         ],
         options: {
@@ -898,11 +984,91 @@ describe('addZeduxLogger', () => {
       ]);
     });
 
-    it('should apply filters based on node type', () => {
+    it('should apply filters based on node type 1', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: ['@atom'],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const atomNode = atom('atomNode', 0);
+      const signalNode = atom('signalNode', () => injectSignal(0));
+
+      ecosystem.getNode(atomNode).set(1);
+      ecosystem.getNode(signalNode).S?.set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] atomNode changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+        [
+          '[✏️] signalNode changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should apply filters based on node type 2', () => {
       addZeduxLogger(ecosystem, {
         filters: [
           {
             include: [{ type: '@atom' }],
+          },
+        ],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: {
+            ...ALL_EVENTS_DISABLED,
+            change: true,
+          },
+        },
+      });
+
+      const atomNode = atom('atomNode', 0);
+      const signalNode = atom('signalNode', () => injectSignal(0));
+
+      ecosystem.getNode(atomNode).set(1);
+      ecosystem.getNode(signalNode).S?.set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] atomNode changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+        [
+          '[✏️] signalNode changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should apply filters based on multiple node types', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            include: [{ type: ['@atom'] }],
           },
         ],
         options: {
@@ -1024,7 +1190,7 @@ describe('addZeduxLogger', () => {
       addZeduxLogger(ecosystem, {
         filters: [
           {
-            include: [includedAtom],
+            include: [{ template: includedAtom }],
           },
         ],
         options: {
@@ -1059,7 +1225,7 @@ describe('addZeduxLogger', () => {
       addZeduxLogger(ecosystem, {
         filters: [
           {
-            include: [includedSelector],
+            include: [{ template: includedSelector }],
           },
         ],
         options: {

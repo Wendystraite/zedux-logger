@@ -1,9 +1,9 @@
 import type { ZeduxNode } from '@zedux/react';
 
-import { getNodeLocalOptions } from './getNodeLocalOptions.js';
-import type { WhatHappened } from './parseWhatHappened/parseWhatHappened.js';
-import type { ZeduxLoggerEcosystemStorage } from './types/ZeduxLoggerEcosystemStorage.js';
-import type { CompleteZeduxLoggerLocalOptions } from './types/ZeduxLoggerLocalOptions.js';
+import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
+import type { ZeduxLoggerEcosystemStorage } from '../types/ZeduxLoggerEcosystemStorage.js';
+import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
+import { findLocalLoggerOptionsOfZeduxNode } from './findLocalLoggerOptionsOfZeduxNode.js';
 
 export function calculateCanLogEventWithOptions(
   node: ZeduxNode | undefined,
@@ -22,7 +22,7 @@ export function calculateCanLogEventWithOptions(
     localOptions = completeMergedOptions;
     canLog = true;
   } else if (node) {
-    const nodeOptions = getNodeLocalOptions(node, filters);
+    const nodeOptions = findLocalLoggerOptionsOfZeduxNode(node, filters);
     if (nodeOptions !== undefined) {
       localOptions = nodeOptions;
       canLog = true;
@@ -36,5 +36,5 @@ export function calculateCanLogEventWithOptions(
     canLog = false;
   }
 
-  return { canLog, localOptions: localOptions };
+  return { canLog, localOptions };
 }
