@@ -11,112 +11,119 @@ import type { ZeduxLoggerColors } from './ZeduxLoggerColors.js';
 export interface ZeduxLoggerLocalOptions {
   /**
    * Zedux events to show.
+   *
+   * Is either an array of event types or an object with the event types as keys.
+   * - If an array, you have to specify all the events you want to show. Default options are not provided.
+   * - If an object, you can specify only the events you want to hide or show since default options are provided.
+   *
    * Internally the logger is listening to all ecosystem's events and filtering them.
    * @see {@link Zedux.EcosystemEvents}
    */
-  eventsToShow?: {
-    /**
-     * Log {@link Zedux.ChangeEvent}.
-     *
-     * Example :
-     * - "[✏️] test atom changed from 0 to 1"
-     *
-     * @default true
-     */
-    change?: boolean;
+  eventsToShow?:
+    | Array<keyof Zedux.EcosystemEvents>
+    | {
+        /**
+         * Log {@link Zedux.ChangeEvent}.
+         *
+         * Example :
+         * - "[✏️] test atom changed from 0 to 1"
+         *
+         * @default true
+         */
+        change?: boolean;
 
-    /**
-     * Log {@link Zedux.CycleEvent}.
-     *
-     * Examples :
-     * - "[⚡] simple atom initialized to 0"
-     * - "[🕰️] simple atom stale"
-     * - "[💥] simple atom destroyed"
-     *
-     * @default true
-     */
-    cycle?: boolean;
+        /**
+         * Log {@link Zedux.CycleEvent}.
+         *
+         * Examples :
+         * - "[⚡] simple atom initialized to 0"
+         * - "[🕰️] simple atom stale"
+         * - "[💥] simple atom destroyed"
+         *
+         * @default true
+         */
+        cycle?: boolean;
 
-    /**
-     * Log {@link Zedux.EdgeEvent}.
-     *
-     * Example :
-     * - "[📈] sourceAtom edge added targetAtom"
-     *
-     * @default false
-     */
-    edge?: boolean;
+        /**
+         * Log {@link Zedux.EdgeEvent}.
+         *
+         * Example :
+         * - "[📈] sourceAtom edge added targetAtom"
+         *
+         * @default false
+         */
+        edge?: boolean;
 
-    /**
-     * Log {@link Zedux.ErrorEvent}.
-     *
-     * Example :
-     * - "[❌] errorAtom error"
-     *
-     * @default true
-     */
-    error?: boolean;
+        /**
+         * Log {@link Zedux.ErrorEvent}.
+         *
+         * Example :
+         * - "[❌] errorAtom error"
+         *
+         * @default true
+         */
+        error?: boolean;
 
-    /**
-     * Log {@link Zedux.InvalidateEvent}.
-     *
-     * Example :
-     * - "[🗑️] test atom invalidate"
-     *
-     * @default true
-     */
-    invalidate?: boolean;
+        /**
+         * Log {@link Zedux.InvalidateEvent}.
+         *
+         * Example :
+         * - "[🗑️] test atom invalidate"
+         *
+         * @default true
+         */
+        invalidate?: boolean;
 
-    /**
-     * Log {@link Zedux.PromiseChangeEvent}.
-     *
-     * Example :
-     * - "[⌛] async promise loading"
-     *
-     * @default true
-     */
-    promiseChange?: boolean;
+        /**
+         * Log {@link Zedux.PromiseChangeEvent}.
+         *
+         * Example :
+         * - "[⌛] async promise loading"
+         *
+         * @default true
+         */
+        promiseChange?: boolean;
 
-    /**
-     * Log {@link Zedux.ResetStartEvent}.
-     *
-     * Example :
-     * - "[🧹] resetting ecosystem"
-     *
-     * @default true
-     */
-    resetStart?: boolean;
+        /**
+         * Log {@link Zedux.ResetStartEvent}.
+         *
+         * Example :
+         * - "[🧹] resetting ecosystem"
+         *
+         * @default true
+         */
+        resetStart?: boolean;
 
-    /**
-     * Log {@link Zedux.ResetEndEvent}.
-     *
-     * Example :
-     * - "[🧹] ecosystem reset"
-     *
-     * @default true
-     */
-    resetEnd?: boolean;
+        /**
+         * Log {@link Zedux.ResetEndEvent}.
+         *
+         * Example :
+         * - "[🧹] ecosystem reset"
+         *
+         * @default true
+         */
+        resetEnd?: boolean;
 
-    /**
-     * Log {@link Zedux.RunStartEvent}.
-     *
-     * Example :
-     * - "[⚙️] simple atom evaluating"
-     *
-     * @default false
-     */
-    runStart?: boolean;
+        /**
+         * Log {@link Zedux.RunStartEvent}.
+         *
+         * Example :
+         * - "[⚙️] simple atom evaluating"
+         *
+         * @default false
+         */
+        runStart?: boolean;
 
-    /**
-     * Log {@link Zedux.RunEndEvent}.
-     *
-     * Example :
-     * - "[⚙️] simple atom evaluated in 3ms"
-     *
-     * @default false
-     */
-    runEnd?: boolean;
-  };
+        /**
+         * Log {@link Zedux.RunEndEvent}.
+         *
+         * Example :
+         * - "[⚙️] simple atom evaluated in 3ms"
+         *
+         * @default false
+         */
+        runEnd?: boolean;
+      };
 
   /**
    * Console-like object to use for logging.

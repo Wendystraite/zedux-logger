@@ -31,7 +31,9 @@ export function calculateCanLogEventWithOptions(
 
   if (
     what.event?.type !== undefined &&
-    !localOptions.eventsToShow[what.event.type]
+    (Array.isArray(localOptions.eventsToShow)
+      ? !localOptions.eventsToShow.includes(what.event.type)
+      : !localOptions.eventsToShow[what.event.type])
   ) {
     canLog = false;
   }

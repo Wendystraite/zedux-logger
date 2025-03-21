@@ -48,19 +48,6 @@ describe('addZeduxLogger', () => {
     ecosystem.reset({ hydration: true, listeners: true, overrides: true });
   });
 
-  const ALL_EVENTS_DISABLED = {
-    change: false,
-    cycle: false,
-    edge: false,
-    error: false,
-    invalidate: false,
-    promiseChange: false,
-    resetStart: false,
-    resetEnd: false,
-    runStart: false,
-    runEnd: false,
-  };
-
   it('should not log when disabled', () => {
     addZeduxLogger(ecosystem, {
       options: {
@@ -254,16 +241,48 @@ describe('addZeduxLogger', () => {
   });
 
   describe('events logging', () => {
-    it('should log change events', () => {
+    it('should log change events filtered by object', () => {
       addZeduxLogger(ecosystem, {
         options: {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
           eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
             change: true,
+            cycle: false,
+            edge: false,
+            error: false,
+            invalidate: false,
+            promiseChange: false,
+            resetStart: false,
+            resetEnd: false,
+            runStart: false,
+            runEnd: false,
           },
+        },
+      });
+
+      const testAtom = atom('test atom', 0);
+      const node = ecosystem.getNode(testAtom);
+      node.set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] test atom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should log change events filtered by array', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          eventsToShow: ['change'],
         },
       });
 
@@ -287,10 +306,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            cycle: true,
-          },
+          eventsToShow: ['cycle'],
         },
       });
 
@@ -320,10 +336,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            edge: true,
-          },
+          eventsToShow: ['edge'],
         },
       });
 
@@ -350,10 +363,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            error: true,
-          },
+          eventsToShow: ['error'],
         },
       });
 
@@ -389,10 +399,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            invalidate: true,
-          },
+          eventsToShow: ['invalidate'],
         },
       });
 
@@ -416,10 +423,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            promiseChange: true,
-          },
+          eventsToShow: ['promiseChange'],
         },
       });
 
@@ -450,11 +454,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            resetStart: true,
-            resetEnd: true,
-          },
+          eventsToShow: ['resetStart', 'resetEnd'],
         },
       });
 
@@ -482,11 +482,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            runStart: true,
-            runEnd: true,
-          },
+          eventsToShow: ['runStart', 'runEnd'],
         },
       });
 
@@ -520,11 +516,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            runStart: true,
-            runEnd: true,
-          },
+          eventsToShow: ['runStart', 'runEnd'],
         },
       });
 
@@ -561,11 +553,7 @@ describe('addZeduxLogger', () => {
           oneLineLogs: true,
           showInSummary: { showExecutionTime: false },
           showInDetails: { showExecutionTime: false },
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            runStart: true,
-            runEnd: true,
-          },
+          eventsToShow: ['runStart', 'runEnd'],
         },
       });
 
@@ -599,11 +587,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            runStart: true,
-            runEnd: true,
-          },
+          eventsToShow: ['runStart', 'runEnd'],
         },
       });
 
@@ -627,11 +611,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            runStart: true,
-            runEnd: true,
-          },
+          eventsToShow: ['runStart', 'runEnd'],
           executionTimeOptions: {
             slowThresholdMs: 0,
             warnInConsoleIfSlow: true,
@@ -670,11 +650,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            runStart: true,
-            runEnd: true,
-          },
+          eventsToShow: ['runStart', 'runEnd'],
           executionTimeOptions: {
             slowThresholdMs: 0,
             verySlowThresholdMs: 0,
@@ -715,10 +691,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -749,10 +722,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -791,10 +761,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -835,10 +802,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -870,10 +834,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -896,10 +857,7 @@ describe('addZeduxLogger', () => {
         ],
         options: {
           console: consoleMock,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -927,10 +885,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -961,10 +916,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -995,10 +947,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -1035,10 +984,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -1075,10 +1021,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -1118,10 +1061,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -1160,10 +1100,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -1197,10 +1134,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            change: true,
-          },
+          eventsToShow: ['change'],
         },
       });
 
@@ -1232,10 +1166,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           showColors: false,
           oneLineLogs: true,
-          eventsToShow: {
-            ...ALL_EVENTS_DISABLED,
-            cycle: true,
-          },
+          eventsToShow: ['cycle'],
         },
       });
 

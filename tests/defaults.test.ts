@@ -140,4 +140,35 @@ describe('defaults', () => {
 
     expect(result).toEqual({ a: null, b: null });
   });
+
+  it('should preserve array values from default object values', () => {
+    const defaultValues = { a: { some: 'thing' } };
+    const values: { a: { some: string } | number[] } = { a: [4, 5] };
+
+    const result = defaults(defaultValues, values);
+
+    expect(result).toEqual({ a: [4, 5] });
+  });
+
+  it('should preserve object values from default array values', () => {
+    const defaultValues = { a: [4, 5] };
+    const values: { a: { some: string } | number[] } = { a: { some: 'thing' } };
+
+    const result = defaults(defaultValues, values);
+
+    expect(result).toEqual({ a: { some: 'thing' } });
+  });
+
+  it('should not override array values', () => {
+    const defaultValues = { a: [1, 2, 3], b: [1, 2, 3], c: [1, 2, 3] };
+    const values: { a: number[]; b: number[]; c: number[] | undefined } = {
+      a: [4, 5],
+      b: [],
+      c: undefined,
+    };
+
+    const result = defaults(defaultValues, values);
+
+    expect(result).toEqual({ a: [4, 5], b: [], c: [1, 2, 3] });
+  });
 });
