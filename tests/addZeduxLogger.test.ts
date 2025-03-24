@@ -96,18 +96,64 @@ describe('addZeduxLogger', () => {
       expect(consoleMock.log.mock.calls).toEqual([
         [
           '%c[⚡] %csimple atom%c%c%c%c %cinitialized %cto %c0',
-          'color: #6a7282; font-weight: lighter;',
-          'color: inherit; font-weight: normal;',
-          'color: #6a7282; font-weight: lighter;',
-          'color: #6a7282; font-weight: lighter;',
-          'color: #6a7282; font-weight: lighter;',
-          'color: #6a7282; font-weight: lighter;',
-          'color: #2b7fff; font-weight: normal;',
-          'color: #6a7282; font-weight: lighter;',
-          'color: inherit; font-weight: normal;',
+          'color: #6b7280',
+          'color: inherit',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #3b82f6',
+          'color: #6b7280',
+          'color: inherit',
           expect.any(Object),
         ],
       ]);
+    });
+
+    it('should log groups with colors', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          showColors: true,
+          oneLineLogs: false,
+        },
+      });
+
+      ecosystem.getNode(atom('simple atom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['📢 event(cycle)', expect.any(Object)],
+        ['➡️ %cnew state', 'color: #22c55e', 0],
+        ['🔗 node', expect.any(Object)],
+        ['🔗 sources', expect.any(Map)],
+        ['🔗 observers', expect.any(Map)],
+        ['🌍 ecosystem', expect.any(Object)],
+        ['by-namespaces', expect.any(Object)],
+        ['flat', expect.any(Object)],
+        ['top-down', expect.any(Object)],
+        ['bottom-up', expect.any(Object)],
+        ['%cnew snapshot', 'color: #22c55e', expect.any(Object)],
+      ]);
+      expect(consoleMock.warn).not.toHaveBeenCalled();
+      expect(consoleMock.error).not.toHaveBeenCalled();
+      expect(consoleMock.group).not.toHaveBeenCalled();
+      expect(consoleMock.groupCollapsed.mock.calls).toEqual([
+        [
+          '%c[⚡] %csimple atom%c%c%c%c %cinitialized %cto %c0',
+          'color: #6b7280',
+          'color: inherit',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #3b82f6',
+          'color: #6b7280',
+          'color: inherit',
+        ],
+        ['📈 graph'],
+        ['📸 snapshot'],
+      ]);
+      expect(consoleMock.groupEnd.mock.calls).toEqual([[], [], []]);
     });
 
     it('should log without colors', () => {
@@ -874,6 +920,35 @@ describe('addZeduxLogger', () => {
       ]);
     });
 
+    it('should apply custom options if no include given', () => {
+      addZeduxLogger(ecosystem, {
+        filters: [
+          {
+            options: {
+              showColors: false,
+              oneLineLogs: true,
+            },
+          },
+        ],
+        options: {
+          console: consoleMock,
+          eventsToShow: ['change'],
+        },
+      });
+
+      const customOptionsAtom = atom('customOptionsAtom', 0);
+      ecosystem.getNode(customOptionsAtom).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[✏️] customOptionsAtom changed from 0 to 1',
+          expect.objectContaining({
+            '📢 event(change)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
     it('should log nodes matching a regex include filter', () => {
       addZeduxLogger(ecosystem, {
         filters: [
@@ -1294,6 +1369,124 @@ describe('addZeduxLogger', () => {
             '📸 snapshot.new-snapshot': expect.any(Object),
           }),
         ],
+      ]);
+    });
+  });
+
+  describe('templates', () => {
+    it('should prioritize options over templates', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['show-colors'],
+        options: {
+          console: consoleMock,
+          oneLineLogs: true,
+          showColors: false, // This should take precedence
+        },
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] testAtom initialized to 0', expect.any(Object)],
+      ]);
+    });
+
+    it('should prioritize rightmost templates', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          oneLineLogs: true,
+        },
+        templates: ['custom-template-1', 'custom-template-2'],
+        customTemplates: {
+          'custom-template-1': {
+            showColors: true,
+          },
+          'custom-template-2': {
+            showColors: false,
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] testAtom initialized to 0', expect.any(Object)],
+      ]);
+    });
+
+    it('should prioritize filters templates', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          oneLineLogs: true,
+        },
+        customTemplates: {
+          'custom-template-1': {
+            showColors: true,
+          },
+          'custom-template-2': {
+            showColors: false,
+          },
+        },
+        templates: ['custom-template-1'],
+        filters: [
+          {
+            templates: ['custom-template-2'],
+          },
+        ],
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] testAtom initialized to 0', expect.any(Object)],
+      ]);
+    });
+
+    it('should prioritize filters options over templates', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          oneLineLogs: true,
+        },
+        customTemplates: {
+          'custom-template': {
+            showColors: true,
+          },
+        },
+        filters: [
+          {
+            templates: ['custom-template'],
+            options: {
+              showColors: false,
+            },
+          },
+        ],
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] testAtom initialized to 0', expect.any(Object)],
+      ]);
+    });
+
+    it('should ignore non-existing templates', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          oneLineLogs: true,
+          showColors: false,
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        templates: ['default', 'non-existing' as any],
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] testAtom initialized to 0', expect.any(Object)],
       ]);
     });
   });

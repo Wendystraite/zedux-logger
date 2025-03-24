@@ -1,5 +1,5 @@
+import { getZeduxLoggerTailwindColorsTemplate } from '../colors/tailwind-css-colors.js';
 import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
-import { DEFAULT_ZEDUX_LOGGER_COLORS } from './default-zedux-logger-colors.js';
 
 export const DEFAULT_ZEDUX_LOGGER_LOCAL_OPTIONS: CompleteZeduxLoggerLocalOptions =
   {
@@ -18,7 +18,7 @@ export const DEFAULT_ZEDUX_LOGGER_LOCAL_OPTIONS: CompleteZeduxLoggerLocalOptions
     console,
     oneLineLogs: false,
     showColors: true,
-    colors: DEFAULT_ZEDUX_LOGGER_COLORS,
+    colors: getZeduxLoggerTailwindColorsTemplate(5).colors,
     showInSummary: {
       showEmoji: true,
       showEcosystemName: false,

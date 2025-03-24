@@ -21,13 +21,13 @@ describe('logLogArgs', () => {
   it('should call console.groupCollapsed with correct parameters', () => {
     logLogArgs({
       options: { console, oneLineLogs: false, showColors: true },
-      logSummary: 'Test Summary',
-      logSummaryColors: ['color1', 'color2'],
+      logSummary: '%cTest %cSummary',
+      logSummaryColors: ['#f00', '#0f0'],
       details: [],
     });
 
     expect(consoleMock.groupCollapsed.mock.calls).toEqual([
-      ['Test Summary', 'color1', 'color2'],
+      ['%cTest %cSummary', 'color: #f00', 'color: #0f0'],
     ]);
     expect(consoleMock.groupEnd.mock.calls).toEqual([[]]);
   });

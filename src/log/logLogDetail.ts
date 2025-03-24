@@ -17,7 +17,7 @@ export function logLogDetail(
       logDetail.emoji !== undefined
         ? `${logDetail.emoji} ${logDetail.log}`
         : logDetail.log,
-      ...(logDetail.colors ?? []),
+      ...(logDetail.colors?.map((color) => `color: ${color}`) ?? []),
     ];
   } else {
     logs = [

@@ -18,7 +18,10 @@ export function logLogArgs(
 
   let resultingLogSummary: string[];
   if (showColors) {
-    resultingLogSummary = [logSummary, ...logSummaryColors];
+    resultingLogSummary = [
+      logSummary,
+      ...logSummaryColors.map((color) => `color: ${color}`),
+    ];
   } else {
     resultingLogSummary = [logSummary.replaceAll('%c', '')];
   }

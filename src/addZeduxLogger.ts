@@ -3,6 +3,7 @@ import { type Cleanup, type Ecosystem } from '@zedux/react';
 import { makeZeduxLoggerListener } from './makeZeduxLoggerListener.js';
 import { getDefaultZeduxLoggerEcosystemStorage } from './storage/getDefaultZeduxLoggerEcosystemStorage.js';
 import { setZeduxLoggerEcosystemStorage } from './storage/setZeduxLoggerEcosystemStorage.js';
+import type { ZeduxLoggerBuiltInTemplateKey } from './types/ZeduxLoggerBuiltInTemplateKey.js';
 import { type ZeduxLoggerOptions } from './types/ZeduxLoggerOptions.js';
 
 /**
@@ -15,10 +16,9 @@ import { type ZeduxLoggerOptions } from './types/ZeduxLoggerOptions.js';
  * const ecosystem = createEcosystem();
  * addZeduxLogger(ecosystem);
  */
-export function addZeduxLogger(
-  ecosystem: Ecosystem,
-  options?: ZeduxLoggerOptions,
-): Cleanup {
+export function addZeduxLogger<
+  TEMPLATE_KEY extends string = ZeduxLoggerBuiltInTemplateKey,
+>(ecosystem: Ecosystem, options?: ZeduxLoggerOptions<TEMPLATE_KEY>): Cleanup {
   const storage = getDefaultZeduxLoggerEcosystemStorage(options);
   setZeduxLoggerEcosystemStorage(ecosystem, storage);
 
