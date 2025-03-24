@@ -294,6 +294,185 @@ describe('addZeduxLogger', () => {
     });
   });
 
+  describe('state', () => {
+    it('should log old and new states when enabled', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+        },
+        filters: [
+          {
+            include: ['test atom enabled'],
+            options: {
+              showInSummary: {
+                showOldState: true,
+                showNewState: true,
+              },
+              showInDetails: {
+                showStateDiff: true,
+                showOldState: true,
+                showNewState: true,
+              },
+            },
+          },
+          {
+            include: ['test atom disabled'],
+          },
+        ],
+      });
+
+      ecosystem.getNode(atom('test atom enabled', 0)).set(1);
+      ecosystem.getNode(atom('test atom disabled', 0)).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] test atom enabled initialized to 0',
+          {
+            '➡️ new-state': 0,
+          },
+        ],
+        [
+          '[✏️] test atom enabled changed from 0 to 1',
+          {
+            '⬅️ old-state': 0,
+            '➡️ new-state': 1,
+          },
+        ],
+
+        ['[⚡] test atom disabled initialized to 0'],
+        ['[✏️] test atom disabled changed from 0 to 1'],
+      ]);
+    });
+  });
+
+  describe('diffs', () => {
+    it('should not log diffs of primitive values', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInDetails: {
+            showStateDiff: true,
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('test atom', 0)).set(1);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] test atom initialized to 0'],
+        ['[✏️] test atom changed from 0 to 1'],
+      ]);
+    });
+
+    it('should log diffs of complex objects', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInDetails: {
+            showStateDiff: true,
+          },
+        },
+      });
+
+      const node = ecosystem.getNode(
+        atom('test atom', { a: 1, b: 2 } as object),
+      );
+      node.set({ a: 1, b: 3 });
+      node.set({ a: 1, b: 3, c: 4 });
+      node.set({ a: 1, c: 4 });
+      node.set({ b: 5, c: 6 });
+      node.set({ b: 5, c: 6 });
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] test atom initialized to {"a":1,"b":2}'],
+        [
+          '[✏️] test atom changed from {"a":1,"b":2} to {"a":1,"b":3}',
+          {
+            '🔍 1-diff': [['CHANGE b', { oldValue: 2, value: 3 }]],
+          },
+        ],
+        [
+          '[✏️] test atom changed from {"a":1,"b":3} to {"a":1,"b":3,"c":4}',
+          {
+            '🔍 1-diff': [['CREATE c', { value: 4 }]],
+          },
+        ],
+        [
+          '[✏️] test atom changed from {"a":1,"b":3,"c":4} to {"a":1,"c":4}',
+          {
+            '🔍 1-diff': [['REMOVE b', { oldValue: 3 }]],
+          },
+        ],
+        [
+          '[✏️] test atom changed from {"a":1,"c":4} to {"b":5,"c":6}',
+          {
+            '🔍 3-diffs': [
+              ['REMOVE a', { oldValue: 1 }],
+              ['CHANGE c', { oldValue: 4, value: 6 }],
+              ['CREATE b', { value: 5 }],
+            ],
+          },
+        ],
+        [
+          '[✏️] test atom changed from {"b":5,"c":6} to {"b":5,"c":6}',
+          {
+            '🔍 (no-diffs)': [],
+          },
+        ],
+      ]);
+    });
+
+    it('should log diffs in groups', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: false,
+          showInDetails: {
+            showStateDiff: true,
+          },
+        },
+      });
+
+      const node = ecosystem.getNode(
+        atom('test atom', { a: 1, b: 2 } as object),
+      );
+      node.set({ a: 1, b: 3 });
+      node.set({ a: 1, b: 3 });
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        // 1
+        ['[⚡] test atom initialized to {"a":1,"b":2}'],
+
+        // 2.3
+        ['CHANGE b', { oldValue: 2, value: 3 }],
+
+        // 3.2
+        ['🔍 (no diffs)'],
+      ]);
+      expect(consoleMock.groupCollapsed.mock.calls).toEqual([
+        // 2.1
+        ['[✏️] test atom changed from {"a":1,"b":2} to {"a":1,"b":3}'],
+
+        // 2.2
+        ['🔍 1 diff'],
+
+        // 3.1
+        ['[✏️] test atom changed from {"a":1,"b":3} to {"a":1,"b":3}'],
+      ]);
+    });
+  });
+
   describe('details', () => {
     it('should show details', () => {
       addZeduxLogger(ecosystem, {

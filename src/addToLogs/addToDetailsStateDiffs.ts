@@ -8,6 +8,7 @@ export function addToDetailsStateDiffs(args: LogArgs): void {
     addLogToDetails,
     what: { hasOldState = false, hasNewState = false, oldState, newState },
     options: {
+      oneLineLogs,
       showInDetails: { showStateDiff },
       diffOptions: { groupCollapseStateDiff },
       colors,
@@ -26,28 +27,46 @@ export function addToDetailsStateDiffs(args: LogArgs): void {
 
   const diffs = microdiff(oldState, newState);
 
-  if (diffs.length <= 0) {
-    addLogToDetails({
-      emoji: '🔍',
-      log: '(no diffs)',
-    });
+  if (oneLineLogs) {
+    if (diffs.length <= 0) {
+      addLogToDetails({
+        emoji: '🔍',
+        log: '(no diffs)',
+        data: [],
+      });
+    } else {
+      addLogToDetails({
+        emoji: '🔍',
+        log: `${diffs.length} diff${diffs.length > 1 ? 's' : ''}`,
+        data: diffs.map(({ type, path, ...diff }) => {
+          return [`${type} ${path.join('.')}`, diff];
+        }),
+      });
+    }
   } else {
-    addLogToDetails({
-      emoji: '🔍',
-      log: `${diffs.length} diff${diffs.length > 1 ? 's' : ''}`,
-      groupCollapsedSubLogs: groupCollapseStateDiff,
-      subLogs: diffs.map(({ type, path, ...diff }) => {
-        const colorsMap: Record<typeof type, string> = {
-          CREATE: colors.diffCreate,
-          REMOVE: colors.diffRemove,
-          CHANGE: colors.diffChange,
-        };
-        return {
-          log: `%c${type}%c ${path.join('.')}`,
-          colors: [colorsMap[type], colors.default],
-          data: diff,
-        };
-      }),
-    });
+    if (diffs.length <= 0) {
+      addLogToDetails({
+        emoji: '🔍',
+        log: '(no diffs)',
+      });
+    } else {
+      addLogToDetails({
+        emoji: '🔍',
+        log: `${diffs.length} diff${diffs.length > 1 ? 's' : ''}`,
+        groupCollapsedSubLogs: groupCollapseStateDiff,
+        subLogs: diffs.map(({ type, path, ...diff }) => {
+          const colorsMap: Record<typeof type, string> = {
+            CREATE: colors.diffCreate,
+            REMOVE: colors.diffRemove,
+            CHANGE: colors.diffChange,
+          };
+          return {
+            log: `%c${type}%c ${path.join('.')}`,
+            colors: [colorsMap[type], colors.default],
+            data: diff,
+          };
+        }),
+      });
+    }
   }
 }

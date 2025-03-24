@@ -33,7 +33,7 @@ export function logLogDetail(
       logDetail.groupCollapsedSubLogs === true ? 'groupCollapsed' : 'group',
       logs,
       () => {
-        if (logDetail.data !== undefined) {
+        if ('data' in logDetail) {
           console.log(logDetail.data);
         }
         for (const subLogDetail of subLogDetails) {
@@ -41,7 +41,9 @@ export function logLogDetail(
         }
       },
     );
-  } else {
+  } else if ('data' in logDetail) {
     console.log(...logs, logDetail.data);
+  } else {
+    console.log(...logs);
   }
 }
