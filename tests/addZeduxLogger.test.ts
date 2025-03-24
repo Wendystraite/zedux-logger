@@ -250,6 +250,48 @@ describe('addZeduxLogger', () => {
       ]);
       expect(consoleMock.groupEnd.mock.calls).toEqual([[], [], []]);
     });
+
+    it('should not log if no summary nor details', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-summary', 'no-details'],
+        options: {
+          console: consoleMock,
+          eventsToShow: ['cycle'],
+        },
+      });
+
+      ecosystem.getNode(atom('simple atom', 0));
+
+      expect(consoleMock.log).not.toHaveBeenCalled();
+      expect(consoleMock.warn).not.toHaveBeenCalled();
+      expect(consoleMock.error).not.toHaveBeenCalled();
+      expect(consoleMock.group).not.toHaveBeenCalled();
+      expect(consoleMock.groupCollapsed).not.toHaveBeenCalled();
+      expect(consoleMock.groupEnd).not.toHaveBeenCalled();
+    });
+
+    it('should not log group if no details', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: false, // groups
+          eventsToShow: ['cycle'],
+        },
+      });
+
+      ecosystem.getNode(atom('simple atom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] simple atom initialized to 0'],
+      ]);
+      expect(consoleMock.warn).not.toHaveBeenCalled();
+      expect(consoleMock.error).not.toHaveBeenCalled();
+      expect(consoleMock.group).not.toHaveBeenCalled();
+      expect(consoleMock.groupCollapsed).not.toHaveBeenCalled();
+      expect(consoleMock.groupEnd).not.toHaveBeenCalled();
+    });
   });
 
   describe('details', () => {
