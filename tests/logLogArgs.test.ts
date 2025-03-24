@@ -18,7 +18,7 @@ describe('logLogArgs', () => {
     vi.clearAllMocks();
   });
 
-  it('should call console.groupCollapsed with correct parameters', () => {
+  it('should call console.log with correct parameters', () => {
     logLogArgs({
       options: { console, oneLineLogs: false, showColors: true },
       logSummary: '%cTest %cSummary',
@@ -26,10 +26,9 @@ describe('logLogArgs', () => {
       details: [],
     });
 
-    expect(consoleMock.groupCollapsed.mock.calls).toEqual([
+    expect(consoleMock.log.mock.calls).toEqual([
       ['%cTest %cSummary', 'color: #f00', 'color: #0f0'],
     ]);
-    expect(consoleMock.groupEnd.mock.calls).toEqual([[]]);
   });
 
   it('should call console.log for each detail', () => {
