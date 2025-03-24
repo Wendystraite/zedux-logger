@@ -26,7 +26,11 @@ export function logLogArgs(
     resultingLogSummary = [logSummary.replaceAll('%c', '')];
   }
 
-  if (oneLineLogs) {
+  if (logSummary === '' && details.length <= 0) {
+    return;
+  } else if (details.length <= 0) {
+    console.log(...resultingLogSummary);
+  } else if (oneLineLogs) {
     console.log(...resultingLogSummary, flattenLogDetails(details));
   } else {
     consoleGroup(console, 'groupCollapsed', resultingLogSummary, () => {
