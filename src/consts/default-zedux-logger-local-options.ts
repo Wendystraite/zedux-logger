@@ -49,6 +49,9 @@ export const DEFAULT_ZEDUX_LOGGER_LOCAL_OPTIONS: CompleteZeduxLoggerLocalOptions
       showSnapshot: true,
       showExecutionTime: true,
     },
+    stateOptions: {
+      summaryStringifyMaxChars: 50,
+    },
     executionTimeOptions: {
       slowThresholdMs: 50,
       verySlowThresholdMs: 100,

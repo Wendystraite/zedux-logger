@@ -346,6 +346,133 @@ describe('addZeduxLogger', () => {
         ['[✏️] test atom disabled changed from 0 to 1'],
       ]);
     });
+
+    it('should limit number of characters of stringified state', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInSummary: { showOldState: true, showNewState: true },
+          showInDetails: { showOldState: true, showNewState: true },
+        },
+        filters: [
+          {
+            include: ['simple atom 50 chars'],
+          },
+          {
+            include: ['simple atom 5 chars'],
+            options: {
+              stateOptions: {
+                summaryStringifyMaxChars: 5,
+              },
+            },
+          },
+          {
+            include: ['simple atom 0 chars'],
+            options: {
+              stateOptions: {
+                summaryStringifyMaxChars: 0,
+              },
+            },
+          },
+        ],
+      });
+
+      ecosystem
+        .getNode(atom('simple atom 50 chars', { a: 1, b: 2 }))
+        .set({ a: 3, b: 4 });
+      ecosystem
+        .getNode(atom('simple atom 5 chars', { a: 1, b: 2 }))
+        .set({ a: 3, b: 4 });
+      ecosystem
+        .getNode(
+          atom('simple atom 0 chars', {
+            foo: 'a very long string that is more than 50 characters and is not limited',
+          }),
+        )
+        .set({
+          foo: 'another very long string that is more than 50 characters and is not limited',
+        });
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] simple atom 50 chars initialized to {"a":1,"b":2}',
+          {
+            '➡️ new-state': { a: 1, b: 2 },
+          },
+        ],
+        [
+          '[✏️] simple atom 50 chars changed from {"a":1,"b":2} to {"a":3,"b":4}',
+          {
+            '➡️ new-state': { a: 3, b: 4 },
+            '⬅️ old-state': { a: 1, b: 2 },
+          },
+        ],
+
+        [
+          '[⚡] simple atom 5 chars initialized to {"a":…',
+          {
+            '➡️ new-state': { a: 1, b: 2 },
+          },
+        ],
+        [
+          '[✏️] simple atom 5 chars changed from {"a":… to {"a":…',
+          {
+            '➡️ new-state': { a: 3, b: 4 },
+            '⬅️ old-state': { a: 1, b: 2 },
+          },
+        ],
+
+        [
+          '[⚡] simple atom 0 chars initialized to {"foo":"a very long string that is more than 50 characters and is not limited"}',
+          {
+            '➡️ new-state': {
+              foo: 'a very long string that is more than 50 characters and is not limited',
+            },
+          },
+        ],
+        [
+          '[✏️] simple atom 0 chars changed from {"foo":"a very long string that is more than 50 characters and is not limited"} to {"foo":"another very long string that is more than 50 characters and is not limited"}',
+          {
+            '➡️ new-state': {
+              foo: 'another very long string that is more than 50 characters and is not limited',
+            },
+            '⬅️ old-state': {
+              foo: 'a very long string that is more than 50 characters and is not limited',
+            },
+          },
+        ],
+      ]);
+    });
+
+    it('should not crash when state is recursive', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInSummary: { showOldState: true, showNewState: true },
+          showInDetails: { showOldState: true, showNewState: true },
+        },
+      });
+
+      const recursiveObject: Record<string, unknown> = {};
+      recursiveObject.recursive = recursiveObject;
+
+      ecosystem.getNode(atom('recursive atom', recursiveObject));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] recursive atom initialized to [Circular]',
+          {
+            '➡️ new-state': recursiveObject,
+          },
+        ],
+      ]);
+    });
   });
 
   describe('diffs', () => {

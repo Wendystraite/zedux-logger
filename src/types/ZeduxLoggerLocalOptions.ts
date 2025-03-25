@@ -335,6 +335,18 @@ export interface ZeduxLoggerLocalOptions {
   };
 
   /**
+   * Options for the old and new state.
+   */
+  stateOptions?: {
+    /**
+     * Maximum number of characters shown for the stringified state in the log's summary.
+     * No limit if set to 0 or lower.
+     * @default 50
+     */
+    summaryStringifyMaxChars?: number;
+  };
+
+  /**
    * Options for the execution performance measured in the logs.
    */
   executionTimeOptions?: {

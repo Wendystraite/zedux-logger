@@ -14,6 +14,7 @@ export function addToSummaryStates(args: LogArgs): void {
     options: {
       console,
       showInSummary: { showOldState, showNewState },
+      stateOptions: { summaryStringifyMaxChars },
       colors,
     },
   } = args;
@@ -31,6 +32,7 @@ export function addToSummaryStates(args: LogArgs): void {
       state: oldState,
       hasState: hasOldState,
       console,
+      maxLength: summaryStringifyMaxChars,
     });
     if (oldStateString !== undefined) {
       addLogToSummary(
@@ -47,6 +49,7 @@ export function addToSummaryStates(args: LogArgs): void {
       state: newState,
       hasState: hasNewState,
       console,
+      maxLength: summaryStringifyMaxChars,
     });
     if (newStateString !== undefined) {
       addLogToSummary(
