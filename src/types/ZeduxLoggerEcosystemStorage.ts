@@ -19,7 +19,7 @@ export interface ZeduxLoggerEcosystemStorage {
   /**
    * The ID of the timeout for the graph's consistency check.
    */
-  consistencyCheckTimeoutId: number | undefined;
+  consistencyCheckTimeoutId: ReturnType<typeof setTimeout> | undefined;
   /**
    * The original options provided to the logger.
    */

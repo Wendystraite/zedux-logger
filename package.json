@@ -11,7 +11,8 @@
     "bench": "vitest bench",
     "check-format": "prettier --check src",
     "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
-    "ci": "pnpm run build && pnpm run check-format && pnpm run check-exports && pnpm run lint && pnpm run test",
+    "check-types": "tsc --build tsconfig.tests.json --noEmit",
+    "ci": "pnpm run build && pnpm run check-types && pnpm run check-format && pnpm run check-exports && pnpm run lint && pnpm run test",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "pnpm run ci"
   },

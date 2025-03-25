@@ -1,10 +1,10 @@
 import { forEach, values } from 'remeda';
 import { vi } from 'vitest';
 
-import type { ZeduxLoggerOptions } from '../../src/types/ZeduxLoggerOptions';
+import type { CompleteZeduxLoggerLocalOptions } from '../../src/types/ZeduxLoggerLocalOptions';
 
 const TO_MOCK: {
-  [K in keyof NonNullable<ZeduxLoggerOptions['console']>]: K;
+  [K in keyof CompleteZeduxLoggerLocalOptions['console']]: K;
 } = {
   log: 'log',
   warn: 'warn',

@@ -9,21 +9,11 @@ mockConsole();
 describe('one line logs', () => {
   benchBasicLogger();
 
-  const defaultOptions = {
-    deobfuscateSingleLetters: false,
-    showSnapshot: false,
-    showGraph: false,
-  };
-
   benchZeduxLogger('grouped logs', {
-    ...defaultOptions,
-
-    oneLineLogs: false,
+    templates: ['grouped-logs'],
   });
 
   benchZeduxLogger('one lines logs', {
-    ...defaultOptions,
-
-    oneLineLogs: true,
+    templates: ['one-line-logs'],
   });
 });

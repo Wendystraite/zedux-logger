@@ -9,11 +9,21 @@ mockConsole();
 describe('addZeduxLogger', () => {
   benchBasicLogger();
 
-  benchZeduxLogger('incremental graph', {
-    useIncrementalGraph: true,
+  benchZeduxLogger('all enabled with incremental graph', {
+    templates: ['all-enabled'],
+    options: {
+      debugOptions: {
+        useIncrementalGraph: true,
+      },
+    },
   });
 
-  benchZeduxLogger('no incremental graph', {
-    useIncrementalGraph: false,
+  benchZeduxLogger('all enabled without incremental graph', {
+    templates: ['all-enabled'],
+    options: {
+      debugOptions: {
+        useIncrementalGraph: false,
+      },
+    },
   });
 });

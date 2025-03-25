@@ -13,141 +13,78 @@ describe('graph', () => {
 
   // no graph
 
-  const defaultOptions = {
-    deobfuscateSingleLetters: false,
-    showSnapshot: false,
-    showGraph: false,
-  };
-
   benchZeduxLogger('no graph', {
-    ...defaultOptions,
-
-    showGraph: false,
+    templates: ['no-graphs'],
   });
 
   // all graphs
 
   benchZeduxLogger('all graphs', {
-    ...defaultOptions,
-
-    showGraph: true,
-    showFlatGraph: true,
-    showTopDownGraph: true,
-    showBottomUpGraph: true,
-    showByNamespacesGraph: true,
-
-    useIncrementalGraph: false,
+    templates: ['all-graphs'],
   });
 
   benchZeduxLogger('all incremental graphs', {
-    ...defaultOptions,
-
-    showGraph: true,
-    showFlatGraph: true,
-    showTopDownGraph: true,
-    showBottomUpGraph: true,
-    showByNamespacesGraph: true,
-
-    useIncrementalGraph: true,
+    templates: ['all-graphs'],
+    options: {
+      debugOptions: {
+        useIncrementalGraph: true,
+      },
+    },
   });
 
   // flat graph
 
   benchZeduxLogger('only flat graph', {
-    ...defaultOptions,
-
-    showGraph: true,
-    showFlatGraph: true,
-    showTopDownGraph: false,
-    showBottomUpGraph: false,
-    showByNamespacesGraph: false,
-
-    useIncrementalGraph: false,
+    templates: ['flat-graph'],
   });
   benchZeduxLogger('only incremental flat graph', {
-    ...defaultOptions,
-
-    showGraph: true,
-    showFlatGraph: true,
-    showTopDownGraph: false,
-    showBottomUpGraph: false,
-    showByNamespacesGraph: false,
-
-    useIncrementalGraph: true,
+    templates: ['flat-graph'],
+    options: {
+      debugOptions: {
+        useIncrementalGraph: true,
+      },
+    },
   });
 
   // top down graph
 
   benchZeduxLogger('only top down graph', {
-    ...defaultOptions,
-
-    showGraph: true,
-    showFlatGraph: false,
-    showTopDownGraph: true,
-    showBottomUpGraph: false,
-    showByNamespacesGraph: false,
-
-    useIncrementalGraph: false,
+    templates: ['top-down-graph'],
   });
   benchZeduxLogger('only incremental top down graph', {
-    ...defaultOptions,
-
-    showGraph: true,
-    showFlatGraph: false,
-    showTopDownGraph: true,
-    showBottomUpGraph: false,
-    showByNamespacesGraph: false,
-
-    useIncrementalGraph: true,
+    templates: ['top-down-graph'],
+    options: {
+      debugOptions: {
+        useIncrementalGraph: true,
+      },
+    },
   });
 
   // bottom up graph
 
   benchZeduxLogger('only bottom up graph', {
-    ...defaultOptions,
-
-    showGraph: true,
-    showFlatGraph: false,
-    showTopDownGraph: false,
-    showBottomUpGraph: true,
-    showByNamespacesGraph: false,
-
-    useIncrementalGraph: false,
+    templates: ['bottom-up-graph'],
   });
   benchZeduxLogger('only incremental bottom up graph', {
-    ...defaultOptions,
-
-    showGraph: true,
-    showFlatGraph: false,
-    showTopDownGraph: false,
-    showBottomUpGraph: true,
-    showByNamespacesGraph: false,
-
-    useIncrementalGraph: true,
+    templates: ['bottom-up-graph'],
+    options: {
+      debugOptions: {
+        useIncrementalGraph: true,
+      },
+    },
   });
 
   // by namespaces graph
 
   benchZeduxLogger('only by namespaces graph', {
-    showSnapshot: false,
-
-    showGraph: true,
-    showFlatGraph: false,
-    showTopDownGraph: false,
-    showBottomUpGraph: false,
-    showByNamespacesGraph: true,
-
-    useIncrementalGraph: false,
+    templates: ['by-namespaces-graph'],
   });
   benchZeduxLogger('only incremental by namespaces graph', {
-    showSnapshot: false,
-
-    showGraph: true,
-    showFlatGraph: false,
-    showTopDownGraph: false,
-    showBottomUpGraph: false,
-    showByNamespacesGraph: true,
-
-    useIncrementalGraph: true,
+    templates: ['by-namespaces-graph'],
+    options: {
+      debugOptions: {
+        useIncrementalGraph: true,
+      },
+    },
   });
 });

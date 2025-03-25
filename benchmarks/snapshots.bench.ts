@@ -9,21 +9,11 @@ mockConsole();
 describe('snapshots', () => {
   benchBasicLogger();
 
-  const defaultOptions = {
-    deobfuscateSingleLetters: false,
-    showSnapshot: false,
-    showGraph: false,
-  };
-
   benchZeduxLogger('no snapshots', {
-    ...defaultOptions,
-
-    showSnapshot: false,
+    templates: ['no-snapshots'],
   });
 
   benchZeduxLogger('snapshots', {
-    ...defaultOptions,
-
-    showSnapshot: true,
+    templates: ['snapshots'],
   });
 });

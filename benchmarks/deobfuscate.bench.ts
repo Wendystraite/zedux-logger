@@ -9,21 +9,11 @@ mockConsole();
 describe('deobfuscate', () => {
   benchBasicLogger();
 
-  const defaultOptions = {
-    deobfuscateSingleLetters: false,
-    showSnapshot: false,
-    showGraph: false,
-  };
-
   benchZeduxLogger('no deobfuscate', {
-    ...defaultOptions,
-
-    deobfuscateSingleLetters: false,
+    templates: ['no-deobfuscate'],
   });
 
   benchZeduxLogger('deobfuscate', {
-    ...defaultOptions,
-
-    deobfuscateSingleLetters: true,
+    templates: ['deobfuscate'],
   });
 });
