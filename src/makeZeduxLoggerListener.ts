@@ -55,35 +55,42 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       what,
     );
 
-    const currentGraph = storage.graph;
-
-    const doUpdateGraphIncrementally =
-      storage.calculateIncrementalGraph && currentGraph !== undefined;
-
-    const doGenerateNewGraphInstead =
-      !storage.calculateIncrementalGraph && storage.calculateGraph && canLog;
-
-    if (doUpdateGraphIncrementally) {
-      storage.graph = updateGraphIncrementally({
-        eventMap,
-        graph: currentGraph,
-        calculateBottomUpGraph: storage.calculateBottomUpGraph,
-        calculateByNamespacesGraph: storage.calculateByNamespacesGraph,
-        calculateFlatGraph: storage.calculateFlatGraph,
-        calculateTopDownGraph: storage.calculateTopDownGraph,
-        globalGraphOptions: storage.completeGlobalOptions.graphOptions,
-      });
-    } else if (doGenerateNewGraphInstead) {
-      storage.graph = generateGraph({
-        ecosystem,
-        calculateBottomUpGraph: storage.calculateBottomUpGraph,
-        calculateByNamespacesGraph: storage.calculateByNamespacesGraph,
-        calculateFlatGraph: storage.calculateFlatGraph,
-        calculateGraph: storage.calculateGraph,
-        calculateTopDownGraph: storage.calculateTopDownGraph,
-        console: localOptions.console,
-        globalGraphOptions: storage.completeGlobalOptions.graphOptions,
-      });
+    if (storage.calculateGraph) {
+      if (storage.calculateIncrementalGraph) {
+        if (storage.graph === undefined) {
+          storage.graph = generateGraph({
+            ecosystem,
+            calculateBottomUpGraph: storage.calculateBottomUpGraph,
+            calculateByNamespacesGraph: storage.calculateByNamespacesGraph,
+            calculateFlatGraph: storage.calculateFlatGraph,
+            calculateGraph: storage.calculateGraph,
+            calculateTopDownGraph: storage.calculateTopDownGraph,
+            console: localOptions.console,
+            globalGraphOptions: storage.completeGlobalOptions.graphOptions,
+          });
+        } else {
+          storage.graph = updateGraphIncrementally({
+            eventMap,
+            graph: storage.graph,
+            calculateBottomUpGraph: storage.calculateBottomUpGraph,
+            calculateByNamespacesGraph: storage.calculateByNamespacesGraph,
+            calculateFlatGraph: storage.calculateFlatGraph,
+            calculateTopDownGraph: storage.calculateTopDownGraph,
+            globalGraphOptions: storage.completeGlobalOptions.graphOptions,
+          });
+        }
+      } else if (canLog) {
+        storage.graph = generateGraph({
+          ecosystem,
+          calculateBottomUpGraph: storage.calculateBottomUpGraph,
+          calculateByNamespacesGraph: storage.calculateByNamespacesGraph,
+          calculateFlatGraph: storage.calculateFlatGraph,
+          calculateGraph: storage.calculateGraph,
+          calculateTopDownGraph: storage.calculateTopDownGraph,
+          console: localOptions.console,
+          globalGraphOptions: storage.completeGlobalOptions.graphOptions,
+        });
+      }
     }
 
     const runExecutionTimeMs = calculateExecutionTime(
