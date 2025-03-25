@@ -67,9 +67,6 @@ export const ALL_ENABLED_ZEDUX_LOGGER_MERGED_OPTIONS: ZeduxLoggerMergedOptions =
       showSignalsInFlatGraph: true,
       groupCollapseGraph: true,
     },
-    snapshotOptions: {
-      groupCollapseSnapshot: true,
-    },
     diffOptions: {
       groupCollapseStateDiff: true,
     },

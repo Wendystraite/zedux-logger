@@ -67,8 +67,7 @@ export function getZeduxLoggerColorsTemplate(colors: {
       diffChange: blue,
       groupOldState: gray,
       groupNewState: green,
-      groupOldSnapshot: gray,
-      groupNewSnapshot: green,
+      groupSnapshot: green,
     },
   };
 }

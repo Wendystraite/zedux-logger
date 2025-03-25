@@ -26,7 +26,7 @@ import { addToSummaryStates } from './addToLogs/addToSummaryStates.js';
 import { addToSummarySummary } from './addToLogs/addToSummarySummary.js';
 import { addToSummaryTtl } from './addToLogs/addToSummaryTtl.js';
 import { addToSummaryWaitingPromises } from './addToLogs/addToSummaryWaitingPromises.js';
-import { checkIncrementalGraphConsistency } from './checkIncrementalGraphConsistency.js';
+import { checkIncrementalDataConsistency } from './checkIncrementalDataConsistency.js';
 import { calculateExecutionTime } from './executionTime/calculateExecutionTime.js';
 import { warnExecutionTimeIfSlow } from './executionTime/warnExecutionTimeIfSlow.js';
 import { calculateCanLogEventWithOptions } from './filters/calculateCanLogEventWithOptions.js';
@@ -37,6 +37,7 @@ import { parseWhatHappened } from './parseWhatHappened/parseWhatHappened.js';
 import { getDefaultZeduxLoggerEcosystemStorage } from './storage/getDefaultZeduxLoggerEcosystemStorage.js';
 import { getZeduxLoggerEcosystemStorage } from './storage/getZeduxLoggerEcosystemStorage.js';
 import { updateGraphIncrementally } from './updateGraphIncrementally/updateGraphIncrementally.js';
+import { updateSnapshotIncrementally } from './updateSnapshotIncrementally/updateSnapshotIncrementally.js';
 
 export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
   return function zeduxLoggerListener(
@@ -91,13 +92,16 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       localOptions,
     );
 
-    const oldSnapshot = storage.snapshot;
-    const newSnapshot = generateSnapshot({
-      ecosystem,
-      eventMap,
-      localOptions,
-      storage,
-    });
+    if (storage.calculateSnapshot) {
+      if (storage.snapshot === undefined) {
+        storage.snapshot = generateSnapshot({ ecosystem });
+      } else {
+        storage.snapshot = updateSnapshotIncrementally({
+          eventMap,
+          snapshot: storage.snapshot,
+        });
+      }
+    }
 
     const logArgs: LogArgs = {
       logSummary: '',
@@ -118,8 +122,7 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       globalOptions: storage.completeGlobalOptions,
       options: localOptions,
       graph: storage.graph,
-      oldSnapshot,
-      newSnapshot,
+      snapshot: storage.snapshot,
       runExecutionTimeMs,
     };
 
@@ -156,7 +159,7 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
 
     warnExecutionTimeIfSlow(logArgs);
 
-    checkIncrementalGraphConsistency({
+    checkIncrementalDataConsistency({
       ecosystem,
       storage,
     });

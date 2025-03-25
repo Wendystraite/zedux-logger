@@ -67,9 +67,6 @@ export const DEFAULT_ZEDUX_LOGGER_LOCAL_OPTIONS: CompleteZeduxLoggerLocalOptions
       showByNamespacesGraph: true,
       groupCollapseGraph: true,
     },
-    snapshotOptions: {
-      groupCollapseSnapshot: true,
-    },
     diffOptions: {
       groupCollapseStateDiff: true,
     },

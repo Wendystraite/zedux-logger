@@ -4,36 +4,20 @@ export function addToDetailsSnapshot(args: LogArgs): void {
   const {
     options: {
       showInDetails: { showSnapshot },
-      snapshotOptions: { groupCollapseSnapshot },
       colors,
     },
-    oldSnapshot,
-    newSnapshot,
+    snapshot,
     addLogToDetails,
   } = args;
 
-  if (
-    !showSnapshot ||
-    (oldSnapshot === undefined && newSnapshot === undefined)
-  ) {
+  if (!showSnapshot || snapshot === undefined) {
     return;
   }
 
   addLogToDetails({
     emoji: '📸',
-    log: 'snapshot',
-    groupCollapsedSubLogs: groupCollapseSnapshot,
-    subLogs: [
-      oldSnapshot !== undefined && {
-        log: '%cold snapshot',
-        colors: [colors.groupOldSnapshot],
-        data: oldSnapshot,
-      },
-      newSnapshot !== undefined && {
-        log: '%cnew snapshot',
-        colors: [colors.groupNewSnapshot],
-        data: newSnapshot,
-      },
-    ],
+    log: '%csnapshot',
+    colors: [colors.groupSnapshot],
+    data: snapshot,
   });
 }

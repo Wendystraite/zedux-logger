@@ -18,8 +18,10 @@ import {
 import { configDefaults } from 'vitest/config';
 
 import { addZeduxLogger } from '../src/addZeduxLogger.js';
+import { generateSnapshot } from '../src/generateSnapshot/generateSnapshot.js';
 import { getZeduxLoggerEcosystemStorage } from '../src/storage/getZeduxLoggerEcosystemStorage.js';
 import type { CompleteZeduxLoggerLocalOptions } from '../src/types/ZeduxLoggerLocalOptions.js';
+import { addLotsOfAtomsInEcosystem } from './addLotsOfAtomsInEcosystem.js';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -132,7 +134,7 @@ describe('addZeduxLogger', () => {
         ['flat', expect.any(Object)],
         ['top-down', expect.any(Object)],
         ['bottom-up', expect.any(Object)],
-        ['%cnew snapshot', 'color: #22c55e', expect.any(Object)],
+        ['📸 %csnapshot', 'color: #22c55e', expect.any(Object)],
       ]);
       expect(consoleMock.warn).not.toHaveBeenCalled();
       expect(consoleMock.error).not.toHaveBeenCalled();
@@ -151,9 +153,8 @@ describe('addZeduxLogger', () => {
           'color: inherit',
         ],
         ['📈 graph'],
-        ['📸 snapshot'],
       ]);
-      expect(consoleMock.groupEnd.mock.calls).toEqual([[], [], []]);
+      expect(consoleMock.groupEnd.mock.calls).toEqual([[], []]);
     });
 
     it('should log without colors', () => {
@@ -202,7 +203,7 @@ describe('addZeduxLogger', () => {
             '📈 graph.flat': expect.any(Object),
             '📈 graph.top-down': expect.any(Object),
             '📢 event(cycle)': expect.any(Object),
-            '📸 snapshot.new-snapshot': expect.any(Object),
+            '📸 snapshot': expect.any(Object),
             '🔗 node': expect.any(Object),
             '🔗 observers': expect.any(Object),
             '🔗 sources': expect.any(Object),
@@ -238,7 +239,7 @@ describe('addZeduxLogger', () => {
         ['flat', expect.any(Object)],
         ['top-down', expect.any(Object)],
         ['bottom-up', expect.any(Object)],
-        ['new snapshot', expect.any(Object)],
+        ['📸 snapshot', expect.any(Object)],
       ]);
       expect(consoleMock.warn).not.toHaveBeenCalled();
       expect(consoleMock.error).not.toHaveBeenCalled();
@@ -246,9 +247,8 @@ describe('addZeduxLogger', () => {
       expect(consoleMock.groupCollapsed.mock.calls).toEqual([
         ['[⚡] simple atom initialized to 0'],
         ['📈 graph'],
-        ['📸 snapshot'],
       ]);
-      expect(consoleMock.groupEnd.mock.calls).toEqual([[], [], []]);
+      expect(consoleMock.groupEnd.mock.calls).toEqual([[], []]);
     });
 
     it('should not log if no summary nor details', () => {
@@ -624,7 +624,7 @@ describe('addZeduxLogger', () => {
             '📈 graph.flat': expect.any(Object),
             '📈 graph.top-down': expect.any(Object),
             '📢 event(cycle)': expect.any(Object),
-            '📸 snapshot.new-snapshot': expect.any(Object),
+            '📸 snapshot': expect.any(Object),
             '🔗 node': expect.any(Object),
             '🔗 observers': expect.any(Object),
             '🔗 sources': expect.any(Object),
@@ -1699,6 +1699,7 @@ describe('addZeduxLogger', () => {
         },
         filters: [
           {
+            include: ['simple atom'],
             options: {
               showInDetails: {
                 showSnapshot: true,
@@ -1708,13 +1709,17 @@ describe('addZeduxLogger', () => {
         ],
       });
 
+      ecosystem.getNode(atom('another atom not logged', 'foo'));
       ecosystem.getNode(atom('simple atom', 0));
 
       expect(consoleMock.log.mock.calls).toEqual([
         [
           '[⚡] simple atom initialized to 0',
           expect.objectContaining({
-            '📸 snapshot.new-snapshot': expect.any(Object),
+            '📸 snapshot': {
+              'simple atom': 0,
+              'another atom not logged': 'foo',
+            },
           }),
         ],
       ]);
@@ -1836,6 +1841,150 @@ describe('addZeduxLogger', () => {
       expect(consoleMock.log.mock.calls).toEqual([
         ['[⚡] testAtom initialized to 0', expect.any(Object)],
       ]);
+    });
+  });
+
+  describe('snapshots', () => {
+    it('should log snapshots', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInDetails: {
+            showSnapshot: true,
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('test nb', 0)).set(1);
+      ecosystem.getNode(atom('test str', 'foo'));
+      ecosystem.getNode(atom('test bool', () => injectSignal(true)));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] test nb initialized to 0',
+          {
+            '📸 snapshot': { 'test nb': 0 },
+          },
+        ],
+        [
+          '[✏️] test nb changed from 0 to 1',
+          {
+            '📸 snapshot': { 'test nb': 1 },
+          },
+        ],
+        [
+          '[⚡] test str initialized to "foo"',
+          {
+            '📸 snapshot': { 'test nb': 1, 'test str': 'foo' },
+          },
+        ],
+        [
+          '[⚡] @signal(test bool)-1 initialized to true',
+          {
+            '📸 snapshot': {
+              'test nb': 1,
+              'test str': 'foo',
+              '@signal(test bool)-1': true,
+            },
+          },
+        ],
+        [
+          '[⚡] test bool initialized to true',
+          {
+            '📸 snapshot': {
+              'test nb': 1,
+              'test str': 'foo',
+              '@signal(test bool)-1': true,
+              'test bool': true,
+            },
+          },
+        ],
+      ]);
+    });
+
+    it('should incrementally update snapshots', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInDetails: {
+            showSnapshot: true,
+          },
+        },
+      });
+
+      addLotsOfAtomsInEcosystem(ecosystem, { triggerSomeChanges: true });
+
+      const expectedSnapshot = {
+        '1': 33,
+        '@component(MyComponent)-:r0:': undefined,
+        '@component(MyComponent)-:r1:': undefined,
+        '@component(MyComponent)-:r2:': undefined,
+        '@component(MyComponent)-:r3:': undefined,
+        '@component(MyComponent)-:r4:': undefined,
+        '@component(MyComponent)-:r5:': undefined,
+        '@component(MyComponent)-:r6:': undefined,
+        '@component(MyComponent)-:r7:': undefined,
+        '@listener(@signal(with/signal)-25)-26': undefined,
+        '@selector(namedFnSelector)-27': 0,
+        '@selector(otherNamedFnSelector)-29': undefined,
+        '@selector(unknown)-28': 0,
+        '@signal()-13': 11,
+        '@signal()-14': 22,
+        '@signal(with/signal)-25': 2,
+        '@signal(with/signal/2)-30': 0,
+        '@signal(withEverything)-1': 'a',
+        '@signal(withEverything/withParams-[11])-4': 'a',
+        '@signal(withEverything/withParams-[21])-16': 'a',
+        '@signal(withEverything/withParamsAndScope-[22])-10': 'a',
+        '@signal(withEverything/withParamsAndScope-[42])-22': 'a',
+        '@signal(withEverything/withScope)-19': 'a',
+        '@signal(withEverything/withScope)-7': 'a',
+        'atomNumber/0': 0,
+        'atomNumber/1': 1,
+        'atomNumber/2': 2,
+        'atomNumber/3': 3,
+        'atomNumber/4': 4,
+        'atomNumber/5': 5,
+        'atomNumber/6': 6,
+        'atomNumber/7': 7,
+        'atomNumber/8': 8,
+        'atomNumber/9': 9,
+        'nested/one': 0,
+        'nested/three': 0,
+        'nested/three/four': 0,
+        'nested/two': 0,
+        'simple atom': 9,
+        'simple/atom/with/params-[21]': 21,
+        'simple/atom/with/params/and/scope-[42]-@scope("some context value")':
+          'some context value42',
+        'simple/atom/with/scope-@scope("some context value")':
+          'some context value',
+        something: 0,
+        'with/signal': 2,
+        'with/signal/2': 0,
+        withEverything: 'a',
+        'withEverything/withParams-[11]': 'a',
+        'withEverything/withParams-[21]': 'a',
+        'withEverything/withParamsAndScope-[22]': 'a',
+        'withEverything/withParamsAndScope-[42]': 'a',
+        'withEverything/withScope-@scope("simple-context-value")': 'a',
+        'withEverything/withScope-@scope("some context value")': 'a',
+        'withScope-@scope(1)': 1,
+      };
+
+      const generatedSnapshot = generateSnapshot({ ecosystem });
+
+      expect(expectedSnapshot).toEqual(generatedSnapshot);
+
+      expect(
+        consoleMock.log.mock.calls[consoleMock.log.mock.calls.length - 1],
+      ).toEqual([expect.any(String), { '📸 snapshot': expectedSnapshot }]);
     });
   });
 });

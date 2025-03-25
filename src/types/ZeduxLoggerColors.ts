@@ -94,10 +94,8 @@ export interface ZeduxLoggerColors {
   groupOldState: string;
   /** If `showInDetails.showNewState` is `true` ; color for new state group header */
   groupNewState: string;
-  /** If `showInDetails.showSnapshot` is `true` ; color for old snapshot group header */
-  groupOldSnapshot: string;
   /** If `showInDetails.showSnapshot` is `true` ; color for new snapshot group header */
-  groupNewSnapshot: string;
+  groupSnapshot: string;
 }
 
 export type CompleteZeduxLoggerColors = DeepRequired<ZeduxLoggerColors>;

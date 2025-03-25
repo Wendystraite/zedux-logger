@@ -94,6 +94,12 @@ export function getDefaultZeduxLoggerEcosystemStorage(
       (options) => options.graphOptions.showByNamespacesGraph,
     );
 
+  const showSnapshot = getIsOptionEnabledEitherGloballyOrLocallyOnce(
+    filters,
+    completeMergedOptions,
+    (options) => options.showInDetails.showSnapshot,
+  );
+
   return {
     snapshot: undefined,
     graph: undefined,
@@ -109,6 +115,7 @@ export function getDefaultZeduxLoggerEcosystemStorage(
     calculateBottomUpGraph: useBottomUpGraph,
     calculateFlatGraph: useFlatGraph,
     calculateByNamespacesGraph: useByNamespacesGraph,
+    calculateSnapshot: showSnapshot,
   };
 }
 

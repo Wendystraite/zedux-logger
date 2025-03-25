@@ -11,7 +11,7 @@ export interface ZeduxLoggerEcosystemStorage {
   /**
    * The previous snapshot of the ecosystem.
    */
-  snapshot: unknown;
+  snapshot: Record<string, unknown> | undefined;
   /**
    * The graph of the ecosystem.
    */
@@ -57,4 +57,6 @@ export interface ZeduxLoggerEcosystemStorage {
   calculateFlatGraph: boolean;
   /** Whether the logger is generating a by namespaces graph */
   calculateByNamespacesGraph: boolean;
+  /** Whether the logger is generating a snapshot */
+  calculateSnapshot: boolean;
 }

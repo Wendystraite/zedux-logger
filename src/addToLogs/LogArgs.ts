@@ -17,8 +17,7 @@ export interface LogArgs {
   globalOptions: CompleteZeduxLoggerGlobalOptions;
   options: CompleteZeduxLoggerLocalOptions;
   graph: Graph | undefined;
-  newSnapshot: unknown;
-  oldSnapshot: unknown;
+  snapshot: Record<string, unknown> | undefined;
 
   /**
    * Time in milliseconds that the run took to execute between the runStart and runEnd events.

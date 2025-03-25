@@ -16,6 +16,7 @@ export const DEFAULT_ZEDUX_LOGGER_GLOBAL_OPTIONS: CompleteZeduxLoggerGlobalOptio
     debugOptions: {
       logOptions: false,
       checkIncrementalGraphConsistency: false,
+      checkIncrementalSnapshotConsistency: false,
       useIncrementalGraph: false,
     },
   };

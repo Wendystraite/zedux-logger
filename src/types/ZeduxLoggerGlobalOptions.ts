@@ -61,6 +61,14 @@ export interface ZeduxLoggerGlobalOptions {
     checkIncrementalGraphConsistency?: boolean;
 
     /**
+     * Checks whenever the snapshot is consistent after each event.
+     * Will log an error if the snapshot is not consistent.
+     * @remarks This is a performance heavy operation recalculating and comparing the snapshot every event.
+     * @default false
+     */
+    checkIncrementalSnapshotConsistency?: boolean;
+
+    /**
      * Use the incremental graph in the logger.
      * This is disabled by default for now until it's more stable.
      * @default false
