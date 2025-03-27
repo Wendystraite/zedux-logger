@@ -35,6 +35,17 @@ export const ZeduxLoggerBuiltInTemplateKeys = {
   colorsMaterialUiA400: 'colors-material-ui-a400',
   colorsMaterialUiA700: 'colors-material-ui-a700',
 
+  /** Color blind colors */
+
+  /** @see https://cran.r-project.org/web/packages/khroma/vignettes/tol.html */
+  colorsColorBlindPaulTolBright: 'colors-color-blind-paul-tol-bright',
+
+  /** @see https://cran.r-project.org/web/packages/khroma/vignettes/tol.html */
+  colorsColorBlindPaulTolMuted: 'colors-color-blind-paul-tol-muted',
+
+  /** @see https://siegal.bio.nyu.edu/color-palette/ */
+  colorsColorBlindOkabeIto: 'colors-color-blind-okabe-ito',
+
   /** Events */
   allEvents: 'all-events',
   noEvents: 'no-events',

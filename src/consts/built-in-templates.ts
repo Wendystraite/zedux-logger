@@ -1,3 +1,4 @@
+import { getZeduxLoggerColorsTemplate } from '../colors/getZeduxLoggerColorsTemplate.js';
 import { getZeduxLoggerMaterialUiColorsTemplate } from '../colors/material-ui-colors.js';
 import { getZeduxLoggerTailwindColorsTemplate } from '../colors/tailwind-css-colors.js';
 import {
@@ -74,6 +75,42 @@ export const ZEDUX_LOGGER_BUILT_IN_TEMPLATES: Record<
     getZeduxLoggerMaterialUiColorsTemplate(12),
   [ZeduxLoggerBuiltInTemplateKeys.colorsMaterialUiA700]:
     getZeduxLoggerMaterialUiColorsTemplate(13),
+
+  /** @see https://cran.r-project.org/web/packages/khroma/vignettes/tol.html */
+  [ZeduxLoggerBuiltInTemplateKeys.colorsColorBlindPaulTolBright]:
+    getZeduxLoggerColorsTemplate({
+      red: '#ee6677',
+      gray: '#bbbbbb',
+      blue: '#4477aa',
+      amber: '#ccbb44',
+      green: '#228833',
+      orange: '#ddaa33',
+      purple: '#aa3377',
+    }),
+
+  /** @see https://cran.r-project.org/web/packages/khroma/vignettes/tol.html */
+  [ZeduxLoggerBuiltInTemplateKeys.colorsColorBlindPaulTolMuted]:
+    getZeduxLoggerColorsTemplate({
+      red: '#cc6677',
+      gray: '#dddddd',
+      blue: '#88ccee',
+      amber: '#ddcc77',
+      green: '#117733',
+      orange: '#ddcc77',
+      purple: '#aa4499',
+    }),
+
+  /** @see https://siegal.bio.nyu.edu/color-palette/ */
+  [ZeduxLoggerBuiltInTemplateKeys.colorsColorBlindOkabeIto]:
+    getZeduxLoggerColorsTemplate({
+      red: '#d55e00',
+      gray: '#dddddd',
+      blue: '#56b4e9',
+      amber: '#f0e442',
+      green: '#009e73',
+      orange: '#e69f00',
+      purple: '#cc79a7',
+    }),
 
   [ZeduxLoggerBuiltInTemplateKeys.allEvents]: {
     eventsToShow: {
