@@ -1,6 +1,7 @@
 import microdiff from 'microdiff';
 import { isArray, isPlainObject } from 'remeda';
 
+import { isCircularObject } from '../utils/isCircularObject.js';
 import type { LogArgs } from './LogArgs.js';
 
 export function addToDetailsStateDiffs(args: LogArgs): void {
@@ -25,7 +26,16 @@ export function addToDetailsStateDiffs(args: LogArgs): void {
     return;
   }
 
-  const diffs = microdiff(oldState, newState);
+  if (isCircularObject(oldState) || isCircularObject(newState)) {
+    addLogToDetails({
+      emoji: '🔍',
+      log: '(unknown diffs)',
+      data: '[Circular]',
+    });
+    return;
+  }
+
+  const diffs = microdiff(oldState, newState, { cyclesFix: false });
 
   if (oneLineLogs) {
     if (diffs.length <= 0) {

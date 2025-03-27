@@ -598,6 +598,59 @@ describe('addZeduxLogger', () => {
         ['[✏️] test atom changed from {"a":1,"b":3} to {"a":1,"b":3}'],
       ]);
     });
+
+    it('should not diff circular objects', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          showInDetails: {
+            showStateDiff: true,
+          },
+        },
+      });
+
+      const circularObject: Record<string, unknown> = {};
+      circularObject.circular = circularObject;
+      const otherCircularObject: Record<string, unknown> = {};
+      otherCircularObject.circular = otherCircularObject;
+
+      const node = ecosystem.getNode(atom('test atom', circularObject));
+      node.set({ a: 1, b: 2 });
+      node.set({ a: 1, b: 2 });
+      node.set(circularObject);
+      node.set(otherCircularObject);
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        ['[⚡] test atom initialized to [Circular]'],
+        [
+          '[✏️] test atom changed from [Circular] to {"a":1,"b":2}',
+          {
+            '🔍 (unknown-diffs)': '[Circular]',
+          },
+        ],
+        [
+          '[✏️] test atom changed from {"a":1,"b":2} to {"a":1,"b":2}',
+          {
+            '🔍 (no-diffs)': [],
+          },
+        ],
+        [
+          '[✏️] test atom changed from {"a":1,"b":2} to [Circular]',
+          {
+            '🔍 (unknown-diffs)': '[Circular]',
+          },
+        ],
+        [
+          '[✏️] test atom changed from [Circular] to [Circular]',
+          {
+            '🔍 (unknown-diffs)': '[Circular]',
+          },
+        ],
+      ]);
+    });
   });
 
   describe('details', () => {
