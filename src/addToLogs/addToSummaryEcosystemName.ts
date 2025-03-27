@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToSummaryEcosystemName(args: LogArgs): void {
+export function addToSummaryEcosystemName(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToSummary,
     what: { ecosystemName },

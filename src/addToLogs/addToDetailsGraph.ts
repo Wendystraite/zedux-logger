@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToDetailsGraph(args: LogArgs): void {
+export function addToDetailsGraph(args: ZeduxLoggerLogArgs): void {
   const {
     options: {
       showInDetails: { showGraph },

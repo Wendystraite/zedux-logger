@@ -1,7 +1,7 @@
 import { deobfuscateNode } from '../deobfuscate/deobfuscateNode.js';
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToDetailsNode(args: LogArgs): void {
+export function addToDetailsNode(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToDetails,
     what: { node },

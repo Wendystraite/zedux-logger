@@ -1,11 +1,17 @@
-import type { LogArgs } from '../addToLogs/LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 import { consoleGroup } from '../utils/consoleGroup.js';
 import { flattenLogDetails } from './flattenLogDetails.js';
 import { logLogDetail } from './logLogDetail.js';
 
 export function logLogArgs(
-  logArgs: Pick<LogArgs, 'logSummary' | 'logSummaryColors' | 'details'> & {
-    options: Pick<LogArgs['options'], 'showColors' | 'oneLineLogs' | 'console'>;
+  logArgs: Pick<
+    ZeduxLoggerLogArgs,
+    'logSummary' | 'logSummaryColors' | 'details'
+  > & {
+    options: Pick<
+      ZeduxLoggerLogArgs['options'],
+      'showColors' | 'oneLineLogs' | 'console'
+    >;
   },
 ): void {
   const {

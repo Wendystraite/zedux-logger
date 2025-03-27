@@ -1,6 +1,6 @@
 import type { ParsedNodeId } from '../parseAtomId/parseNodeId.js';
 import type { CompleteZeduxLoggerColors } from '../types/ZeduxLoggerColors.js';
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
 function getNodeIdNamespaces(
   nodeId: string,
@@ -30,7 +30,7 @@ export function createAddToSummaryAtomName(args: {
 }) {
   const { show = true, nodeId, nodeIdParsed } = args;
 
-  return function addToSummaryAtomName(subArgs: LogArgs): void {
+  return function addToSummaryAtomName(subArgs: ZeduxLoggerLogArgs): void {
     const {
       addLogToSummary,
       options: { colors },

@@ -19,6 +19,7 @@ export const DEFAULT_ZEDUX_LOGGER_LOCAL_OPTIONS: CompleteZeduxLoggerLocalOptions
     oneLineLogs: false,
     showColors: true,
     colors: getZeduxLoggerTailwindColorsTemplate(5).colors,
+    logHandler: null,
     showInSummary: {
       showEmoji: true,
       showEcosystemName: false,

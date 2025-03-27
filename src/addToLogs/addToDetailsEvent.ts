@@ -1,7 +1,7 @@
 import { deobfuscateEvent } from '../deobfuscate/deobfuscateEvent.js';
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToDetailsEvent(args: LogArgs): void {
+export function addToDetailsEvent(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToDetails,
     what: { event },

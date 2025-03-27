@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToDetailsSnapshot(args: LogArgs): void {
+export function addToDetailsSnapshot(args: ZeduxLoggerLogArgs): void {
   const {
     options: {
       showInDetails: { showSnapshot },

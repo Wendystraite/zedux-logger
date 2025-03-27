@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToDetailsNewState(args: LogArgs): void {
+export function addToDetailsNewState(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToDetails,
     what: { hasNewState = false, newState },

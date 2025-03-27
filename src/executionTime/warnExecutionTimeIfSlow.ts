@@ -1,6 +1,6 @@
-import type { LogArgs } from '../addToLogs/LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function warnExecutionTimeIfSlow(logArgs: LogArgs): void {
+export function warnExecutionTimeIfSlow(logArgs: ZeduxLoggerLogArgs): void {
   const {
     runExecutionTimeMs,
     options,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { LogDetail } from '../src/addToLogs/LogArgs';
 import { flattenLogDetails } from '../src/log/flattenLogDetails';
+import type { ZeduxLoggerLogDetail } from '../src/types/ZeduxLoggerLogArgs';
 
 describe('flattenLogDetails', () => {
   it('should return empty object when given empty array', () => {
@@ -9,7 +9,7 @@ describe('flattenLogDetails', () => {
   });
 
   it('should flatten a single log detail', () => {
-    const logDetails: LogDetail[] = [
+    const logDetails: ZeduxLoggerLogDetail[] = [
       {
         log: 'test',
         data: 'value',
@@ -22,7 +22,7 @@ describe('flattenLogDetails', () => {
   });
 
   it('should handle emoji in log detail', () => {
-    const logDetails: LogDetail[] = [
+    const logDetails: ZeduxLoggerLogDetail[] = [
       {
         log: 'test',
         emoji: '🚀',
@@ -36,7 +36,7 @@ describe('flattenLogDetails', () => {
   });
 
   it('should replace spaces with dashes', () => {
-    const logDetails: LogDetail[] = [
+    const logDetails: ZeduxLoggerLogDetail[] = [
       {
         log: 'test log with spaces',
         data: 'value',
@@ -49,7 +49,7 @@ describe('flattenLogDetails', () => {
   });
 
   it('should strip %c formatting', () => {
-    const logDetails: LogDetail[] = [
+    const logDetails: ZeduxLoggerLogDetail[] = [
       {
         log: '%cformatted %ctest',
         data: 'value',
@@ -62,7 +62,7 @@ describe('flattenLogDetails', () => {
   });
 
   it('should handle nested sublogs', () => {
-    const logDetails: LogDetail[] = [
+    const logDetails: ZeduxLoggerLogDetail[] = [
       {
         log: 'parent',
         data: 'parentValue',
@@ -82,7 +82,7 @@ describe('flattenLogDetails', () => {
   });
 
   it('should handle multiple nested levels with emoji', () => {
-    const logDetails: LogDetail[] = [
+    const logDetails: ZeduxLoggerLogDetail[] = [
       {
         log: 'root',
         emoji: '📁',
@@ -112,7 +112,7 @@ describe('flattenLogDetails', () => {
   });
 
   it('should ignore false or undefined log details', () => {
-    const logDetails: Array<LogDetail | false | undefined> = [
+    const logDetails: Array<ZeduxLoggerLogDetail | false | undefined> = [
       {
         log: 'valid',
         data: 'value',
@@ -123,9 +123,9 @@ describe('flattenLogDetails', () => {
         log: 'another',
         data: 'data',
       },
-    ] as LogDetail[];
+    ] as ZeduxLoggerLogDetail[];
 
-    expect(flattenLogDetails(logDetails as LogDetail[])).toEqual({
+    expect(flattenLogDetails(logDetails as ZeduxLoggerLogDetail[])).toEqual({
       valid: 'value',
       another: 'data',
     });

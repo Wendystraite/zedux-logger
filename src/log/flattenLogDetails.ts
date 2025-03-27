@@ -1,9 +1,9 @@
 import { isTruthy } from 'remeda';
 
-import type { LogDetail } from '../addToLogs/LogArgs.js';
+import type { ZeduxLoggerLogDetail } from '../types/ZeduxLoggerLogArgs.js';
 
 export function flattenLogDetails(
-  logDetails: LogDetail[],
+  logDetails: ZeduxLoggerLogDetail[],
 ): Record<string, unknown> {
   const flattenedLogs: Record<string, unknown> = {};
   flattenLogDetailsInternal({ flattenedLogs, logDetails });
@@ -12,7 +12,7 @@ export function flattenLogDetails(
 
 function flattenLogDetailsInternal(args: {
   flattenedLogs: Record<string, unknown>;
-  logDetails: Array<LogDetail | false | undefined>;
+  logDetails: Array<ZeduxLoggerLogDetail | false | undefined>;
   parentLog?: string;
 }): void {
   const { flattenedLogs, logDetails, parentLog = '' } = args;

@@ -1,13 +1,16 @@
 import { isTruthy } from 'remeda';
 
-import type { LogArgs, LogDetail } from '../addToLogs/LogArgs.js';
 import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
+import type {
+  ZeduxLoggerLogArgs,
+  ZeduxLoggerLogDetail,
+} from '../types/ZeduxLoggerLogArgs.js';
 import { consoleGroup } from '../utils/consoleGroup.js';
 
 export function logLogDetail(
   console: CompleteZeduxLoggerLocalOptions['console'],
-  logDetail: LogDetail,
-  options: Pick<LogArgs['options'], 'showColors'>,
+  logDetail: ZeduxLoggerLogDetail,
+  options: Pick<ZeduxLoggerLogArgs['options'], 'showColors'>,
 ) {
   const { showColors } = options;
 

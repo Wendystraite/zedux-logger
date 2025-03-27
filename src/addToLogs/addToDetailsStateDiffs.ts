@@ -1,10 +1,10 @@
 import microdiff from 'microdiff';
 import { isArray, isPlainObject } from 'remeda';
 
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 import { isCircularObject } from '../utils/isCircularObject.js';
-import type { LogArgs } from './LogArgs.js';
 
-export function addToDetailsStateDiffs(args: LogArgs): void {
+export function addToDetailsStateDiffs(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToDetails,
     what: { hasOldState = false, hasNewState = false, oldState, newState },

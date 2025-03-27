@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToSummaryEmoji(args: LogArgs): void {
+export function addToSummaryEmoji(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToSummary,
     what: { summaryEmoji },

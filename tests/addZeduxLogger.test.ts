@@ -2040,4 +2040,138 @@ describe('addZeduxLogger', () => {
       ).toEqual([expect.any(String), { '📸 snapshot': expectedSnapshot }]);
     });
   });
+
+  describe('logHandler', () => {
+    it('should call the custom logHandler', () => {
+      const logHandlerMock = vi.fn();
+
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          logHandler: logHandlerMock,
+        },
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(logHandlerMock).toHaveBeenCalledTimes(1);
+      expect(logHandlerMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          logSummary: expect.any(String),
+          details: expect.any(Array),
+        }),
+        expect.any(Object),
+      );
+    });
+
+    it('should allow custom logs in logHandler', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          showColors: true,
+          oneLineLogs: true,
+          console: consoleMock,
+          logHandler(logArgs) {
+            logArgs.addLogToSummary(
+              `%cCustom summary log of ${logArgs.what.nodeId!}`,
+              '#FF0000',
+            );
+            logArgs.addLogToDetails({
+              emoji: '🚀',
+              log: 'Custom detail log',
+              data: { key: 'value' },
+            });
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '%cCustom summary log of testAtom',
+          'color: #FF0000',
+          {
+            '🚀 Custom-detail-log': { key: 'value' },
+          },
+        ],
+      ]);
+    });
+
+    it('should use built-in loggers in logHandler', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          showColors: false,
+          oneLineLogs: true,
+          console: consoleMock,
+          logHandler(logArgs, { addAllBuiltInLoggers }) {
+            addAllBuiltInLoggers(logArgs);
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '[⚡] testAtom initialized to 0',
+          expect.objectContaining({
+            '📢 event(cycle)': expect.any(Object),
+          }),
+        ],
+      ]);
+    });
+
+    it('should not log if logHandler is empty', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          logHandler() {
+            // noop
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log).not.toHaveBeenCalled();
+    });
+
+    it('should log built in summary and details with custom order', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+          logHandler(
+            logArgs,
+            {
+              addToSummaryEmoji,
+              addToSummaryAtomName,
+              addToSummarySummary,
+              addToDetailsEvent,
+              addToDetailsEcosystem,
+            },
+          ) {
+            addToSummaryAtomName(logArgs);
+            addToSummarySummary(logArgs);
+            addToSummaryEmoji(logArgs);
+            addToDetailsEcosystem(logArgs);
+            addToDetailsEvent(logArgs);
+          },
+        },
+      });
+
+      ecosystem.getNode(atom('testAtom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          'testAtom initialized [⚡]',
+          {
+            '🌍 ecosystem': expect.any(Object),
+            '📢 event(cycle)': expect.any(Object),
+          },
+        ],
+      ]);
+    });
+  });
 });

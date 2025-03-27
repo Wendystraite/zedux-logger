@@ -1,6 +1,8 @@
 import type { Ecosystem, EcosystemEvents } from '@zedux/react';
 
-import type { LogArgs, LogDetail } from './addToLogs/LogArgs.js';
+import { addAllBuiltInLoggers } from './addToLogs/addAllBuiltInLoggers.js';
+import { addAllBuiltInLoggersToDetails } from './addToLogs/addAllBuiltInLoggersToDetails.js';
+import { addAllBuiltInLoggersToSummary } from './addToLogs/addAllBuiltInLoggersToSummary.js';
 import { addToDetailsEcosystem } from './addToLogs/addToDetailsEcosystem.js';
 import { addToDetailsError } from './addToLogs/addToDetailsError.js';
 import { addToDetailsEvent } from './addToLogs/addToDetailsEvent.js';
@@ -35,6 +37,11 @@ import { generateSnapshot } from './generateSnapshot/generateSnapshot.js';
 import { logLogArgs } from './log/logLogArgs.js';
 import { parseWhatHappened } from './parseWhatHappened/parseWhatHappened.js';
 import { getZeduxLoggerEcosystemStorage } from './storage/getZeduxLoggerEcosystemStorage.js';
+import type { Writeable } from './types/Writeable.js';
+import type {
+  ZeduxLoggerLogArgs,
+  ZeduxLoggerLogDetail,
+} from './types/ZeduxLoggerLogArgs.js';
 import { updateGraphIncrementally } from './updateGraphIncrementally/updateGraphIncrementally.js';
 import { updateSnapshotIncrementally } from './updateSnapshotIncrementally/updateSnapshotIncrementally.js';
 
@@ -111,18 +118,18 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       }
     }
 
-    const logArgs: LogArgs = {
+    const logArgs: ZeduxLoggerLogArgs = {
       logSummary: '',
       logSummaryColors: [],
       details: [],
       addLogToSummary(log: string, ...colors: string[]): void {
         if (logArgs.logSummary.length > 0) {
-          logArgs.logSummary += ' ';
+          (logArgs as Writeable<ZeduxLoggerLogArgs>).logSummary += ' ';
         }
-        logArgs.logSummary += log;
+        (logArgs as Writeable<ZeduxLoggerLogArgs>).logSummary += log;
         logArgs.logSummaryColors.push(...colors);
       },
-      addLogToDetails(args: LogDetail): void {
+      addLogToDetails(args: ZeduxLoggerLogDetail): void {
         logArgs.details.push(args);
       },
       storage,
@@ -135,33 +142,40 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
     };
 
     if (canLog) {
-      addToSummaryEmoji(logArgs);
-      addToSummaryEcosystemName(logArgs);
-      addToSummaryAtomName(logArgs);
-      addToSummarySummary(logArgs);
-      addToSummaryOperation(logArgs);
-      addToSummaryTtl(logArgs);
-      addToSummaryStates(logArgs);
-      addToSummaryObserverAtomName(logArgs);
-      addToSummaryWaitingPromises(logArgs);
-      addToSummaryExecutionTime(logArgs);
-
-      addToDetailsEvent(logArgs);
-      addToDetailsOldState(logArgs);
-      addToDetailsNewState(logArgs);
-      addToDetailsWaitingPromises(logArgs);
-      addToDetailsStateDiffs(logArgs);
-      addToDetailsReasons(logArgs);
-      addToDetailsError(logArgs);
-      addToDetailsExecutionTime(logArgs);
-      addToDetailsNode(logArgs);
-      addToDetailsObserver(logArgs);
-      addToDetailsSources(logArgs);
-      addToDetailsObservers(logArgs);
-      addToDetailsEcosystem(logArgs);
-      addToDetailsGraph(logArgs);
-      addToDetailsSnapshot(logArgs);
-
+      if (localOptions.logHandler) {
+        localOptions.logHandler(logArgs, {
+          addAllBuiltInLoggers,
+          addAllBuiltInLoggersToSummary,
+          addToSummaryEmoji,
+          addToSummaryEcosystemName,
+          addToSummaryAtomName,
+          addToSummarySummary,
+          addToSummaryOperation,
+          addToSummaryTtl,
+          addToSummaryStates,
+          addToSummaryObserverAtomName,
+          addToSummaryWaitingPromises,
+          addToSummaryExecutionTime,
+          addAllBuiltInLoggersToDetails,
+          addToDetailsEvent,
+          addToDetailsOldState,
+          addToDetailsNewState,
+          addToDetailsWaitingPromises,
+          addToDetailsStateDiffs,
+          addToDetailsReasons,
+          addToDetailsError,
+          addToDetailsExecutionTime,
+          addToDetailsNode,
+          addToDetailsObserver,
+          addToDetailsSources,
+          addToDetailsObservers,
+          addToDetailsEcosystem,
+          addToDetailsGraph,
+          addToDetailsSnapshot,
+        });
+      } else {
+        addAllBuiltInLoggers(logArgs);
+      }
       logLogArgs(logArgs);
     }
 

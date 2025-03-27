@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToDetailsSources(args: LogArgs): void {
+export function addToDetailsSources(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToDetails,
     what: { node },

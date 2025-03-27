@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToSummarySummary(args: LogArgs): void {
+export function addToSummarySummary(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToSummary,
     what: { summaryWhat, getSummaryColor },

@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToDetailsWaitingPromises(args: LogArgs): void {
+export function addToDetailsWaitingPromises(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToDetails,
     what: { waitingForPromisesNodes },

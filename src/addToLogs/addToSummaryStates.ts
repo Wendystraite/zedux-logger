@@ -1,7 +1,7 @@
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 import { stringifyState } from '../utils/stringifyState.js';
-import type { LogArgs } from './LogArgs.js';
 
-export function addToSummaryStates(args: LogArgs): void {
+export function addToSummaryStates(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToSummary,
     what: {

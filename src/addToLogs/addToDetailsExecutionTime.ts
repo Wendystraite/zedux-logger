@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToDetailsExecutionTime(args: LogArgs): void {
+export function addToDetailsExecutionTime(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToDetails,
     runExecutionTimeMs,

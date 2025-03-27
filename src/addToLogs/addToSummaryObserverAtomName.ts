@@ -1,7 +1,7 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 import { createAddToSummaryAtomName } from './createAddToSummaryAtomName.js';
 
-export function addToSummaryObserverAtomName(args: LogArgs): void {
+export function addToSummaryObserverAtomName(args: ZeduxLoggerLogArgs): void {
   const {
     options: {
       showInSummary: { showObserverName },

@@ -1,8 +1,8 @@
 import type * as Zedux from '@zedux/react';
 
-import type { LogArgs } from '../addToLogs/LogArgs.js';
 import type { DeepRequired } from './DeepRequired.js';
 import type { ZeduxLoggerColors } from './ZeduxLoggerColors.js';
+import type { ZeduxLoggerLogArgs } from './ZeduxLoggerLogArgs.js';
 
 /**
  * Options for the Zedux logger that can be overridden based on filters.
@@ -150,6 +150,111 @@ export interface ZeduxLoggerLocalOptions {
    * Colors used in the logs.
    */
   colors?: ZeduxLoggerColors;
+
+  /**
+   * Callback to handle the logs.
+   *
+   * This is called for every log that is included in the filters and before
+   * adding any log data to the log's summary and the log's details.
+   *
+   * If defined, this will override the default logHandler.
+   *
+   * @param logArgs - Arguments passed to the logger.
+   * @param builtInLoggers - Built-in loggers that can be used to log.
+   *
+   * @example
+   * ```ts
+   * const logHandler = (logArgs, builtInLoggers) => {
+   *   // Call all built-in loggers
+   *   builtInLoggers.addAllBuiltInLoggers(logArgs);
+   *
+   *   // Add a custom log to the summary
+   *   logArgs.addLogToSummary('Custom log', '#FF0000');
+   *
+   *   // Add a custom log to the details
+   *   logArgs.addLogToDetails({
+   *     emoji: '🚀',
+   *     log: '%cCustom %clog',
+   *     colors: ['#00FF00',"#0000FF"],
+   *     groupCollapsedSubLogs: true,
+   *     subLogs: [
+   *       {
+   *         log: 'Sub log',
+   *         data: "some data"
+   *       },
+   *     ],
+   *   });
+   * }
+   * ```
+   */
+  logHandler?:
+    | ((
+        logArgs: ZeduxLoggerLogArgs,
+        builtInLoggers: {
+          /** Call all built-in loggers with the given logArgs. */
+          addAllBuiltInLoggers(this: void, logArgs: ZeduxLoggerLogArgs): void;
+
+          /** Call all built-in loggers for the log's summary with the given logArgs. */
+          addAllBuiltInLoggersToSummary(
+            this: void,
+            logArgs: ZeduxLoggerLogArgs,
+          ): void;
+
+          addToSummaryEmoji(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToSummaryEcosystemName(
+            this: void,
+            logArgs: ZeduxLoggerLogArgs,
+          ): void;
+          addToSummaryAtomName(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToSummarySummary(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToSummaryOperation(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToSummaryTtl(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToSummaryStates(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToSummaryObserverAtomName(
+            this: void,
+            logArgs: ZeduxLoggerLogArgs,
+          ): void;
+          addToSummaryWaitingPromises(
+            this: void,
+            logArgs: ZeduxLoggerLogArgs,
+          ): void;
+          addToSummaryExecutionTime(
+            this: void,
+            logArgs: ZeduxLoggerLogArgs,
+          ): void;
+
+          /**
+           * Call all built-in loggers for the log's details with the given logArgs.
+           */
+          addAllBuiltInLoggersToDetails(
+            this: void,
+            logArgs: ZeduxLoggerLogArgs,
+          ): void;
+
+          addToDetailsEvent(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsOldState(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsNewState(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsWaitingPromises(
+            this: void,
+            logArgs: ZeduxLoggerLogArgs,
+          ): void;
+          addToDetailsStateDiffs(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsReasons(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsError(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsExecutionTime(
+            this: void,
+            logArgs: ZeduxLoggerLogArgs,
+          ): void;
+          addToDetailsNode(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsObserver(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsSources(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsObservers(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsEcosystem(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsGraph(this: void, logArgs: ZeduxLoggerLogArgs): void;
+          addToDetailsSnapshot(this: void, logArgs: ZeduxLoggerLogArgs): void;
+        },
+      ) => void)
+    | null;
 
   /**
    * Logs to show in the log's summary.
@@ -379,6 +484,7 @@ export interface ZeduxLoggerLocalOptions {
     /**
      * Callback called when the evaluation is slow.
      * Will be called even if showExecutionTime is false.
+     * Called after logging the event.
      * @param node slow node
      * @param executionTimeMs time in milliseconds the evaluation took. Measured with {@link performance.now}.
      * @param logArgs additional data about the log
@@ -387,13 +493,14 @@ export interface ZeduxLoggerLocalOptions {
       | ((
           node: Zedux.ZeduxNode,
           executionTimeMs: number,
-          logArgs: LogArgs,
+          logArgs: ZeduxLoggerLogArgs,
         ) => void)
       | null;
 
     /**
      * Callback called when the evaluation is very slow.
      * Will be called even if showExecutionTime is false.
+     * Called after logging the event.
      * @param node slow node
      * @param executionTimeMs time in milliseconds the evaluation took. Measured with {@link performance.now}.
      * @param logArgs additional data about the log
@@ -402,7 +509,7 @@ export interface ZeduxLoggerLocalOptions {
       | ((
           node: Zedux.ZeduxNode,
           executionTimeMs: number,
-          logArgs: LogArgs,
+          logArgs: ZeduxLoggerLogArgs,
         ) => void)
       | null;
   };

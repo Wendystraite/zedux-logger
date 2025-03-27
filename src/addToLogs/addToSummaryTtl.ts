@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToSummaryTtl(args: LogArgs): void {
+export function addToSummaryTtl(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToSummary,
     what: { eventMap, template },

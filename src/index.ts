@@ -18,3 +18,8 @@ export type {
   CompleteZeduxLoggerMergedOptions,
   ZeduxLoggerMergedOptions,
 } from './types/ZeduxLoggerMergedOptions.js';
+export type {
+  ZeduxLoggerLogArgs,
+  ZeduxLoggerLogDetail,
+} from './types/ZeduxLoggerLogArgs.js';
+export type { ZeduxLoggerEcosystemStorage } from './types/ZeduxLoggerEcosystemStorage.js';

@@ -1,6 +1,6 @@
-import type { LogArgs } from './LogArgs.js';
+import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 
-export function addToSummaryExecutionTime(args: LogArgs): void {
+export function addToSummaryExecutionTime(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToSummary,
     runExecutionTimeMs,
