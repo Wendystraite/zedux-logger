@@ -55,6 +55,7 @@
   },
   "main": "dist/index.js",
   "dependencies": {
+    "@zedux/atoms": "2.0.0-rc.0",
     "immer": "^10.1.1",
     "microdiff": "^1.5.0",
     "remeda": "^2.20.2"

@@ -34,7 +34,6 @@ import { generateGraph } from './generateGraph/generateGraph.js';
 import { generateSnapshot } from './generateSnapshot/generateSnapshot.js';
 import { logLogArgs } from './log/logLogArgs.js';
 import { parseWhatHappened } from './parseWhatHappened/parseWhatHappened.js';
-import { getDefaultZeduxLoggerEcosystemStorage } from './storage/getDefaultZeduxLoggerEcosystemStorage.js';
 import { getZeduxLoggerEcosystemStorage } from './storage/getZeduxLoggerEcosystemStorage.js';
 import { updateGraphIncrementally } from './updateGraphIncrementally/updateGraphIncrementally.js';
 import { updateSnapshotIncrementally } from './updateSnapshotIncrementally/updateSnapshotIncrementally.js';
@@ -43,9 +42,11 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
   return function zeduxLoggerListener(
     eventMap: Partial<EcosystemEvents>,
   ): void {
-    const storage =
-      getZeduxLoggerEcosystemStorage(ecosystem) ??
-      getDefaultZeduxLoggerEcosystemStorage();
+    const storage = getZeduxLoggerEcosystemStorage(ecosystem);
+
+    if (storage?.completeMergedOptions.enabled !== true) {
+      return;
+    }
 
     const what = parseWhatHappened(ecosystem, eventMap);
 
