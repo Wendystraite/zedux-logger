@@ -4,62 +4,110 @@ Logging utility for [Zedux](https://github.com/Omnistac/zedux).
 
 ⚠️ This library is a work in progress and has performance issues, **use only in development** ⚠️
 
-A new stable 2.0.0 version is being worked on and will be available when zedux's v2 is available. See [#Planned](#Planned).
-
 See https://github.com/Omnistac/zedux/discussions/194.
 
 ## Features
 
-- Diffing old/new state of objects/arrays
-- Graph grouped by namespaces
-- Snapshot of the entire ecosystem
-- Deobfuscting the scary single letters
-- Emojis and colors
-- Showing promise's state and dependent atoms that are waiting for it
+- 🚀 Compatible with [Zedux](https://github.com/Omnistac/zedux) [v2](https://github.com/Omnistac/zedux/issues/118)
+- 🎨 **Fully customizable**, can show, hide, reorder or configure anything displayed in the logs
+- 📊 Can either use **grouped logs** (console.group) or **one line logs** (console.log)
+- 😄 **Emojis**
+- 🌈 **Colors**, with colorblind friendly templates
+- 🔍 **Diffing** old/new state of objects/arrays
+- 📈 Flat / Top Down / Bottom up default **graphs** and a custom graph grouped by namespaces
+- 📸 **Snapshot** of the entire ecosystem
+- 🔮 **Deobfuscate** the scary single letters in zedux's internals
+- ⏳ Showing atoms **promise's state** and dependent atoms that are waiting for it
+- ⏱️ Tracking of nodes **execution time**, warns if anything is slow
+- ⚙️ Can change the logger's **options in runtime**
+- 🖥️ Can change the **console used**
+- 📡 Can show **any zedux events**
+- 🎯 Apply **custom options** based on nodes ids, types, template or tags
+- 📝 **Templates** (of options) support, can create custom templates or use built in ones
 
 ## Install
 
 ```bash
-npm install @wendystraite/zedux-logger
+npm install --dev @wendystraite/zedux-logger
+```
+
+```bash
+yarn add -D @wendystraite/zedux-logger
+```
+
+```bash
+pnpm install --dev @wendystraite/zedux-logger
 ```
 
 ## How to use
 
+Basic logger (vanilla js) :
+
 ```ts
 const ecosystem = createEcosystem();
-addZeduxLogger(ecosystem, loggerOptions);
+addZeduxLogger(ecosystem);
 ```
+
+Basic logger (react) :
+
+```tsx
+export function ZeduxProvider({ children }: PropsWithChildren) {
+  // Create an ecosystem with the logger attached
+  const ecosystem = useMemo(() => {
+    const ecosystem = createEcosystem();
+    addZeduxLogger(ecosystem);
+    return ecosystem;
+  }, []);
+
+  // Provides it
+  return (
+    <EcosystemProvider ecosystem={ecosystem}>{children}</EcosystemProvider>
+  );
+}
+```
+
+With options :
+
+```ts
+addZeduxLogger(ecosystem, {
+  templates: [
+    // Use color blind colors
+    'colors-color-blind-okabe-ito',
+    // Use `console.log` instead of `console.group`
+    'one-line-logs'
+  ],
+  filters: [
+    {
+      exclude: [
+        // Don't log any @memo or @signals atoms
+        { type: ['@memo', '@signal'] },
+        // Don't log any atoms with the tag 'no-log'
+        { tag: 'disable-log' },
+      ],
+    },
+  ],
+  options: {
+    // Only enabled in DEV mode (on Vite)
+    enabled: import.meta.env.DEV,
+  }
+});
+```
+
+## Playground
+
+A playground project can be found in the `playground` folder.
+
+## Tests
+
+90% tests coverage.
+
+## Benchmarks
+
+[bench-results](./benchmarks/bench-results.md)
 
 ## Planned
 
-Theses features are being worked in the [v2 branch](https://github.com/Wendystraite/zedux-logger/tree/v2).
-
-See [v2 branch's commit](https://github.com/Wendystraite/zedux-logger/compare/main...v2).
-
-### Performances
-
 Optimizing the logger
-- Generate snapshot and graph incrementally
+
+- Stabilize the incremental graph generation
 - Applying other optimizations
-- Benchmarks
-
-### Features
-
-- Revisit the options for filtering
-    - Either be able to add multiple logger with different options or be able to give an array of options to a single logger
-    - Combined with that a way to include/exclude atom names / namespaces / tags / types / ..
-    - And some options to customize everything or have a set of templates/options already made.
-    - The idea behind this is to be able to log for example everything with less vibrant colors except a namespace of atoms that you want to debug.
-    - Another idea is to disable a lot of logging for intensive atoms and be able to have the "Group similar" devtool feature kicking in for them.
-- Have a way to disable colors and maybe disable the group (display an object at the end instead). This could be useful for downloading the logs and having only one line per log.
-- Maybe revisit the "reasons" given. Sometimes the logger doesn't show any "reasons" (empty array) for something but should show something. I might experiment a bit to find a good balance.
-- An API to build or insert custom logs. Might work on that after every other features.
-- Default options
-
-### Tests
-
-A lot of tests. Good code coverage.
-
-### Playground
-
-A playground projet that can be run on codesandbox for you to play with
