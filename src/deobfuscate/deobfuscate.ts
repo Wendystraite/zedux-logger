@@ -1,33 +1,44 @@
 import { purry } from 'remeda';
 
-function _deobfuscateAndTransform<OBJ, KEY extends keyof OBJ>(
+function _deobfuscateAndTransform<OBJ extends object, KEY extends keyof OBJ>(
   obj: OBJ,
-  key: KEY,
+  keys: KEY,
   translation: string,
   transform: (key: OBJ[KEY]) => unknown,
 ): OBJ {
-  let smartTranslation: string;
+  let smartTranslation: string = translation;
 
-  const keyStr = String(key);
+  const keysStr = String(keys);
 
-  const keyIndexInTranslation = translation.indexOf(keyStr);
-
-  if (keyIndexInTranslation >= 0) {
-    // key "e" + translation "ecosystem" = [e]cosystem
-    // key "V" + translation "scopeValues" = scope[V]alues
-    smartTranslation = `${translation.slice(0, keyIndexInTranslation)}[${keyStr}]${translation.slice(keyIndexInTranslation + keyStr.length)}`;
-  } else {
-    // key "izn" + translation "isZeduxNode" = [izn] (isZeduxNode)
-    smartTranslation = `[${keyStr}] (${translation})`;
+  if (keysStr.length === 0 || translation.length === 0 || !(keys in obj)) {
+    return obj;
   }
-  (obj as Record<string, unknown>)[smartTranslation] = transform(obj[key]);
+
+  for (const key of keysStr) {
+    const keyIndexInTranslation = smartTranslation.indexOf(key);
+
+    if (keyIndexInTranslation >= 0) {
+      // key "e" + translation "ecosystem" = [e]cosystem
+      // key "V" + translation "scopeValues" = scope[V]alues
+      smartTranslation = `${smartTranslation.slice(0, keyIndexInTranslation)}[${key}]${smartTranslation.slice(keyIndexInTranslation + key.length)}`;
+    } else {
+      // key "izn" + translation "isZeduxNode" = [izn] (isZeduxNode)
+      smartTranslation = `[${keysStr}] (${translation})`;
+      break;
+    }
+  }
+
+  (obj as Record<string, unknown>)[smartTranslation] = transform(obj[keys]);
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-  delete obj[key];
+  delete obj[keys];
   return obj;
 }
 
 // data-first
-export function deobfuscateAndTransform<OBJ, KEY extends keyof OBJ>(
+export function deobfuscateAndTransform<
+  OBJ extends object,
+  KEY extends keyof OBJ,
+>(
   obj: OBJ,
   key: KEY,
   translation: string,
@@ -35,7 +46,10 @@ export function deobfuscateAndTransform<OBJ, KEY extends keyof OBJ>(
 ): OBJ;
 
 // data-last
-export function deobfuscateAndTransform<OBJ, KEY extends keyof OBJ>(
+export function deobfuscateAndTransform<
+  OBJ extends object,
+  KEY extends keyof OBJ,
+>(
   key: KEY,
   translation: string,
   transform: (key: OBJ[KEY]) => unknown,
@@ -45,19 +59,23 @@ export function deobfuscateAndTransform(...args: unknown[]) {
   return purry(_deobfuscateAndTransform, args);
 }
 
-function _deobfuscate<OBJ>(obj: OBJ, key: keyof OBJ, translation: string): OBJ {
+function _deobfuscate<OBJ extends object>(
+  obj: OBJ,
+  key: keyof OBJ,
+  translation: string,
+): OBJ {
   return _deobfuscateAndTransform(obj, key, translation, (data) => data);
 }
 
 // data-first
-export function deobfuscate<OBJ>(
+export function deobfuscate<OBJ extends object>(
   obj: OBJ,
   key: keyof OBJ,
   translation: string,
 ): OBJ;
 
 // data-last
-export function deobfuscate<OBJ>(
+export function deobfuscate<OBJ extends object>(
   key: keyof OBJ,
   translation: string,
 ): (obj: OBJ) => OBJ;

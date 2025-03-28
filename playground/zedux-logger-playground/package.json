@@ -1,0 +1,46 @@
+{
+  "name": "zedux-logger-playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "format": "prettier --write src",
+    "lint": "eslint src",
+    "preview": "vite preview",
+    "check-format": "prettier --check src",
+    "ci": "pnpm run check-format && pnpm run lint"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@tailwindcss/vite": "^4.0.9",
+    "@wendystraite/zedux-logger": "^1.0.3",
+    "@zedux/core": "2.0.0-rc.0",
+    "@zedux/react": "2.0.0-rc.0",
+    "@zedux/stores": "2.0.0-rc.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.9"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react-swc": "^3.8.0",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "prettier": "^3.5.3",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@wendystraite/zedux-logger": "link:../.."
+    }
+  }
+}

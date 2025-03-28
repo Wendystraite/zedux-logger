@@ -4,13 +4,15 @@
   "description": "Logging utility for Zedux",
   "scripts": {
     "dev": "vitest",
-    "build": "tsc --build tsconfig.lib.json",
+    "build": "rm -fr dist && tsc --build tsconfig.lib.json",
     "format": "prettier --write src",
     "lint": "eslint src",
     "test": "vitest run",
+    "bench": "vitest bench",
     "check-format": "prettier --check src",
     "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
-    "ci": "pnpm run build && pnpm run check-format && pnpm run check-exports && pnpm run lint && pnpm run test",
+    "check-types": "tsc --build tsconfig.tests.json --noEmit",
+    "ci": "pnpm run build && pnpm run check-types && pnpm run check-format && pnpm run check-exports && pnpm run lint && pnpm run test",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "pnpm run ci"
   },
@@ -38,8 +40,10 @@
     "@eslint/js": "^9.21.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/react": "^19.0.10",
-    "@zedux/react": "2.0.0-beta.4",
+    "@zedux/react": "2.0.0-rc.0",
+    "@zedux/stores": "2.0.0-rc.0",
     "eslint": "^9.21.0",
     "happy-dom": "^17.1.4",
     "jiti": "^2.4.2",
@@ -51,6 +55,8 @@
   },
   "main": "dist/index.js",
   "dependencies": {
+    "@zedux/atoms": "2.0.0-rc.0",
+    "immer": "^10.1.1",
     "microdiff": "^1.5.0",
     "remeda": "^2.20.2"
   }

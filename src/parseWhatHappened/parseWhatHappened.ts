@@ -5,35 +5,39 @@ import {
   type Ecosystem,
   type EcosystemEvents,
   type EvaluationReason,
-  type GraphNode,
+  type ZeduxNode,
 } from '@zedux/react';
 
-import { ZEDUX_LOGGER_COLORS } from '../colors.js';
-import {
-  type AtomName,
-  parseAtomName,
-} from '../parseAtomName/parseAtomName.js';
+import { getParsedNodeIdGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
+import { type ParsedNodeId, parseNodeId } from '../parseAtomId/parseNodeId.js';
 import type { EventMap } from '../types/EventMap.js';
+import type { ZeduxLoggerColors } from '../types/ZeduxLoggerColors.js';
 
 export interface WhatHappened {
   eventMap: EventMap;
 
   ecosystem: Ecosystem;
-  ecosystemName: string;
+  ecosystemName: string | undefined;
 
-  summary: [what: string, emoji: string, color: string];
+  summaryWhat: string;
+  summaryEmoji: string;
+  getSummaryColor(this: void, colors: ZeduxLoggerColors): string;
 
   operation?: string;
 
-  atomName?: AtomName;
+  nodeId?: string;
+  nodeIdParsed?: ParsedNodeId;
+  nodeIdGroupNames?: string[];
 
-  node?: GraphNode;
-  observer?: GraphNode;
-  observerAtomName?: AtomName;
+  node?: ZeduxNode;
+  observer?: ZeduxNode;
+  observerId?: string;
+  observerIdParsed?: ParsedNodeId;
+  observerIdGroupNames?: string[];
   template?: AnyAtomTemplate;
-  flags?: string[];
+  tags?: string[];
 
-  waitingForPromisesNodes?: GraphNode[];
+  waitingForPromisesNodes?: ZeduxNode[];
 
   reasons?: EvaluationReason[];
 
@@ -55,7 +59,9 @@ export function parseWhatHappened(
     eventMap,
     ecosystem,
     ecosystemName: ecosystem.id,
-    summary: ['unknown', '❓', ZEDUX_LOGGER_COLORS.unknown],
+    summaryWhat: 'unknown',
+    summaryEmoji: '❓',
+    getSummaryColor: (colors) => colors.unknown,
   };
 
   if (eventMap.change !== undefined) {
@@ -86,11 +92,15 @@ export function parseWhatHappened(
   }
 
   if (w.node !== undefined) {
-    w.atomName = parseAtomName(w.node.id);
+    w.nodeId = w.node.id;
+    w.nodeIdParsed = parseNodeId(w.nodeId);
+    w.nodeIdGroupNames = getParsedNodeIdGroupNames(w.nodeIdParsed);
   }
 
   if (w.observer?.id !== undefined) {
-    w.observerAtomName = parseAtomName(w.observer.id);
+    w.observerId = w.observer.id;
+    w.observerIdParsed = parseNodeId(w.observerId);
+    w.observerIdGroupNames = getParsedNodeIdGroupNames(w.observerIdParsed);
   }
 
   if (w.node?.template instanceof AtomTemplateBase) {
@@ -98,7 +108,7 @@ export function parseWhatHappened(
   }
 
   if (w.template !== undefined) {
-    w.flags = w.template.flags;
+    w.tags = w.template.tags;
   }
 
   if (w.node !== undefined) {
@@ -111,16 +121,14 @@ export function parseWhatHappened(
   return w;
 }
 
-function getWaitingForNodes({
-  node,
-  skipNode,
-}: {
-  node: GraphNode;
+function getWaitingForNodes(args: {
+  node: ZeduxNode;
   skipNode: boolean;
-}): GraphNode[] {
-  const waitingNodes: GraphNode[] = [];
+}): ZeduxNode[] {
+  const { node, skipNode } = args;
+  const waitingNodes: ZeduxNode[] = [];
   if (!skipNode) {
-    if (node instanceof AtomInstance && node._promiseStatus === 'loading') {
+    if (node instanceof AtomInstance && node.promiseStatus === 'loading') {
       waitingNodes.push(node);
     }
   }
@@ -137,7 +145,9 @@ function handleEventChange(
   const { operation, reasons, source } = change;
   const newState = change.newState as unknown;
   const oldState = change.oldState as unknown;
-  w.summary = ['changed', '✏️', ZEDUX_LOGGER_COLORS.changed];
+  w.summaryWhat = 'changed';
+  w.summaryEmoji = '✏️';
+  w.getSummaryColor = (colors) => colors.changed;
   w.operation = operation;
   w.node = source;
   w.reasons = reasons;
@@ -155,31 +165,39 @@ function handleEventCycle(
   const { operation, reasons, source, newStatus, oldStatus } = cycle;
 
   if (newStatus === 'Initializing') {
-    w.summary = ['initializing', '⌛', ZEDUX_LOGGER_COLORS.initializing];
+    w.summaryWhat = 'initializing';
+    w.summaryEmoji = '⌛';
+    w.getSummaryColor = (colors) => colors.initializing;
   } else if (oldStatus === 'Initializing' && newStatus === 'Active') {
     if (
       source instanceof AtomInstance &&
       source.promise instanceof Promise &&
-      source._promiseStatus === 'loading'
+      source.promiseStatus === 'loading'
     ) {
-      w.summary = [
-        'initializing promise',
-        '⌛',
-        ZEDUX_LOGGER_COLORS.initializing,
-      ];
+      w.summaryWhat = 'initializing promise';
+      w.summaryEmoji = '⌛';
+      w.getSummaryColor = (colors) => colors.initializingPromise;
     } else {
-      w.summary = ['initialized', '⚡', ZEDUX_LOGGER_COLORS.initialized];
+      w.summaryWhat = 'initialized';
+      w.summaryEmoji = '⚡';
+      w.getSummaryColor = (colors) => colors.initialized;
       if (source !== undefined) {
         w.hasNewState = true;
         w.newState = source.v;
       }
     }
   } else if (newStatus === 'Active') {
-    w.summary = ['active', '✅', ZEDUX_LOGGER_COLORS.active];
+    w.summaryWhat = 'active';
+    w.summaryEmoji = '✅';
+    w.getSummaryColor = (colors) => colors.active;
   } else if (newStatus === 'Stale') {
-    w.summary = ['stale', '🕰️', ZEDUX_LOGGER_COLORS.stale];
+    w.summaryWhat = 'stale';
+    w.summaryEmoji = '🕰️';
+    w.getSummaryColor = (colors) => colors.stale;
   } else {
-    w.summary = ['destroyed', '💥', ZEDUX_LOGGER_COLORS.destroyed];
+    w.summaryWhat = 'destroyed';
+    w.summaryEmoji = '💥';
+    w.getSummaryColor = (colors) => colors.destroyed;
   }
 
   w.operation = operation;
@@ -193,7 +211,9 @@ function handleEventInvalidate(
   w: WhatHappened,
 ) {
   const { operation, reasons, source } = invalidate;
-  w.summary = ['invalidate', '🗑️', ZEDUX_LOGGER_COLORS.invalidate];
+  w.summaryWhat = 'invalidate';
+  w.summaryEmoji = '🗑️';
+  w.getSummaryColor = (colors) => colors.invalidate;
   w.operation = operation;
   w.node = source;
   w.reasons = reasons;
@@ -206,25 +226,25 @@ function handleEventPromiseChange(
 ) {
   const { operation, reasons, source } = promiseChange;
   const promiseStatus =
-    source instanceof AtomInstance ? source._promiseStatus : undefined;
+    source instanceof AtomInstance ? source.promiseStatus : undefined;
   if (promiseStatus === undefined) {
-    w.summary = ['promise changed', '✏️', ZEDUX_LOGGER_COLORS.promiseChange];
+    w.summaryWhat = 'promise changed';
+    w.summaryEmoji = '✏️';
+    w.getSummaryColor = (colors) => colors.promiseChange;
   } else if (promiseStatus === 'loading') {
-    w.summary = [
-      'promise loading',
-      '⌛',
-      ZEDUX_LOGGER_COLORS.promiseChangeLoading,
-    ];
+    w.summaryWhat = 'promise loading';
+    w.summaryEmoji = '⌛';
+    w.getSummaryColor = (colors) => colors.promiseChangeLoading;
   } else if (promiseStatus === 'success') {
-    w.summary = [
-      'promise success',
-      '✅',
-      ZEDUX_LOGGER_COLORS.promiseChangeSuccess,
-    ];
+    w.summaryWhat = 'promise success';
+    w.summaryEmoji = '✅';
+    w.getSummaryColor = (colors) => colors.promiseChangeSuccess;
     w.hasNewState = true;
     w.newState = source?.v;
   } else {
-    w.summary = ['promise error', '❌', ZEDUX_LOGGER_COLORS.promiseChangeError];
+    w.summaryWhat = 'promise error';
+    w.summaryEmoji = '❌';
+    w.getSummaryColor = (colors) => colors.promiseChangeError;
     w.hasNewState = true;
     w.newState = source?.v;
   }
@@ -237,11 +257,17 @@ function handleEventPromiseChange(
 function handleEventEdge(edge: NonNullable<EventMap['edge']>, w: WhatHappened) {
   const { source, action, observer } = edge;
   if (action === 'add') {
-    w.summary = ['edge added', '📈', ZEDUX_LOGGER_COLORS.edgeCreated];
+    w.summaryWhat = 'edge added';
+    w.summaryEmoji = '📈';
+    w.getSummaryColor = (colors) => colors.edgeCreated;
   } else if (action === 'update') {
-    w.summary = ['edge updated', '📈', ZEDUX_LOGGER_COLORS.edgeUpdated];
+    w.summaryWhat = 'edge updated';
+    w.summaryEmoji = '📈';
+    w.getSummaryColor = (colors) => colors.edgeUpdated;
   } else {
-    w.summary = ['edge removed', '📉', ZEDUX_LOGGER_COLORS.edgeRemoved];
+    w.summaryWhat = 'edge removed';
+    w.summaryEmoji = '📉';
+    w.getSummaryColor = (colors) => colors.edgeRemoved;
   }
   w.node = source;
   w.event = edge;
@@ -253,7 +279,9 @@ function handleEventError(
   w: WhatHappened,
 ) {
   const { source, error: errorObj } = error;
-  w.summary = ['error', '❌', ZEDUX_LOGGER_COLORS.error];
+  w.summaryWhat = 'error';
+  w.summaryEmoji = '❌';
+  w.getSummaryColor = (colors) => colors.error;
   w.node = source;
   w.event = error;
   w.error = errorObj;
@@ -263,20 +291,9 @@ function handleEventResetStart(
   resetStart: NonNullable<EventMap['resetStart']>,
   w: WhatHappened,
 ) {
-  const { isDestroy } = resetStart;
-  if (isDestroy) {
-    w.summary = [
-      'destroying ecosystem',
-      '🧹',
-      ZEDUX_LOGGER_COLORS.ecosystemDestroyStart,
-    ];
-  } else {
-    w.summary = [
-      'resetting ecosystem',
-      '🧹',
-      ZEDUX_LOGGER_COLORS.ecosystemResetStart,
-    ];
-  }
+  w.summaryWhat = 'resetting ecosystem';
+  w.summaryEmoji = '🧹';
+  w.getSummaryColor = (colors) => colors.ecosystemResetStart;
   w.event = resetStart;
 }
 
@@ -284,20 +301,9 @@ function handleEventResetEnd(
   resetEnd: NonNullable<EventMap['resetEnd']>,
   w: WhatHappened,
 ) {
-  const { isDestroy } = resetEnd;
-  if (isDestroy) {
-    w.summary = [
-      'ecosystem destroyed',
-      '🧹',
-      ZEDUX_LOGGER_COLORS.ecosystemDestroyEnd,
-    ];
-  } else {
-    w.summary = [
-      'ecosystem reset',
-      '🧹',
-      ZEDUX_LOGGER_COLORS.ecosystemResetEnd,
-    ];
-  }
+  w.summaryWhat = 'ecosystem reset';
+  w.summaryEmoji = '🧹';
+  w.getSummaryColor = (colors) => colors.ecosystemResetEnd;
   w.event = resetEnd;
 }
 
@@ -306,7 +312,9 @@ function handleEventRunStart(
   w: WhatHappened,
 ) {
   const { source } = runStart;
-  w.summary = ['evaluating', '⚙️', ZEDUX_LOGGER_COLORS.evaluating];
+  w.summaryWhat = 'evaluating';
+  w.summaryEmoji = '⚙️';
+  w.getSummaryColor = (colors) => colors.evaluating;
   w.node = source;
   w.event = runStart;
 }
@@ -316,7 +324,9 @@ function handleEventRunEnd(
   w: WhatHappened,
 ) {
   const { source } = runEnd;
-  w.summary = ['evaluated', '⚙️', ZEDUX_LOGGER_COLORS.evaluated];
+  w.summaryWhat = 'evaluated';
+  w.summaryEmoji = '⚙️';
+  w.getSummaryColor = (colors) => colors.evaluated;
   w.node = source;
   w.event = runEnd;
 }

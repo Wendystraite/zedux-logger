@@ -14,7 +14,19 @@ export function deobfuscateEcosystem(ecosystem: Ecosystem): Ecosystem {
       return deobfuscated;
     },
 
+    deobfuscate('C', 'eventCounts'),
+    deobfuscate('L', 'eventListeners'),
+    deobfuscate('S', 'getScopeValue'),
+    deobfuscate('T', 'Type'),
     deobfuscate('b', 'baseKeys'),
+    deobfuscate('cf', 'current finishBuffer'),
+    deobfuscate('ch', 'current handleStateChange'),
+    deobfuscate('cs', 'current startBuffer'),
     deobfuscate('n', 'nodes'),
+    deobfuscate('s', 'scopesByAtom'),
+    deobfuscate('w', 'why'),
+    deobfuscate('wt', 'why tail'),
+    deobfuscate('j', 'job'),
+    deobfuscate('u', 'updateSelectorRef'),
   );
 }

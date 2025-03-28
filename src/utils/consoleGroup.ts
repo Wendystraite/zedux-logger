@@ -1,5 +1,5 @@
 export function consoleGroup(
-  console: Console,
+  console: Pick<Console, 'group' | 'groupCollapsed' | 'groupEnd'>,
   type: 'group' | 'groupCollapsed',
   label: string | string[],
   callback: () => void,

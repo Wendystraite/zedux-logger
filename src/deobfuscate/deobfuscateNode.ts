@@ -1,23 +1,24 @@
 import {
   AtomInstance,
   ExternalNode,
-  type GraphNode,
   type InternalEvaluationReason,
   type Job,
+  Listener,
   MappedSignal,
   SelectorInstance,
   Signal,
+  type ZeduxNode,
 } from '@zedux/react';
-import { map, pipe, piped, when } from 'remeda';
+import { pipe, piped, when } from 'remeda';
 
 import { deobfuscate, deobfuscateAndTransform } from './deobfuscate.js';
 
-export function deobfuscateNode(node: GraphNode): GraphNode {
+export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
   return pipe(
     // eslint-disable-next-line @typescript-eslint/no-misused-spread
-    { ...node } as GraphNode,
+    { ...node } as ZeduxNode,
 
-    (deobfuscated) => {
+    (deobfuscated: ZeduxNode) => {
       (deobfuscated as unknown as Record<'__original', unknown>).__original =
         node;
       return deobfuscated;
@@ -37,27 +38,29 @@ export function deobfuscateNode(node: GraphNode): GraphNode {
           4: 'RunEffect',
         }[type];
       }),
-      (node) => node as GraphNode,
+      (node) => node as ZeduxNode,
     ),
 
-    // GraphNode
+    // ZeduxNode
     piped(
       deobfuscate('izn', 'isZeduxNode'),
       deobfuscate('L', 'ListenerNode'),
       deobfuscate('V', 'scopeValues'),
+      deobfuscate('P', 'P'),
       deobfuscate('c', 'cancelDestruction'),
       deobfuscate('d', 'dehydrate'),
+      deobfuscate('e', 'ecosystem'),
     ),
     piped(
-      deobfuscate('e', 'ecosystem'),
       deobfuscate('f', 'filter'),
       deobfuscate('h', 'hydrate'),
+      deobfuscate('j', 'job'),
       deobfuscate('l', 'lifecycleStatus'),
       deobfuscate('m', 'maybeDestroy'),
-    ),
-    piped(
       deobfuscate('o', 'observers'),
       deobfuscate('p', 'params'),
+    ),
+    piped(
       deobfuscate('r', 'run'),
       deobfuscate('s', 'sources'),
       deobfuscate('t', 'template'),
@@ -65,8 +68,18 @@ export function deobfuscateNode(node: GraphNode): GraphNode {
       deobfuscateAndTransform(
         'w',
         'why',
-        map(deobfuscateInternalEvaluationReason),
+        (reason: InternalEvaluationReason | undefined) => {
+          const deobfuscatedReasons: InternalEvaluationReason[] = [];
+          while (reason !== undefined) {
+            deobfuscatedReasons.push(
+              deobfuscateInternalEvaluationReason(reason),
+            );
+            reason = reason.l;
+          }
+          return deobfuscatedReasons;
+        },
       ),
+      deobfuscate('wt', 'why tail'),
     ),
 
     // ExternalNode
@@ -75,20 +88,18 @@ export function deobfuscateNode(node: GraphNode): GraphNode {
       (node) => {
         return pipe(
           node,
-          deobfuscate('n', 'notify'),
           deobfuscate('i', 'instance'),
+          deobfuscate('n', 'notify'),
           deobfuscate('k', 'killEdge'),
           deobfuscate('u', 'updateEdge'),
-          (node) => node as GraphNode,
+          (node) => node as ZeduxNode,
         );
       },
     ),
 
     // Listener
     when(
-      // "Listener" is not exported
-      (node: unknown): node is Record<string, unknown> =>
-        node instanceof ExternalNode && 'C' in node,
+      (node): node is Listener => node instanceof Listener,
       (node) => {
         return pipe(
           node,
@@ -96,7 +107,7 @@ export function deobfuscateNode(node: GraphNode): GraphNode {
           deobfuscate('N', 'Notifiers'),
           deobfuscate('D', 'DecrementNotifiers'),
           deobfuscate('I', 'IncrementNotifiers'),
-          (node) => node as unknown as GraphNode,
+          (node) => node as ZeduxNode,
         );
       },
     ),
@@ -108,7 +119,7 @@ export function deobfuscateNode(node: GraphNode): GraphNode {
         return pipe(
           node,
           deobfuscate('E', 'EventMap'),
-          (node) => node as GraphNode,
+          (node) => node as ZeduxNode,
         );
       },
     ),
@@ -120,11 +131,13 @@ export function deobfuscateNode(node: GraphNode): GraphNode {
         return pipe(
           node,
           deobfuscate('a', 'alteredEdge'),
+          deobfuscate('H', 'injectedHydration'),
           deobfuscate('I', 'Injectors'),
           deobfuscate('N', 'NextInjectors'),
           deobfuscate('S', 'Signal'),
           deobfuscate('i', 'init'),
-          (node) => node as GraphNode,
+          deobfuscate('x', 'exportsInfusedSetter'),
+          (node) => node as ZeduxNode,
         );
       },
     ),
@@ -133,7 +146,7 @@ export function deobfuscateNode(node: GraphNode): GraphNode {
     when(
       (node) => node instanceof SelectorInstance,
       (node) => {
-        return pipe(node, (node) => node as GraphNode);
+        return pipe(node, (node) => node as ZeduxNode);
       },
     ),
 
@@ -148,7 +161,7 @@ export function deobfuscateNode(node: GraphNode): GraphNode {
           deobfuscate('b', 'bufferedTransactions'),
           deobfuscate('I', 'IdsToKeys'),
           deobfuscate('N', 'NextState'),
-          (node) => node as GraphNode,
+          (node) => node as ZeduxNode,
         );
       },
     ),
@@ -169,6 +182,7 @@ function deobfuscateInternalEvaluationReason(
 
     deobfuscate('e', 'eventMap'),
     deobfuscate('f', 'fullEventMap'),
+    deobfuscate('l', 'linkedReason'),
     deobfuscate('n', 'newStateOrStatus'),
     deobfuscate('o', 'oldStateOrStatus'),
     deobfuscate('s', 'source'),

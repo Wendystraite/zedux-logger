@@ -1,14 +1,15 @@
 import { sliceString } from 'remeda';
 
-import type { ZeduxLoggerOptions } from '../types/ZeduxLoggerOptions.js';
+import type { CompleteZeduxLoggerLocalOptions } from '../types/ZeduxLoggerLocalOptions.js';
 
 export function stringifyState(args: {
   showStateOption: boolean;
   state: unknown;
   hasState: boolean;
-  options: ZeduxLoggerOptions;
+  console: CompleteZeduxLoggerLocalOptions['console'];
+  maxLength: number;
 }): string | undefined {
-  const { showStateOption, state, hasState, options } = args;
+  const { showStateOption, state, hasState, console, maxLength } = args;
   let stateString: string | undefined;
   if (showStateOption && hasState) {
     try {
@@ -18,12 +19,20 @@ export function stringifyState(args: {
         stateString = JSON.stringify(state);
       }
     } catch (error: unknown) {
-      options.console.warn('Failed to generate previous state string', error);
-      stateString = String(state);
+      if (error instanceof TypeError && error.message.includes('circular')) {
+        stateString = '[Circular]';
+      } else {
+        console.warn('Failed to generate previous state string', error);
+        stateString = String(state);
+      }
     }
   }
-  if (stateString !== undefined && stateString.length > 50) {
-    stateString = sliceString(stateString, 0, 50) + '…';
+  if (
+    maxLength > 0 &&
+    stateString !== undefined &&
+    stateString.length > maxLength
+  ) {
+    stateString = sliceString(stateString, 0, maxLength) + '…';
   }
   return stateString;
 }
