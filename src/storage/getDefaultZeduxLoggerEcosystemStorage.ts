@@ -122,6 +122,7 @@ export function getDefaultZeduxLoggerEcosystemStorage(
     originalOptions: loggerOptions,
     completeMergedOptions,
     completeGlobalOptions,
+    completeLocalOptions,
     filters,
     runStartTimeMapping: new Map(),
     calculateGraph,

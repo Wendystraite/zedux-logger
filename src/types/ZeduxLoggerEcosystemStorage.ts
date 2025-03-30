@@ -33,6 +33,12 @@ export interface ZeduxLoggerEcosystemStorage {
    */
   completeGlobalOptions: CompleteZeduxLoggerGlobalOptions;
   /**
+   * The complete local options for the logger.
+   *
+   * This is used as-it when no filters are provided or as the default local options for each filter.
+   */
+  completeLocalOptions: CompleteZeduxLoggerLocalOptions;
+  /**
    * The filters for the logger with the complete local options for each filter.
    */
   filters: Array<
