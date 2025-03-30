@@ -53,51 +53,66 @@ export function getDefaultZeduxLoggerEcosystemStorage(
     return { ...filter, options: completeLocalOptionsOfFilter };
   });
 
-  const showGraph = getIsOptionEnabledEitherGloballyOrLocallyOnce(
+  const calculateGraph = getIsOptionEnabledEitherGloballyOrLocallyOnce(
     filters,
     completeMergedOptions,
     (options) => options.showInDetails.showGraph,
   );
 
-  const useIncrementalGraph =
-    showGraph && completeMergedOptions.debugOptions.useIncrementalGraph;
+  const calculateIncrementalGraph =
+    calculateGraph && completeMergedOptions.debugOptions.useIncrementalGraph;
 
-  const useTopDownGraph =
-    showGraph &&
+  const calculateTopDownGraph =
+    calculateGraph &&
     getIsOptionEnabledEitherGloballyOrLocallyOnce(
       filters,
       completeMergedOptions,
       (options) => options.graphOptions.showTopDownGraph,
     );
 
-  const useBottomUpGraph =
-    showGraph &&
+  const calculateBottomUpGraph =
+    calculateGraph &&
     getIsOptionEnabledEitherGloballyOrLocallyOnce(
       filters,
       completeMergedOptions,
       (options) => options.graphOptions.showBottomUpGraph,
     );
 
-  const useFlatGraph =
-    showGraph &&
+  const calculateFlatGraph =
+    calculateGraph &&
     getIsOptionEnabledEitherGloballyOrLocallyOnce(
       filters,
       completeMergedOptions,
       (options) => options.graphOptions.showFlatGraph,
     );
 
-  const useByNamespacesGraph =
-    showGraph &&
+  const calculateByNamespacesGraph =
+    calculateGraph &&
     getIsOptionEnabledEitherGloballyOrLocallyOnce(
       filters,
       completeMergedOptions,
       (options) => options.graphOptions.showByNamespacesGraph,
     );
 
-  const showSnapshot = getIsOptionEnabledEitherGloballyOrLocallyOnce(
+  const calculateSnapshot = getIsOptionEnabledEitherGloballyOrLocallyOnce(
     filters,
     completeMergedOptions,
     (options) => options.showInDetails.showSnapshot,
+  );
+
+  const calculateExecutionTime = getIsOptionEnabledEitherGloballyOrLocallyOnce(
+    filters,
+    completeMergedOptions,
+    (options) => {
+      return (
+        options.showInSummary.showExecutionTime ||
+        options.showInDetails.showExecutionTime ||
+        options.executionTimeOptions.warnInConsoleIfSlow ||
+        options.executionTimeOptions.errorInConsoleIfVerySlow ||
+        options.executionTimeOptions.onSlowEvaluation !== null ||
+        options.executionTimeOptions.onVerySlowEvaluation !== null
+      );
+    },
   );
 
   return {
@@ -109,13 +124,14 @@ export function getDefaultZeduxLoggerEcosystemStorage(
     completeGlobalOptions,
     filters,
     runStartTimeMapping: new Map(),
-    calculateGraph: showGraph,
-    calculateIncrementalGraph: useIncrementalGraph,
-    calculateTopDownGraph: useTopDownGraph,
-    calculateBottomUpGraph: useBottomUpGraph,
-    calculateFlatGraph: useFlatGraph,
-    calculateByNamespacesGraph: useByNamespacesGraph,
-    calculateSnapshot: showSnapshot,
+    calculateGraph,
+    calculateIncrementalGraph,
+    calculateTopDownGraph,
+    calculateBottomUpGraph,
+    calculateFlatGraph,
+    calculateByNamespacesGraph,
+    calculateSnapshot,
+    calculateExecutionTime,
   };
 }
 

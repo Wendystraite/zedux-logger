@@ -59,4 +59,6 @@ export interface ZeduxLoggerEcosystemStorage {
   calculateByNamespacesGraph: boolean;
   /** Whether the logger is generating a snapshot */
   calculateSnapshot: boolean;
+  /** Whether the logger is calculating the execution time of nodes */
+  calculateExecutionTime: boolean;
 }

@@ -55,6 +55,8 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       return;
     }
 
+    const runExecutionTimeMs = calculateExecutionTime(eventMap, storage);
+
     const what = parseWhatHappened(ecosystem, eventMap);
 
     const { canLog, localOptions } = calculateCanLogEventWithOptions(
@@ -100,12 +102,6 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
         });
       }
     }
-
-    const runExecutionTimeMs = calculateExecutionTime(
-      what,
-      storage,
-      localOptions,
-    );
 
     if (storage.calculateSnapshot) {
       if (storage.snapshot === undefined) {
