@@ -1,5 +1,12 @@
 # zedux-logger
 
+## 2.0.1
+
+### Patch Changes
+
+- bfb884a: Prevent false positives when calculating execution time of nodes
+- 1c63d17: Bump zedux to 2.0.0-rc.5
+
 ## 2.0.0
 
 ### Major Changes
