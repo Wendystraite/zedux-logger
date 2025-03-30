@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@zedux/atoms':
-        specifier: 2.0.0-rc.0
-        version: 2.0.0-rc.0
+        specifier: 2.0.0-rc.5
+        version: 2.0.0-rc.5
       immer:
         specifier: ^10.1.1
         version: 10.1.1
@@ -46,11 +46,11 @@ importers:
         specifier: 3.0.7
         version: 3.0.7(vitest@3.0.7(happy-dom@17.1.4)(jiti@2.4.2))
       '@zedux/react':
-        specifier: 2.0.0-rc.0
-        version: 2.0.0-rc.0(react@19.0.0)
+        specifier: 2.0.0-rc.5
+        version: 2.0.0-rc.5(react@19.0.0)
       '@zedux/stores':
-        specifier: 2.0.0-rc.0
-        version: 2.0.0-rc.0
+        specifier: 2.0.0-rc.5
+        version: 2.0.0-rc.5
       eslint:
         specifier: ^9.21.0
         version: 9.21.0(jiti@2.4.2)
@@ -693,19 +693,19 @@ packages:
   '@vitest/utils@3.0.7':
     resolution: {integrity: sha512-xePVpCRfooFX3rANQjwoditoXgWb1MaFbzmGuPP59MK6i13mrnDw/yEIyJudLeW6/38mCNcwCiJIGmpDPibAIg==}
 
-  '@zedux/atoms@2.0.0-rc.0':
-    resolution: {integrity: sha512-UB0r9HCpL2/xmoGyGj565FCIAJLW/4Fzpr5RQF0YCgZYjL+lPrdW56n3ceDYnRfdURWMCk9fJjOumRQ1MjgsPQ==}
+  '@zedux/atoms@2.0.0-rc.5':
+    resolution: {integrity: sha512-mfGNYoDT2QE/gVGjqitfCoePnQi98AyXVK3ZmLxGlNuEMEzmvH4BuSEINWK7rLzmb+pPxatKB1yWBNF9FScXtg==}
 
-  '@zedux/core@2.0.0-rc.0':
-    resolution: {integrity: sha512-BZKUp9RPw7kiRO1nGhMQzFUcdJkIvMIybOJvwR+bgRa4wmtH1R/EcSZEuVv3ARw0IIJnGZP62W8V+5TEujh3AA==}
+  '@zedux/core@2.0.0-rc.5':
+    resolution: {integrity: sha512-b6BFOJNMAV4ziCXyddJiLR1LgW46JuYSyAwaevjVn1415uP6trecq+Z8NzoPn0DUFvoJ/6fNdriWZN2JA5XuNA==}
 
-  '@zedux/react@2.0.0-rc.0':
-    resolution: {integrity: sha512-DmRr9LEqAOv1H1jP+kjM2Jj8Wfhtnfj9PJqokmWKZ3hC99SOFaFLEsD1d8fzXjbF5DQQiehfMnrBrvb8vFWq6Q==}
+  '@zedux/react@2.0.0-rc.5':
+    resolution: {integrity: sha512-8jPdcCZj8hMFDKxzEfUuMFgPi013ypcGnXvk8goRzA2RzLk0HEeXeR1Cv3Xwru+3NBstsxSDN2hXV0V6f8PFQw==}
     peerDependencies:
       react: '>=18.0.0'
 
-  '@zedux/stores@2.0.0-rc.0':
-    resolution: {integrity: sha512-jOmCezmYPo191fEdfAvJ9zLPIWIWvcubyDYUsUFbHZ9nJWybOTaOpmKm3u4lF9W5AbGxqQASPJTt1godhZUAPA==}
+  '@zedux/stores@2.0.0-rc.5':
+    resolution: {integrity: sha512-3viW2VNS4u9Wtcjkj4kLPgsVie1AqIvwM2BI7HhymA/7EqbAbT3AHvNHLdxRwBnZg3WQ4JmzuluMG9VJmFBgIg==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2450,19 +2450,19 @@ snapshots:
       loupe: 3.1.3
       tinyrainbow: 2.0.0
 
-  '@zedux/atoms@2.0.0-rc.0': {}
+  '@zedux/atoms@2.0.0-rc.5': {}
 
-  '@zedux/core@2.0.0-rc.0': {}
+  '@zedux/core@2.0.0-rc.5': {}
 
-  '@zedux/react@2.0.0-rc.0(react@19.0.0)':
+  '@zedux/react@2.0.0-rc.5(react@19.0.0)':
     dependencies:
-      '@zedux/atoms': 2.0.0-rc.0
+      '@zedux/atoms': 2.0.0-rc.5
       react: 19.0.0
 
-  '@zedux/stores@2.0.0-rc.0':
+  '@zedux/stores@2.0.0-rc.5':
     dependencies:
-      '@zedux/atoms': 2.0.0-rc.0
-      '@zedux/core': 2.0.0-rc.0
+      '@zedux/atoms': 2.0.0-rc.5
+      '@zedux/core': 2.0.0-rc.5
 
   acorn-jsx@5.3.2(acorn@8.14.0):
     dependencies:

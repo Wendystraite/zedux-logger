@@ -28,6 +28,7 @@ export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
     piped(
       (node) => node as Job,
       deobfuscate('W', 'Weight'),
+      deobfuscate('R', 'needsRecalculation'),
       deobfuscate('j', 'job'),
       deobfuscateAndTransform('T', 'Type', (type) => {
         return {
@@ -46,7 +47,6 @@ export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
       deobfuscate('izn', 'isZeduxNode'),
       deobfuscate('L', 'ListenerNode'),
       deobfuscate('V', 'scopeValues'),
-      deobfuscate('P', 'P'),
       deobfuscate('c', 'cancelDestruction'),
       deobfuscate('d', 'dehydrate'),
       deobfuscate('e', 'ecosystem'),
