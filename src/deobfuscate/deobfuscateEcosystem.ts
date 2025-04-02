@@ -4,13 +4,14 @@ import { pipe } from 'remeda';
 import { deobfuscate } from './deobfuscate.js';
 
 export function deobfuscateEcosystem(ecosystem: Ecosystem): Ecosystem {
+  const original = ecosystem;
   return pipe(
     // eslint-disable-next-line @typescript-eslint/no-misused-spread
     { ...ecosystem } as Ecosystem,
 
     (deobfuscated) => {
       (deobfuscated as unknown as Record<'__original', unknown>).__original =
-        ecosystem;
+        original;
       return deobfuscated;
     },
 

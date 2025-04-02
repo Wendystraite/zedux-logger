@@ -9,8 +9,8 @@ import { deobfuscateNode } from './deobfuscateNode.js';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-type AnyEvents = EcosystemEvents & { eventReceived: EventReceivedEvent };
-type AnyEvent = AnyEvents[keyof AnyEvents];
+export type AnyEvents = EcosystemEvents & { eventReceived: EventReceivedEvent };
+export type AnyEvent = AnyEvents[keyof AnyEvents];
 
 type EventWithSource = {
   [K in keyof AnyEvents]: AnyEvents[K] extends Partial<Record<'source', any>>
@@ -31,12 +31,13 @@ type EventWithReasons = {
 }[keyof AnyEvents];
 
 export function deobfuscateEvent<EVENT extends AnyEvent>(event: EVENT): EVENT {
+  const original = event;
   return pipe(
     { ...event } as AnyEvent,
 
     (deobfuscated) => {
       (deobfuscated as unknown as Record<'__original', unknown>).__original =
-        event;
+        original;
       return deobfuscated;
     },
 

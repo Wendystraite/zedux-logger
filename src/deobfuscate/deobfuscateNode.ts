@@ -14,13 +14,14 @@ import { pipe, piped, when } from 'remeda';
 import { deobfuscate, deobfuscateAndTransform } from './deobfuscate.js';
 
 export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
+  const original = node;
   return pipe(
     // eslint-disable-next-line @typescript-eslint/no-misused-spread
     { ...node } as ZeduxNode,
 
     (deobfuscated: ZeduxNode) => {
       (deobfuscated as unknown as Record<'__original', unknown>).__original =
-        node;
+        original;
       return deobfuscated;
     },
 
@@ -84,7 +85,7 @@ export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
 
     // ExternalNode
     when(
-      (node) => node instanceof ExternalNode,
+      (node): node is ExternalNode => original instanceof ExternalNode,
       (node) => {
         return pipe(
           node,
@@ -99,7 +100,7 @@ export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
 
     // Listener
     when(
-      (node): node is Listener => node instanceof Listener,
+      (node): node is Listener => original instanceof Listener,
       (node) => {
         return pipe(
           node,
@@ -114,7 +115,7 @@ export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
 
     // Signal
     when(
-      (node) => node instanceof Signal,
+      (node): node is Signal => original instanceof Signal,
       (node) => {
         return pipe(
           node,
@@ -126,7 +127,7 @@ export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
 
     // AtomInstance
     when(
-      (node) => node instanceof AtomInstance,
+      (node): node is AtomInstance => original instanceof AtomInstance,
       (node) => {
         return pipe(
           node,
@@ -144,7 +145,7 @@ export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
 
     // SelectorInstance
     when(
-      (node) => node instanceof SelectorInstance,
+      (node): node is SelectorInstance => original instanceof SelectorInstance,
       (node) => {
         return pipe(node, (node) => node as ZeduxNode);
       },
@@ -152,7 +153,7 @@ export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
 
     // MappedSignal
     when(
-      (node) => node instanceof MappedSignal,
+      (node): node is MappedSignal => original instanceof MappedSignal,
       (node) => {
         return pipe(
           node,
