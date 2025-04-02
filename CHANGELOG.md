@@ -1,5 +1,12 @@
 # zedux-logger
 
+## 2.0.2
+
+### Patch Changes
+
+- 192f3a5: Fix some node keys that were not deobfuscated
+- c358812: better performances during nodes deobfuscation
+
 ## 2.0.1
 
 ### Patch Changes

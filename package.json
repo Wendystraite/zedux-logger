@@ -1,6 +1,6 @@
 {
   "name": "@wendystraite/zedux-logger",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Logging utility for Zedux",
   "scripts": {
     "dev": "vitest",
