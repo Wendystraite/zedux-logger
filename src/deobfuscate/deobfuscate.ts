@@ -1,18 +1,15 @@
-import { purry } from 'remeda';
-
-function _deobfuscateAndTransform<OBJ extends object, KEY extends keyof OBJ>(
-  obj: OBJ,
+function _makeDeobfuscateAndTransform<
+  OBJ extends object,
+  KEY extends keyof OBJ,
+>(
   keys: KEY,
   translation: string,
-  transform: (key: OBJ[KEY]) => unknown,
-): OBJ {
+): (obj: OBJ, transform: (key: OBJ[KEY]) => unknown) => OBJ {
   let smartTranslation: string = translation;
 
   const keysStr = String(keys);
 
-  if (keysStr.length === 0 || translation.length === 0 || !(keys in obj)) {
-    return obj;
-  }
+  const isInvalid = keysStr.length === 0 || translation.length === 0;
 
   for (const key of keysStr) {
     const keyIndexInTranslation = smartTranslation.indexOf(key);
@@ -28,10 +25,15 @@ function _deobfuscateAndTransform<OBJ extends object, KEY extends keyof OBJ>(
     }
   }
 
-  (obj as Record<string, unknown>)[smartTranslation] = transform(obj[keys]);
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-  delete obj[keys];
-  return obj;
+  return function _deobfuscateAndTransform(obj, transform) {
+    if (isInvalid || !(keys in obj)) {
+      return obj;
+    }
+    (obj as Record<string, unknown>)[smartTranslation] = transform(obj[keys]);
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete obj[keys];
+    return obj;
+  };
 }
 
 // data-first
@@ -56,15 +58,30 @@ export function deobfuscateAndTransform<
 ): (obj: OBJ) => OBJ;
 
 export function deobfuscateAndTransform(...args: unknown[]) {
-  return purry(_deobfuscateAndTransform, args);
-}
-
-function _deobfuscate<OBJ extends object>(
-  obj: OBJ,
-  key: keyof OBJ,
-  translation: string,
-): OBJ {
-  return _deobfuscateAndTransform(obj, key, translation, (data) => data);
+  if (args.length === 3) {
+    const [key, translation, transform] = args as [
+      keyof object,
+      string,
+      (key: string) => unknown,
+    ];
+    const fn = _makeDeobfuscateAndTransform<object, keyof object>(
+      key,
+      translation,
+    );
+    return (obj: object) => fn(obj, transform);
+  } else {
+    const [obj, key, translation, transform] = args as [
+      object,
+      keyof object,
+      string,
+      (key: string) => unknown,
+    ];
+    const fn = _makeDeobfuscateAndTransform<object, keyof object>(
+      key,
+      translation,
+    );
+    return fn(obj, transform);
+  }
 }
 
 // data-first
@@ -81,5 +98,21 @@ export function deobfuscate<OBJ extends object>(
 ): (obj: OBJ) => OBJ;
 
 export function deobfuscate(...args: unknown[]) {
-  return purry(_deobfuscate, args);
+  // return purry(_deobfuscate, args);
+  if (args.length === 2) {
+    const [key, translation] = args as [keyof object, string];
+    return deobfuscateAndTransform<object, keyof object>(
+      key,
+      translation,
+      (data) => data,
+    );
+  } else {
+    const [obj, key, translation] = args as [object, keyof object, string];
+    return deobfuscateAndTransform<object, keyof object>(
+      obj,
+      key,
+      translation,
+      (data) => data,
+    );
+  }
 }

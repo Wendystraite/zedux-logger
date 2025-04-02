@@ -7,187 +7,174 @@ import {
   MappedSignal,
   SelectorInstance,
   Signal,
-  type ZeduxNode,
+  ZeduxNode,
 } from '@zedux/react';
-import { pipe, piped, when } from 'remeda';
 
 import { deobfuscate, deobfuscateAndTransform } from './deobfuscate.js';
 
-export function deobfuscateNode(node: ZeduxNode): ZeduxNode {
-  const original = node;
-  return pipe(
-    // eslint-disable-next-line @typescript-eslint/no-misused-spread
-    { ...node } as ZeduxNode,
+const deobfuscatesJob = [
+  deobfuscate<Job>('W', 'Weight'),
+  deobfuscate<Job>('R', 'needsRecalculation'),
+  deobfuscate<Job>('j', 'job'),
+  deobfuscateAndTransform<Job, 'T'>('T', 'Type', (type) => {
+    return {
+      0: 'UpdateStore',
+      1: 'InformSubscribers',
+      2: 'EvaluateGraphNode',
+      3: 'UpdateExternalDependent',
+      4: 'RunEffect',
+    }[type];
+  }),
+];
 
-    (deobfuscated: ZeduxNode) => {
-      (deobfuscated as unknown as Record<'__original', unknown>).__original =
-        original;
-      return deobfuscated;
+const deobfuscatesZeduxNode = [
+  deobfuscate<ZeduxNode>('izn', 'isZeduxNode'),
+  deobfuscate<ZeduxNode>('L', 'ListenerNode'),
+  deobfuscate<ZeduxNode>('V', 'scopeValues'),
+  deobfuscate<ZeduxNode>('c', 'cancelDestruction'),
+  deobfuscate<ZeduxNode>('d', 'dehydrate'),
+  deobfuscate<ZeduxNode>('e', 'ecosystem'),
+  deobfuscate<ZeduxNode>('f', 'filter'),
+  deobfuscate<ZeduxNode>('h', 'hydrate'),
+  deobfuscate<ZeduxNode>('j', 'job'),
+  deobfuscate<ZeduxNode>('l', 'lifecycleStatus'),
+  deobfuscate<ZeduxNode>('m', 'maybeDestroy'),
+  deobfuscate<ZeduxNode>('o', 'observers'),
+  deobfuscate<ZeduxNode>('p', 'params'),
+  deobfuscate<ZeduxNode>('r', 'run'),
+  deobfuscate<ZeduxNode>('s', 'sources'),
+  deobfuscate<ZeduxNode>('t', 'template'),
+  deobfuscate<ZeduxNode>('v', 'value'),
+  deobfuscateAndTransform<ZeduxNode, 'w'>(
+    'w',
+    'why',
+    (reason: InternalEvaluationReason | undefined) => {
+      const deobfuscatedReasons: InternalEvaluationReason[] = [];
+      while (reason !== undefined) {
+        deobfuscatedReasons.push(deobfuscateInternalEvaluationReason(reason));
+        reason = reason.l;
+      }
+      return deobfuscatedReasons;
     },
+  ),
+  deobfuscate<ZeduxNode>('wt', 'why tail'),
+];
 
-    // Job
-    piped(
-      (node) => node as Job,
-      deobfuscate('W', 'Weight'),
-      deobfuscate('R', 'needsRecalculation'),
-      deobfuscate('j', 'job'),
-      deobfuscateAndTransform('T', 'Type', (type) => {
-        return {
-          0: 'UpdateStore',
-          1: 'InformSubscribers',
-          2: 'EvaluateGraphNode',
-          3: 'UpdateExternalDependent',
-          4: 'RunEffect',
-        }[type];
-      }),
-      (node) => node as ZeduxNode,
-    ),
+const deobfuscatesExternalNode = [
+  deobfuscate<ExternalNode>('i', 'instance'),
+  deobfuscate<ExternalNode>('n', 'notify'),
+  deobfuscate<ExternalNode>('k', 'killEdge'),
+  deobfuscate<ExternalNode>('u', 'updateEdge'),
+];
 
-    // ZeduxNode
-    piped(
-      deobfuscate('izn', 'isZeduxNode'),
-      deobfuscate('L', 'ListenerNode'),
-      deobfuscate('V', 'scopeValues'),
-      deobfuscate('c', 'cancelDestruction'),
-      deobfuscate('d', 'dehydrate'),
-      deobfuscate('e', 'ecosystem'),
-    ),
-    piped(
-      deobfuscate('f', 'filter'),
-      deobfuscate('h', 'hydrate'),
-      deobfuscate('j', 'job'),
-      deobfuscate('l', 'lifecycleStatus'),
-      deobfuscate('m', 'maybeDestroy'),
-      deobfuscate('o', 'observers'),
-      deobfuscate('p', 'params'),
-    ),
-    piped(
-      deobfuscate('r', 'run'),
-      deobfuscate('s', 'sources'),
-      deobfuscate('t', 'template'),
-      deobfuscate('v', 'value'),
-      deobfuscateAndTransform(
-        'w',
-        'why',
-        (reason: InternalEvaluationReason | undefined) => {
-          const deobfuscatedReasons: InternalEvaluationReason[] = [];
-          while (reason !== undefined) {
-            deobfuscatedReasons.push(
-              deobfuscateInternalEvaluationReason(reason),
-            );
-            reason = reason.l;
-          }
-          return deobfuscatedReasons;
-        },
-      ),
-      deobfuscate('wt', 'why tail'),
-    ),
+const deobfuscatesListener = [
+  deobfuscate<Listener>('C', 'eventCounts'),
+  deobfuscate<Listener>('N', 'Notifiers'),
+  deobfuscate<Listener>('D', 'DecrementNotifiers'),
+  deobfuscate<Listener>('I', 'IncrementNotifiers'),
+];
 
-    // ExternalNode
-    when(
-      (node): node is ExternalNode => original instanceof ExternalNode,
-      (node) => {
-        return pipe(
-          node,
-          deobfuscate('i', 'instance'),
-          deobfuscate('n', 'notify'),
-          deobfuscate('k', 'killEdge'),
-          deobfuscate('u', 'updateEdge'),
-          (node) => node as ZeduxNode,
-        );
-      },
-    ),
+const deobfuscatesSignal = [deobfuscate<Signal>('E', 'EventMap')];
 
-    // Listener
-    when(
-      (node): node is Listener => original instanceof Listener,
-      (node) => {
-        return pipe(
-          node,
-          deobfuscate('C', 'eventCounts'),
-          deobfuscate('N', 'Notifiers'),
-          deobfuscate('D', 'DecrementNotifiers'),
-          deobfuscate('I', 'IncrementNotifiers'),
-          (node) => node as ZeduxNode,
-        );
-      },
-    ),
+const deobfuscatesAtomInstance = [
+  deobfuscate<AtomInstance>('a', 'alteredEdge'),
+  deobfuscate<AtomInstance>('H', 'injectedHydration'),
+  deobfuscate<AtomInstance>('I', 'Injectors'),
+  deobfuscate<AtomInstance>('N', 'NextInjectors'),
+  deobfuscate<AtomInstance>('S', 'Signal'),
+  deobfuscate<AtomInstance>('i', 'init'),
+  deobfuscate<AtomInstance>('x', 'exportsInfusedSetter'),
+];
 
-    // Signal
-    when(
-      (node): node is Signal => original instanceof Signal,
-      (node) => {
-        return pipe(
-          node,
-          deobfuscate('E', 'EventMap'),
-          (node) => node as ZeduxNode,
-        );
-      },
-    ),
+const deobfuscatesMappedSignal = [
+  deobfuscate<MappedSignal>('M', 'SignalMap'),
+  deobfuscate<MappedSignal>('C', 'ChangeEvents'),
+  deobfuscate<MappedSignal>('b', 'bufferedTransactions'),
+  deobfuscate<MappedSignal>('I', 'IdsToKeys'),
+  deobfuscate<MappedSignal>('N', 'NextState'),
+];
 
-    // AtomInstance
-    when(
-      (node): node is AtomInstance => original instanceof AtomInstance,
-      (node) => {
-        return pipe(
-          node,
-          deobfuscate('a', 'alteredEdge'),
-          deobfuscate('H', 'injectedHydration'),
-          deobfuscate('I', 'Injectors'),
-          deobfuscate('N', 'NextInjectors'),
-          deobfuscate('S', 'Signal'),
-          deobfuscate('i', 'init'),
-          deobfuscate('x', 'exportsInfusedSetter'),
-          (node) => node as ZeduxNode,
-        );
-      },
-    ),
+export function deobfuscateNode(original: ZeduxNode): ZeduxNode {
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread
+  const deobfuscated = { ...original } as ZeduxNode;
 
-    // SelectorInstance
-    when(
-      (node): node is SelectorInstance => original instanceof SelectorInstance,
-      (node) => {
-        return pipe(node, (node) => node as ZeduxNode);
-      },
-    ),
+  (deobfuscated as unknown as Record<'__original', unknown>).__original =
+    original;
 
-    // MappedSignal
-    when(
-      (node): node is MappedSignal => original instanceof MappedSignal,
-      (node) => {
-        return pipe(
-          node,
-          deobfuscate('M', 'SignalMap'),
-          deobfuscate('C', 'ChangeEvents'),
-          deobfuscate('b', 'bufferedTransactions'),
-          deobfuscate('I', 'IdsToKeys'),
-          deobfuscate('N', 'NextState'),
-          (node) => node as ZeduxNode,
-        );
-      },
-    ),
-  );
+  // Job
+  for (const deobfuscateJob of deobfuscatesJob) {
+    deobfuscateJob(deobfuscated);
+  }
+
+  // ZeduxNode
+  for (const deobfuscateZeduxNode of deobfuscatesZeduxNode) {
+    deobfuscateZeduxNode(deobfuscated);
+  }
+
+  // ExternalNode
+  if (original instanceof ExternalNode) {
+    for (const deobfuscateExternalNode of deobfuscatesExternalNode) {
+      deobfuscateExternalNode(deobfuscated as ExternalNode);
+    }
+  }
+
+  // Listener
+  if (original instanceof Listener) {
+    for (const deobfuscateListener of deobfuscatesListener) {
+      deobfuscateListener(deobfuscated as Listener);
+    }
+  }
+
+  // Signal
+  if (original instanceof Signal) {
+    for (const deobfuscateSignal of deobfuscatesSignal) {
+      deobfuscateSignal(deobfuscated as Signal);
+    }
+  }
+
+  // AtomInstance
+  if (original instanceof AtomInstance) {
+    for (const deobfuscateAtomInstance of deobfuscatesAtomInstance) {
+      deobfuscateAtomInstance(deobfuscated as AtomInstance);
+    }
+  }
+
+  // SelectorInstance
+  if (original instanceof SelectorInstance) {
+    for (const deobfuscateSelectorInstance of deobfuscatesZeduxNode) {
+      deobfuscateSelectorInstance(deobfuscated as SelectorInstance);
+    }
+  }
+
+  // MappedSignal
+  if (original instanceof MappedSignal) {
+    for (const deobfuscateMappedSignal of deobfuscatesMappedSignal) {
+      deobfuscateMappedSignal(deobfuscated as MappedSignal);
+    }
+  }
+
+  return deobfuscated;
 }
+
+const deobfuscatesInternalEvaluationReason = [
+  deobfuscate<InternalEvaluationReason>('e', 'eventMap'),
+  deobfuscate<InternalEvaluationReason>('f', 'fullEventMap'),
+  deobfuscate<InternalEvaluationReason>('l', 'linkedReason'),
+  deobfuscate<InternalEvaluationReason>('n', 'newStateOrStatus'),
+  deobfuscate<InternalEvaluationReason>('o', 'oldStateOrStatus'),
+  deobfuscate<InternalEvaluationReason>('s', 'source'),
+  deobfuscate<InternalEvaluationReason>('r', 'reasons'),
+  deobfuscate<InternalEvaluationReason>('t', 'type'),
+];
 
 function deobfuscateInternalEvaluationReason(
   reason: InternalEvaluationReason,
 ): InternalEvaluationReason {
-  return pipe(
-    { ...reason } as InternalEvaluationReason,
-
-    (deobfuscated) => {
-      (deobfuscated as unknown as Record<'__original', unknown>).__original =
-        reason;
-      return deobfuscated;
-    },
-
-    deobfuscate('e', 'eventMap'),
-    deobfuscate('f', 'fullEventMap'),
-    deobfuscate('l', 'linkedReason'),
-    deobfuscate('n', 'newStateOrStatus'),
-    deobfuscate('o', 'oldStateOrStatus'),
-    deobfuscate('s', 'source'),
-    deobfuscate('r', 'reasons'),
-    deobfuscate('t', 'type'),
-  );
+  const deobfuscated = { ...reason } as InternalEvaluationReason;
+  (deobfuscated as unknown as Record<'__original', unknown>).__original =
+    reason;
+  for (const deobfuscateInternalEvaluationReason of deobfuscatesInternalEvaluationReason) {
+    deobfuscateInternalEvaluationReason(deobfuscated);
+  }
+  return deobfuscated;
 }

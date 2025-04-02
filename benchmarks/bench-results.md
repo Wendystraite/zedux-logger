@@ -22,11 +22,11 @@
    · zedux logger grouped logs      588.93  1.0330  14.4109  1.6980  1.4113  4.9503  6.0937  14.4109  ±8.55%      296   slowest
    · zedux logger one lines logs    607.44  1.0983   5.4305  1.6462  1.3748  5.3733  5.4292   5.4305  ±7.34%      304
 
- ✓ benchmarks/deobfuscate.bench.ts > deobfuscate 1860ms
-     name                               hz     min      max    mean     p75     p99     p995     p999      rme  samples
-   · basic zedux logger           2,049.37  0.2798   6.6622  0.4880  0.4152  2.5759   3.3624   6.1946   ±6.29%     1025   fastest
-   · zedux logger no deobfuscate    567.77  0.9403  13.9454  1.7613  1.5410  9.8648  11.7162  13.9454  ±10.21%      284
-   · zedux logger deobfuscate       168.66  4.3402   8.0258  5.9292  6.7041  8.0258   8.0258   8.0258   ±3.63%       85   slowest
+ ✓ benchmarks/deobfuscate.bench.ts > deobfuscate 1843ms
+     name                               hz     min      max    mean     p75     p99     p995     p999     rme  samples   
+   · basic zedux logger           2,029.63  0.2827   6.6106  0.4927  0.4048  2.3617   4.3239   5.3053  ±6.55%     1015   fastest
+   · zedux logger no deobfuscate    601.35  0.9446  11.4992  1.6629  1.3885  5.8658   8.8833  11.4992  ±8.37%      301   
+   · zedux logger deobfuscate       265.88  2.5231  22.2163  3.7611  4.8915  6.6638  22.2163  22.2163  ±8.98%      133   slowest
 
  ✓ benchmarks/snapshots.bench.ts > snapshots 1840ms
      name                             hz     min      max    mean     p75     p99     p995     p999     rme  samples
@@ -47,8 +47,8 @@
     57.83x faster than zedux logger all enabled with incremental graph
 
   basic zedux logger - benchmarks/deobfuscate.bench.ts > deobfuscate
-    3.61x faster than zedux logger no deobfuscate
-    12.15x faster than zedux logger deobfuscate
+    3.38x faster than zedux logger no deobfuscate
+    7.63x faster than zedux logger deobfuscate
 
   basic zedux logger - benchmarks/graph.bench.ts > graph
     3.04x faster than zedux logger no graph

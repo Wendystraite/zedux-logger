@@ -3,70 +3,33 @@ import {
   type EvaluationReason,
   type EventReceivedEvent,
 } from '@zedux/react';
-import { pipe, when } from 'remeda';
 
 import { deobfuscateNode } from './deobfuscateNode.js';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type AnyEvents = EcosystemEvents & { eventReceived: EventReceivedEvent };
 export type AnyEvent = AnyEvents[keyof AnyEvents];
 
-type EventWithSource = {
-  [K in keyof AnyEvents]: AnyEvents[K] extends Partial<Record<'source', any>>
-    ? AnyEvents[K]
-    : never;
-}[keyof AnyEvents];
+export function deobfuscateEvent<EVENT extends AnyEvent>(
+  original: EVENT,
+): EVENT {
+  const deobfuscated = { ...original } as AnyEvent;
 
-type EventWithObserver = {
-  [K in keyof AnyEvents]: AnyEvents[K] extends Partial<Record<'observer', any>>
-    ? AnyEvents[K]
-    : never;
-}[keyof AnyEvents];
+  (deobfuscated as unknown as Record<'__original', unknown>).__original =
+    original;
 
-type EventWithReasons = {
-  [K in keyof AnyEvents]: AnyEvents[K] extends Partial<Record<'reasons', any>>
-    ? AnyEvents[K]
-    : never;
-}[keyof AnyEvents];
+  if ('source' in deobfuscated && deobfuscated.source !== undefined) {
+    deobfuscated.source = deobfuscateNode(deobfuscated.source);
+  }
 
-export function deobfuscateEvent<EVENT extends AnyEvent>(event: EVENT): EVENT {
-  const original = event;
-  return pipe(
-    { ...event } as AnyEvent,
+  if ('observer' in deobfuscated) {
+    deobfuscated.observer = deobfuscateNode(deobfuscated.observer);
+  }
 
-    (deobfuscated) => {
-      (deobfuscated as unknown as Record<'__original', unknown>).__original =
-        original;
-      return deobfuscated;
-    },
+  if ('reasons' in deobfuscated && deobfuscated.reasons !== undefined) {
+    deobfuscated.reasons = deobfuscateReasons(deobfuscated.reasons);
+  }
 
-    when(
-      (event): event is EventWithSource => 'source' in event,
-      (event) => {
-        if (event.source !== undefined) {
-          event.source = deobfuscateNode(event.source);
-        }
-        return event as AnyEvent;
-      },
-    ),
-    when(
-      (event): event is EventWithObserver => 'observer' in event,
-      (event) => {
-        event.observer = deobfuscateNode(event.observer);
-        return event as AnyEvent;
-      },
-    ),
-    when(
-      (event): event is EventWithReasons => 'reasons' in event,
-      (event) => {
-        if (event.reasons !== undefined) {
-          event.reasons = deobfuscateReasons(event.reasons);
-        }
-        return event as AnyEvent;
-      },
-    ),
-  ) as EVENT;
+  return deobfuscated as EVENT;
 }
 
 export function deobfuscateReasons(reasons: EvaluationReason[]) {

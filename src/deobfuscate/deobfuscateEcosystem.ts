@@ -1,33 +1,34 @@
-import type { Ecosystem } from '@zedux/react';
-import { pipe } from 'remeda';
+import { Ecosystem } from '@zedux/react';
 
 import { deobfuscate } from './deobfuscate.js';
 
-export function deobfuscateEcosystem(ecosystem: Ecosystem): Ecosystem {
-  const original = ecosystem;
-  return pipe(
-    // eslint-disable-next-line @typescript-eslint/no-misused-spread
-    { ...ecosystem } as Ecosystem,
+const deobfuscatesEcosystem = [
+  deobfuscate<Ecosystem>('C', 'eventCounts'),
+  deobfuscate<Ecosystem>('L', 'eventListeners'),
+  deobfuscate<Ecosystem>('S', 'getScopeValue'),
+  deobfuscate<Ecosystem>('T', 'Type'),
+  deobfuscate<Ecosystem>('b', 'baseKeys'),
+  deobfuscate<Ecosystem>('cf', 'current finishBuffer'),
+  deobfuscate<Ecosystem>('ch', 'current handleStateChange'),
+  deobfuscate<Ecosystem>('cs', 'current startBuffer'),
+  deobfuscate<Ecosystem>('n', 'nodes'),
+  deobfuscate<Ecosystem>('s', 'scopesByAtom'),
+  deobfuscate<Ecosystem>('w', 'why'),
+  deobfuscate<Ecosystem>('wt', 'why tail'),
+  deobfuscate<Ecosystem>('j', 'job'),
+  deobfuscate<Ecosystem>('u', 'updateSelectorRef'),
+];
 
-    (deobfuscated) => {
-      (deobfuscated as unknown as Record<'__original', unknown>).__original =
-        original;
-      return deobfuscated;
-    },
+export function deobfuscateEcosystem(original: Ecosystem): Ecosystem {
+  // eslint-disable-next-line @typescript-eslint/no-misused-spread
+  const deobfuscated = { ...original } as Ecosystem;
 
-    deobfuscate('C', 'eventCounts'),
-    deobfuscate('L', 'eventListeners'),
-    deobfuscate('S', 'getScopeValue'),
-    deobfuscate('T', 'Type'),
-    deobfuscate('b', 'baseKeys'),
-    deobfuscate('cf', 'current finishBuffer'),
-    deobfuscate('ch', 'current handleStateChange'),
-    deobfuscate('cs', 'current startBuffer'),
-    deobfuscate('n', 'nodes'),
-    deobfuscate('s', 'scopesByAtom'),
-    deobfuscate('w', 'why'),
-    deobfuscate('wt', 'why tail'),
-    deobfuscate('j', 'job'),
-    deobfuscate('u', 'updateSelectorRef'),
-  );
+  (deobfuscated as unknown as Record<'__original', unknown>).__original =
+    original;
+
+  for (const deobfuscateEcosystem of deobfuscatesEcosystem) {
+    deobfuscateEcosystem(deobfuscated);
+  }
+
+  return deobfuscated;
 }
