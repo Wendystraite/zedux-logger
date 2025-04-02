@@ -1,3 +1,1 @@
-export const DEFAULT_BENCH_OPTIONS = {
-  time: 2_000,
-};
+export const DEFAULT_BENCH_OPTIONS = {};

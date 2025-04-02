@@ -74,10 +74,11 @@ export const LOTS_OF_ATOMS_IDS = [
 export function addLotsOfAtomsInEcosystem(
   ecosystem: Ecosystem,
   options?: {
+    noRenders?: boolean;
     triggerSomeChanges?: boolean;
   },
 ): void {
-  const { triggerSomeChanges = false } = options ?? {};
+  const { triggerSomeChanges = false, noRenders = false } = options ?? {};
 
   // Lot of atoms
   for (let i = 0; i < 10; i++) {
@@ -231,15 +232,17 @@ export function addLotsOfAtomsInEcosystem(
     useAtomValue(atomWithEverythingWithParamsAndScope, [42]);
     return null;
   }
-  render(
-    <StrContext value="some context value">
-      <NbContext value={42}>
-        <EcosystemProvider ecosystem={ecosystem}>
-          <MyComponent />
-        </EcosystemProvider>
-      </NbContext>
-    </StrContext>,
-  );
+  if (!noRenders) {
+    render(
+      <StrContext value="some context value">
+        <NbContext value={42}>
+          <EcosystemProvider ecosystem={ecosystem}>
+            <MyComponent />
+          </EcosystemProvider>
+        </NbContext>
+      </StrContext>,
+    );
+  }
 
   // @listener
   const signalNode = ecosystem.getNode(

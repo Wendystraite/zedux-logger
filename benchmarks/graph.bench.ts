@@ -1,5 +1,6 @@
 import { describe } from 'vitest';
 
+import type { ZeduxLoggerBuiltInTemplateKey } from '../src/types/ZeduxLoggerBuiltInTemplateKey';
 import { benchBasicLogger } from './utils/benchBasicLogger';
 import { benchZeduxLogger } from './utils/benchZeduxLogger';
 import { mockConsole } from './utils/mockConsole';
@@ -11,20 +12,26 @@ describe('graph', () => {
 
   benchBasicLogger();
 
+  const defaultTemplates = [
+    'no-snapshots',
+    'no-deobfuscate',
+    'no-graphs',
+  ] satisfies ZeduxLoggerBuiltInTemplateKey[];
+
   // no graph
 
   benchZeduxLogger('no graph', {
-    templates: ['no-graphs'],
+    templates: [...defaultTemplates, 'no-graphs'],
   });
 
   // all graphs
 
   benchZeduxLogger('all graphs', {
-    templates: ['all-graphs'],
+    templates: [...defaultTemplates, 'all-graphs'],
   });
 
   benchZeduxLogger('all incremental graphs', {
-    templates: ['all-graphs'],
+    templates: [...defaultTemplates, 'all-graphs'],
     options: {
       debugOptions: {
         useIncrementalGraph: true,
@@ -35,10 +42,10 @@ describe('graph', () => {
   // flat graph
 
   benchZeduxLogger('only flat graph', {
-    templates: ['flat-graph'],
+    templates: [...defaultTemplates, 'flat-graph'],
   });
   benchZeduxLogger('only incremental flat graph', {
-    templates: ['flat-graph'],
+    templates: [...defaultTemplates, 'flat-graph'],
     options: {
       debugOptions: {
         useIncrementalGraph: true,
@@ -49,10 +56,10 @@ describe('graph', () => {
   // top down graph
 
   benchZeduxLogger('only top down graph', {
-    templates: ['top-down-graph'],
+    templates: [...defaultTemplates, 'top-down-graph'],
   });
   benchZeduxLogger('only incremental top down graph', {
-    templates: ['top-down-graph'],
+    templates: [...defaultTemplates, 'top-down-graph'],
     options: {
       debugOptions: {
         useIncrementalGraph: true,
@@ -63,10 +70,10 @@ describe('graph', () => {
   // bottom up graph
 
   benchZeduxLogger('only bottom up graph', {
-    templates: ['bottom-up-graph'],
+    templates: [...defaultTemplates, 'bottom-up-graph'],
   });
   benchZeduxLogger('only incremental bottom up graph', {
-    templates: ['bottom-up-graph'],
+    templates: [...defaultTemplates, 'bottom-up-graph'],
     options: {
       debugOptions: {
         useIncrementalGraph: true,
@@ -77,10 +84,10 @@ describe('graph', () => {
   // by namespaces graph
 
   benchZeduxLogger('only by namespaces graph', {
-    templates: ['by-namespaces-graph'],
+    templates: [...defaultTemplates, 'by-namespaces-graph'],
   });
   benchZeduxLogger('only incremental by namespaces graph', {
-    templates: ['by-namespaces-graph'],
+    templates: [...defaultTemplates, 'by-namespaces-graph'],
     options: {
       debugOptions: {
         useIncrementalGraph: true,

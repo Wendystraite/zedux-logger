@@ -1,4 +1,3 @@
-import { cleanup as testingLibraryCleanup } from '@testing-library/react';
 import { type Ecosystem, createEcosystem } from '@zedux/react';
 import { bench } from 'vitest';
 
@@ -12,22 +11,19 @@ export function benchBasicLogger(): void {
   bench(
     'basic zedux logger',
     () => {
-      addBasicZeduxLogger(ecosystem);
-
       runBench(ecosystem);
 
-      testingLibraryCleanup();
-      ecosystem.reset({ hydration: true, listeners: true, overrides: true });
+      ecosystem.reset({ hydration: true, listeners: false, overrides: true });
     },
     {
       ...DEFAULT_BENCH_OPTIONS,
 
       setup() {
-        ecosystem = createEcosystem({ id: `bench[basic zedux logger]` });
+        ecosystem = createEcosystem({ id: 'bench' });
+        addBasicZeduxLogger(ecosystem);
       },
 
       teardown() {
-        testingLibraryCleanup();
         ecosystem.reset({ hydration: true, listeners: true, overrides: true });
       },
     },
