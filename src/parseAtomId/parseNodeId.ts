@@ -31,7 +31,11 @@ export function parseNodeId(
   if (fullAtomName.startsWith('@')) {
     const parsed = parseBuiltInNodeId(fullAtomName);
     if (parsed !== undefined) {
-      if (parsed.type === '@signal' || parsed.type === '@listener') {
+      if (
+        parsed.type === '@signal' ||
+        parsed.type === '@listener' ||
+        parsed.type === '@memo'
+      ) {
         const subNode = parseNodeId(parsed.wrapped);
         Object.assign(parsed, { subNode });
       }

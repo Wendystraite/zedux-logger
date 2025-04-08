@@ -20,15 +20,33 @@ const TESTS: Array<[nodeId: string, groupNames: string[]]> = [
   ['nested/three', ['nested', 'three']],
   ['nested/three/four', ['nested', 'three', 'four']],
   ['@signal(withEverything)-1', ['withEverything', '@signal-1']],
+  ['@memo(withEverything)-2', ['withEverything', '@memo-2']],
+  ['@memo(withEverything)-3', ['withEverything', '@memo-3']],
   ['withEverything', ['withEverything']],
   [
     '@signal(withEverything/withParams-[11])-4',
     ['withEverything', 'withParams', '[11]', '@signal-4'],
   ],
+  [
+    '@memo(withEverything/withParams-[11])-5',
+    ['withEverything', 'withParams', '[11]', '@memo-5'],
+  ],
+  [
+    '@memo(withEverything/withParams-[11])-6',
+    ['withEverything', 'withParams', '[11]', '@memo-6'],
+  ],
   ['withEverything/withParams-[11]', ['withEverything', 'withParams', '[11]']],
   [
     '@signal(withEverything/withScope)-7',
     ['withEverything', 'withScope', '@signal-7'],
+  ],
+  [
+    '@memo(withEverything/withScope)-8',
+    ['withEverything', 'withScope', '@memo-8'],
+  ],
+  [
+    '@memo(withEverything/withScope)-9',
+    ['withEverything', 'withScope', '@memo-9'],
   ],
   [
     'withEverything/withScope-@scope("simple-context-value")',
@@ -39,11 +57,20 @@ const TESTS: Array<[nodeId: string, groupNames: string[]]> = [
     ['withEverything', 'withParamsAndScope', '[22]', '@signal-10'],
   ],
   [
+    '@memo(withEverything/withParamsAndScope-[22])-11',
+    ['withEverything', 'withParamsAndScope', '[22]', '@memo-11'],
+  ],
+  [
+    '@memo(withEverything/withParamsAndScope-[22])-12',
+    ['withEverything', 'withParamsAndScope', '[22]', '@memo-12'],
+  ],
+  [
     'withEverything/withParamsAndScope-[22]',
     ['withEverything', 'withParamsAndScope', '[22]'],
   ],
   ['@signal()-13', ['@signal', '13']],
   ['@signal()-14', ['@signal', '14']],
+  ['@memo(1)-15', ['1', '@memo-15']],
   ['1', ['1']],
   ['withScope-@scope(1)', ['withScope', '@scope-1']],
   ['@component(MyComponent)-:r0:', ['@component', 'MyComponent', ':r0:']],
@@ -76,11 +103,27 @@ const TESTS: Array<[nodeId: string, groupNames: string[]]> = [
     '@signal(withEverything/withParams-[21])-16',
     ['withEverything', 'withParams', '[21]', '@signal-16'],
   ],
+  [
+    '@memo(withEverything/withParams-[21])-17',
+    ['withEverything', 'withParams', '[21]', '@memo-17'],
+  ],
+  [
+    '@memo(withEverything/withParams-[21])-18',
+    ['withEverything', 'withParams', '[21]', '@memo-18'],
+  ],
   ['withEverything/withParams-[21]', ['withEverything', 'withParams', '[21]']],
   ['@component(MyComponent)-:r5:', ['@component', 'MyComponent', ':r5:']],
   [
     '@signal(withEverything/withScope)-19',
     ['withEverything', 'withScope', '@signal-19'],
+  ],
+  [
+    '@memo(withEverything/withScope)-20',
+    ['withEverything', 'withScope', '@memo-20'],
+  ],
+  [
+    '@memo(withEverything/withScope)-21',
+    ['withEverything', 'withScope', '@memo-21'],
   ],
   [
     'withEverything/withScope-@scope("some context value")',
@@ -90,6 +133,14 @@ const TESTS: Array<[nodeId: string, groupNames: string[]]> = [
   [
     '@signal(withEverything/withParamsAndScope-[42])-22',
     ['withEverything', 'withParamsAndScope', '[42]', '@signal-22'],
+  ],
+  [
+    '@memo(withEverything/withParamsAndScope-[42])-23',
+    ['withEverything', 'withParamsAndScope', '[42]', '@memo-23'],
+  ],
+  [
+    '@memo(withEverything/withParamsAndScope-[42])-24',
+    ['withEverything', 'withParamsAndScope', '[42]', '@memo-24'],
   ],
   [
     'withEverything/withParamsAndScope-[42]',

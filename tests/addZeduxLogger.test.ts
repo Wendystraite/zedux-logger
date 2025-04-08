@@ -1984,6 +1984,23 @@ describe('addZeduxLogger', () => {
         '@component(MyComponent)-:r6:': undefined,
         '@component(MyComponent)-:r7:': undefined,
         '@listener(@signal(with/signal)-25)-26': undefined,
+        '@memo(1)-15': 11,
+        '@memo(withEverything)-2': 'a',
+        '@memo(withEverything)-3': expect.any(Function),
+        '@memo(withEverything/withParams-[11])-5': 'a',
+        '@memo(withEverything/withParams-[11])-6': expect.any(Function),
+        '@memo(withEverything/withParams-[21])-17': 'a',
+        '@memo(withEverything/withParams-[21])-18': expect.any(Function),
+        '@memo(withEverything/withParamsAndScope-[22])-11': 'a',
+        '@memo(withEverything/withParamsAndScope-[22])-12':
+          expect.any(Function),
+        '@memo(withEverything/withParamsAndScope-[42])-23': 'a',
+        '@memo(withEverything/withParamsAndScope-[42])-24':
+          expect.any(Function),
+        '@memo(withEverything/withScope)-20': 'a',
+        '@memo(withEverything/withScope)-21': expect.any(Function),
+        '@memo(withEverything/withScope)-8': 'a',
+        '@memo(withEverything/withScope)-9': expect.any(Function),
         '@selector(namedFnSelector)-27': 0,
         '@selector(otherNamedFnSelector)-29': undefined,
         '@selector(unknown)-28': 0,
@@ -2033,7 +2050,7 @@ describe('addZeduxLogger', () => {
 
       const generatedSnapshot = generateSnapshot({ ecosystem });
 
-      expect(expectedSnapshot).toEqual(generatedSnapshot);
+      expect(generatedSnapshot).toEqual(expectedSnapshot);
 
       expect(
         consoleMock.log.mock.calls[consoleMock.log.mock.calls.length - 1],

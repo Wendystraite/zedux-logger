@@ -174,6 +174,38 @@ const TESTS: Array<[nodeId: string, parsedNodeId: ParsedNodeId]> = [
     },
   ],
   [
+    '@memo(withEverything)-2',
+    {
+      id: '@memo(withEverything)-2',
+      subNode: {
+        id: 'withEverything',
+        name: 'withEverything',
+        params: undefined,
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '2',
+      type: '@memo',
+      wrapped: 'withEverything',
+    },
+  ],
+  [
+    '@memo(withEverything)-3',
+    {
+      id: '@memo(withEverything)-3',
+      subNode: {
+        id: 'withEverything',
+        name: 'withEverything',
+        params: undefined,
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '3',
+      type: '@memo',
+      wrapped: 'withEverything',
+    },
+  ],
+  [
     'withEverything',
     {
       id: 'withEverything',
@@ -196,6 +228,38 @@ const TESTS: Array<[nodeId: string, parsedNodeId: ParsedNodeId]> = [
       },
       suffix: '4',
       type: '@signal',
+      wrapped: 'withEverything/withParams-[11]',
+    },
+  ],
+  [
+    '@memo(withEverything/withParams-[11])-5',
+    {
+      id: '@memo(withEverything/withParams-[11])-5',
+      subNode: {
+        id: 'withEverything/withParams-[11]',
+        name: 'withEverything/withParams',
+        params: '11',
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '5',
+      type: '@memo',
+      wrapped: 'withEverything/withParams-[11]',
+    },
+  ],
+  [
+    '@memo(withEverything/withParams-[11])-6',
+    {
+      id: '@memo(withEverything/withParams-[11])-6',
+      subNode: {
+        id: 'withEverything/withParams-[11]',
+        name: 'withEverything/withParams',
+        params: '11',
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '6',
+      type: '@memo',
       wrapped: 'withEverything/withParams-[11]',
     },
   ],
@@ -226,6 +290,38 @@ const TESTS: Array<[nodeId: string, parsedNodeId: ParsedNodeId]> = [
     },
   ],
   [
+    '@memo(withEverything/withScope)-8',
+    {
+      id: '@memo(withEverything/withScope)-8',
+      subNode: {
+        id: 'withEverything/withScope',
+        name: 'withEverything/withScope',
+        params: undefined,
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '8',
+      type: '@memo',
+      wrapped: 'withEverything/withScope',
+    },
+  ],
+  [
+    '@memo(withEverything/withScope)-9',
+    {
+      id: '@memo(withEverything/withScope)-9',
+      subNode: {
+        id: 'withEverything/withScope',
+        name: 'withEverything/withScope',
+        params: undefined,
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '9',
+      type: '@memo',
+      wrapped: 'withEverything/withScope',
+    },
+  ],
+  [
     'withEverything/withScope-@scope("simple-context-value")',
     {
       id: 'withEverything/withScope-@scope("simple-context-value")',
@@ -248,6 +344,38 @@ const TESTS: Array<[nodeId: string, parsedNodeId: ParsedNodeId]> = [
       },
       suffix: '10',
       type: '@signal',
+      wrapped: 'withEverything/withParamsAndScope-[22]',
+    },
+  ],
+  [
+    '@memo(withEverything/withParamsAndScope-[22])-11',
+    {
+      id: '@memo(withEverything/withParamsAndScope-[22])-11',
+      subNode: {
+        id: 'withEverything/withParamsAndScope-[22]',
+        name: 'withEverything/withParamsAndScope',
+        params: '22',
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '11',
+      type: '@memo',
+      wrapped: 'withEverything/withParamsAndScope-[22]',
+    },
+  ],
+  [
+    '@memo(withEverything/withParamsAndScope-[22])-12',
+    {
+      id: '@memo(withEverything/withParamsAndScope-[22])-12',
+      subNode: {
+        id: 'withEverything/withParamsAndScope-[22]',
+        name: 'withEverything/withParamsAndScope',
+        params: '22',
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '12',
+      type: '@memo',
       wrapped: 'withEverything/withParamsAndScope-[22]',
     },
   ],
@@ -279,6 +407,22 @@ const TESTS: Array<[nodeId: string, parsedNodeId: ParsedNodeId]> = [
       suffix: '14',
       type: '@signal',
       wrapped: '',
+    },
+  ],
+  [
+    '@memo(1)-15',
+    {
+      id: '@memo(1)-15',
+      subNode: {
+        id: '1',
+        name: '1',
+        params: undefined,
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '15',
+      type: '@memo',
+      wrapped: '1',
     },
   ],
   [
@@ -393,6 +537,38 @@ const TESTS: Array<[nodeId: string, parsedNodeId: ParsedNodeId]> = [
     },
   ],
   [
+    '@memo(withEverything/withParams-[21])-17',
+    {
+      id: '@memo(withEverything/withParams-[21])-17',
+      subNode: {
+        id: 'withEverything/withParams-[21]',
+        name: 'withEverything/withParams',
+        params: '21',
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '17',
+      type: '@memo',
+      wrapped: 'withEverything/withParams-[21]',
+    },
+  ],
+  [
+    '@memo(withEverything/withParams-[21])-18',
+    {
+      id: '@memo(withEverything/withParams-[21])-18',
+      subNode: {
+        id: 'withEverything/withParams-[21]',
+        name: 'withEverything/withParams',
+        params: '21',
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '18',
+      type: '@memo',
+      wrapped: 'withEverything/withParams-[21]',
+    },
+  ],
+  [
     'withEverything/withParams-[21]',
     {
       id: 'withEverything/withParams-[21]',
@@ -428,6 +604,38 @@ const TESTS: Array<[nodeId: string, parsedNodeId: ParsedNodeId]> = [
     },
   ],
   [
+    '@memo(withEverything/withScope)-20',
+    {
+      id: '@memo(withEverything/withScope)-20',
+      subNode: {
+        id: 'withEverything/withScope',
+        name: 'withEverything/withScope',
+        params: undefined,
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '20',
+      type: '@memo',
+      wrapped: 'withEverything/withScope',
+    },
+  ],
+  [
+    '@memo(withEverything/withScope)-21',
+    {
+      id: '@memo(withEverything/withScope)-21',
+      subNode: {
+        id: 'withEverything/withScope',
+        name: 'withEverything/withScope',
+        params: undefined,
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '21',
+      type: '@memo',
+      wrapped: 'withEverything/withScope',
+    },
+  ],
+  [
     'withEverything/withScope-@scope("some context value")',
     {
       id: 'withEverything/withScope-@scope("some context value")',
@@ -459,6 +667,38 @@ const TESTS: Array<[nodeId: string, parsedNodeId: ParsedNodeId]> = [
       },
       suffix: '22',
       type: '@signal',
+      wrapped: 'withEverything/withParamsAndScope-[42]',
+    },
+  ],
+  [
+    '@memo(withEverything/withParamsAndScope-[42])-23',
+    {
+      id: '@memo(withEverything/withParamsAndScope-[42])-23',
+      subNode: {
+        id: 'withEverything/withParamsAndScope-[42]',
+        name: 'withEverything/withParamsAndScope',
+        params: '42',
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '23',
+      type: '@memo',
+      wrapped: 'withEverything/withParamsAndScope-[42]',
+    },
+  ],
+  [
+    '@memo(withEverything/withParamsAndScope-[42])-24',
+    {
+      id: '@memo(withEverything/withParamsAndScope-[42])-24',
+      subNode: {
+        id: 'withEverything/withParamsAndScope-[42]',
+        name: 'withEverything/withParamsAndScope',
+        params: '42',
+        scope: undefined,
+        type: '@atom',
+      },
+      suffix: '24',
+      type: '@memo',
       wrapped: 'withEverything/withParamsAndScope-[42]',
     },
   ],

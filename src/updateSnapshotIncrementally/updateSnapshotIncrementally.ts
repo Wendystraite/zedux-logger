@@ -1,4 +1,4 @@
-import type { EcosystemEvents, ZeduxNode } from '@zedux/react';
+import type { EcosystemEvents } from '@zedux/react';
 
 export function updateSnapshotIncrementally(args: {
   eventMap: Partial<EcosystemEvents>;
@@ -18,10 +18,6 @@ export function updateSnapshotIncrementally(args: {
   return snapshot;
 }
 
-function shouldIgnoreNodeInSnapshot(nodeId: ZeduxNode['id']): boolean {
-  return nodeId.startsWith('@memo');
-}
-
 function handleCycleEvent(args: {
   cycle: NonNullable<EcosystemEvents['cycle']>;
   snapshot: Record<string, unknown>;
@@ -33,14 +29,8 @@ function handleCycleEvent(args: {
 
   if (source !== undefined) {
     if (newStatus === 'Active') {
-      if (shouldIgnoreNodeInSnapshot(source.id)) {
-        return snapshot;
-      }
       return { ...snapshot, [source.id]: source.v as unknown };
     } else if (newStatus === 'Destroyed') {
-      if (shouldIgnoreNodeInSnapshot(source.id)) {
-        return snapshot;
-      }
       const { [source.id]: _, ...newSnapshot } = snapshot;
       return newSnapshot;
     }
@@ -60,13 +50,7 @@ function handleChangeEvent(args: {
   } = args;
 
   if (source !== undefined) {
-    if (shouldIgnoreNodeInSnapshot(source.id)) {
-      return snapshot;
-    }
-    return {
-      ...snapshot,
-      [source.id]: change.newState as unknown,
-    };
+    return { ...snapshot, [source.id]: change.newState as unknown };
   }
 
   return snapshot;

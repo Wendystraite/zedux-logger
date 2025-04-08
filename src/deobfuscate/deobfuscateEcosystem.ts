@@ -13,9 +13,6 @@ const deobfuscatesEcosystem = [
   deobfuscate<Ecosystem>('cs', 'current startBuffer'),
   deobfuscate<Ecosystem>('n', 'nodes'),
   deobfuscate<Ecosystem>('s', 'scopesByAtom'),
-  deobfuscate<Ecosystem>('w', 'why'),
-  deobfuscate<Ecosystem>('wt', 'why tail'),
-  deobfuscate<Ecosystem>('j', 'job'),
   deobfuscate<Ecosystem>('u', 'updateSelectorRef'),
 ];
 

@@ -469,8 +469,6 @@ describe('deobfuscateEcosystem', () => {
         cs: 'cs',
         n: 'n',
         s: 's',
-        w: 'w',
-        wt: 'wt',
         _storage: '_storage',
         addOverrides: 'addOverrides',
         batch: 'batch',
@@ -494,7 +492,6 @@ describe('deobfuscateEcosystem', () => {
         viewGraph: 'viewGraph',
         why: 'why',
         withScope: 'withScope',
-        j: 'j',
         u: 'u',
       }),
     );

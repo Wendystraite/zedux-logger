@@ -44,8 +44,8 @@
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/react": "^19.0.10",
     "@vitest/coverage-v8": "3.0.7",
-    "@zedux/react": "2.0.0-rc.5",
-    "@zedux/stores": "2.0.0-rc.5",
+    "@zedux/react": "2.0.0-rc.7",
+    "@zedux/stores": "2.0.0-rc.7",
     "eslint": "^9.21.0",
     "happy-dom": "^17.1.4",
     "jiti": "^2.4.2",
@@ -57,7 +57,7 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@zedux/atoms": "2.0.0-rc.5",
+    "@zedux/atoms": "2.0.0-rc.7",
     "immer": "^10.1.1",
     "microdiff": "^1.5.0",
     "remeda": "^2.20.2"
