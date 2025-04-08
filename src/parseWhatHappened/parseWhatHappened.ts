@@ -37,8 +37,6 @@ export interface WhatHappened {
   template?: AnyAtomTemplate;
   tags?: string[];
 
-  waitingForPromisesNodes?: ZeduxNode[];
-
   reasons?: EvaluationReason[];
 
   oldState?: unknown;
@@ -111,31 +109,7 @@ export function parseWhatHappened(
     w.tags = w.template.tags;
   }
 
-  if (w.node !== undefined) {
-    w.waitingForPromisesNodes = getWaitingForNodes({
-      node: w.node,
-      skipNode: true,
-    });
-  }
-
   return w;
-}
-
-function getWaitingForNodes(args: {
-  node: ZeduxNode;
-  skipNode: boolean;
-}): ZeduxNode[] {
-  const { node, skipNode } = args;
-  const waitingNodes: ZeduxNode[] = [];
-  if (!skipNode) {
-    if (node instanceof AtomInstance && node.promiseStatus === 'loading') {
-      waitingNodes.push(node);
-    }
-  }
-  for (const source of node.s.keys()) {
-    waitingNodes.push(...getWaitingForNodes({ node: source, skipNode: false }));
-  }
-  return waitingNodes;
 }
 
 function handleEventChange(

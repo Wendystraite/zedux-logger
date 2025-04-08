@@ -1,73 +1,73 @@
 # Benchmarks results
 
 ```
- ✓ benchmarks/graph.bench.ts > graph 7423ms
+ ✓ benchmarks/graph.bench.ts > graph 7661ms
      name                                                     hz      min      max     mean      p75      p99     p995     p999      rme  samples
-   · basic zedux logger                                 1,940.42   0.2732   5.9410   0.5154   0.4220   2.8731   3.4645   5.9410   ±6.15%      971   fastest   
-   · zedux logger no graph                                638.73   0.9850  11.7405   1.5656   1.3633   5.2572  10.8573  11.7405   ±8.19%      320
-   · zedux logger all graphs                              182.02   3.8082  19.6581   5.4940   6.2219  19.6581  19.6581  19.6581   ±6.95%       92
-   · zedux logger all incremental graphs                 79.5281  10.3151  21.6300  12.5742  13.6476  21.6300  21.6300  21.6300   ±5.24%       40   slowest   
-   · zedux logger only flat graph                         356.68   1.9395   6.5876   2.8036   2.4311   6.0684   6.5876   6.5876   ±6.22%      179
-   · zedux logger only incremental flat graph             115.68   4.5432  20.8020   8.6448  11.5581  20.8020  20.8020  20.8020  ±12.77%       58
-   · zedux logger only top down graph                     384.86   1.7738  13.6089   2.5983   2.1924   5.7900  13.6089  13.6089   ±7.60%      193
-   · zedux logger only incremental top down graph         207.92   3.7792   9.6040   4.8095   4.5537   7.6893   9.6040   9.6040   ±4.90%      104
-   · zedux logger only bottom up graph                    344.10   1.7530  40.2984   2.9061   2.2397  16.2362  40.2984  40.2984  ±16.97%      173
-   · zedux logger only incremental bottom up graph        207.90   3.7036  10.1785   4.8101   4.5895   8.6182  10.1785  10.1785   ±5.76%      104
-   · zedux logger only by namespaces graph                213.27   3.2254   7.7515   4.6890   6.0326   7.2514   7.7515   7.7515   ±5.51%      107
-   · zedux logger only incremental by namespaces graph    199.95   3.8628   9.9774   5.0012   4.9551   8.3372   9.9774   9.9774   ±5.76%      101
+   · basic zedux logger                                 1,363.76   0.3946   6.8542   0.7333   0.6338   5.1532   5.9002   6.8542   ±7.82%      683   fastest
+   · zedux logger no graph                                449.68   1.3821   9.2320   2.2238   2.1701   6.8805   7.5658   9.2320   ±7.60%      225
+   · zedux logger all graphs                              118.99   5.3156  22.4380   8.4040   9.6963  22.4380  22.4380  22.4380   ±8.46%       60
+   · zedux logger all incremental graphs                 52.5665  14.6393  25.9454  19.0235  21.6265  25.9454  25.9454  25.9454   ±6.95%       27   slowest
+   · zedux logger only flat graph                         273.83   1.9303  30.6465   3.6519   4.4079   9.8049  30.6465  30.6465  ±13.09%      137
+   · zedux logger only incremental flat graph             151.33   4.6023  12.3652   6.6081   7.8393  12.3652  12.3652  12.3652   ±7.24%       76
+   · zedux logger only top down graph                     323.43   1.8130   8.6924   3.0919   4.1340   8.5276   8.6924   8.6924   ±8.12%      162
+   · zedux logger only incremental top down graph         178.30   3.7535  15.6601   5.6085   7.2511  15.6601  15.6601  15.6601   ±8.33%       90
+   · zedux logger only bottom up graph                    249.18   1.7509  19.9420   4.0132   4.4750  18.9223  19.9420  19.9420  ±13.13%      129
+   · zedux logger only incremental bottom up graph        152.79   3.6796  19.8430   6.5451   8.2021  19.8430  19.8430  19.8430  ±10.69%       77
+   · zedux logger only by namespaces graph                195.87   3.3267  17.6079   5.1055   6.0873  17.6079  17.6079  17.6079   ±8.72%       98
+   · zedux logger only incremental by namespaces graph    159.67   3.9069  45.9848   6.2630   7.2877  45.9848  45.9848  45.9848  ±18.27%       80
 
- ✓ benchmarks/oneLineLogs.bench.ts > one line logs 1863ms
-     name                               hz     min      max    mean     p75     p99    p995     p999     rme  samples
-   · basic zedux logger           1,933.88  0.2776   6.6950  0.5171  0.4165  2.7976  4.6516   6.6950  ±6.68%      973   fastest
-   · zedux logger grouped logs      588.93  1.0330  14.4109  1.6980  1.4113  4.9503  6.0937  14.4109  ±8.55%      296   slowest
-   · zedux logger one lines logs    607.44  1.0983   5.4305  1.6462  1.3748  5.3733  5.4292   5.4305  ±7.34%      304
+ ✓ benchmarks/oneLineLogs.bench.ts > one line logs 1858ms
+     name                               hz     min      max    mean     p75     p99     p995     p999      rme  samples
+   · basic zedux logger           1,407.07  0.3882   5.9957  0.7107  0.6142  4.3702   5.8387   5.9957   ±7.77%      704   fastest
+   · zedux logger grouped logs      488.02  0.9511  11.3092  2.0491  1.8276  9.7933  10.3580  11.3092  ±10.39%      246   slowest
+   · zedux logger one lines logs    557.02  1.0308  15.3518  1.7953  2.1590  5.3919   5.4616  15.3518   ±8.13%      279
 
- ✓ benchmarks/deobfuscate.bench.ts > deobfuscate 1843ms
-     name                               hz     min      max    mean     p75     p99     p995     p999     rme  samples   
-   · basic zedux logger           2,029.63  0.2827   6.6106  0.4927  0.4048  2.3617   4.3239   5.3053  ±6.55%     1015   fastest
-   · zedux logger no deobfuscate    601.35  0.9446  11.4992  1.6629  1.3885  5.8658   8.8833  11.4992  ±8.37%      301   
-   · zedux logger deobfuscate       265.88  2.5231  22.2163  3.7611  4.8915  6.6638  22.2163  22.2163  ±8.98%      133   slowest
+ ✓ benchmarks/deobfuscate.bench.ts > deobfuscate 1864ms
+     name                               hz     min      max    mean     p75      p99     p995     p999      rme  samples
+   · basic zedux logger           1,394.15  0.3928   8.9852  0.7173  0.6259   4.0070   5.1006   8.9852   ±7.51%      699   fastest
+   · zedux logger no deobfuscate    492.10  0.9757  17.1113  2.0321  2.2080   7.4790  10.0929  17.1113  ±10.26%      247
+   · zedux logger deobfuscate       258.64  2.5370  14.0618  3.8664  5.2844  13.0351  14.0618  14.0618   ±8.23%      130   slowest
 
- ✓ benchmarks/snapshots.bench.ts > snapshots 1840ms
-     name                             hz     min      max    mean     p75     p99     p995     p999     rme  samples
-   · basic zedux logger         2,008.76  0.2779   6.1688  0.4978  0.4058  2.8791   3.7879   5.7016  ±6.71%     1005   fastest
-   · zedux logger no snapshots    599.30  0.9859  13.7284  1.6686  1.4162  7.3796  11.6983  13.7284  ±9.26%      300
-   · zedux logger snapshots       483.50  1.4799  18.5015  2.0682  1.7700  4.8309   4.9619  18.5015  ±8.22%      242   slowest
+ ✓ benchmarks/snapshots.bench.ts > snapshots 1846ms
+     name                             hz     min      max    mean     p75     p99     p995     p999      rme  samples
+   · basic zedux logger         1,914.02  0.2898  13.9204  0.5225  0.3883  3.0381   4.7413  13.9204   ±8.99%      959   fastest
+   · zedux logger no snapshots    573.83  0.9753  12.1128  1.7427  1.4310  9.3013  11.5793  12.1128  ±10.08%      287
+   · zedux logger snapshots       477.60  1.4772  20.0646  2.0938  1.6609  6.2645   6.3627  20.0646   ±9.58%      239   slowest
 
- ✓ benchmarks/addZeduxLogger.bench.ts > addZeduxLogger 2131ms
-     name                                                      hz      min      max     mean      p75      p99     p995     p999     rme  samples
-   · basic zedux logger                                  1,924.63   0.2781   7.1401   0.5196   0.4217   2.8247   4.0452   7.1401  ±6.76%      963   fastest   
-   · zedux logger all enabled with incremental graph      33.2820  27.1366  34.2829  30.0463  31.0268  34.2829  34.2829  34.2829  ±3.24%       17   slowest   
-   · zedux logger all enabled without incremental graph   46.9631  19.6140  23.0017  21.2933  22.0236  23.0017  23.0017  23.0017  ±1.75%       24
+ ✓ benchmarks/addZeduxLogger.bench.ts > addZeduxLogger 2160ms
+     name                                                      hz      min      max     mean      p75      p99     p995     p999      rme  samples
+   · basic zedux logger                                  1,341.58   0.3841   8.6236   0.7454   0.6063   5.6350   6.9558   8.6236   ±8.96%      671   fastest
+   · zedux logger all enabled with incremental graph      27.4315  27.9346  42.6874  36.4545  38.4571  42.6874  42.6874  42.6874   ±6.55%       14   slowest
+   · zedux logger all enabled without incremental graph   35.9028  20.0732  73.6078  27.8530  27.6724  73.6078  73.6078  73.6078  ±21.16%       18
 
  BENCH  Summary
 
   basic zedux logger - benchmarks/addZeduxLogger.bench.ts > addZeduxLogger
-    40.98x faster than zedux logger all enabled without incremental graph
-    57.83x faster than zedux logger all enabled with incremental graph
+    37.37x faster than zedux logger all enabled without incremental graph
+    48.91x faster than zedux logger all enabled with incremental graph
 
   basic zedux logger - benchmarks/deobfuscate.bench.ts > deobfuscate
-    3.38x faster than zedux logger no deobfuscate
-    7.63x faster than zedux logger deobfuscate
+    2.83x faster than zedux logger no deobfuscate
+    5.39x faster than zedux logger deobfuscate
 
   basic zedux logger - benchmarks/graph.bench.ts > graph
-    3.04x faster than zedux logger no graph
-    5.04x faster than zedux logger only top down graph
-    5.44x faster than zedux logger only flat graph
-    5.64x faster than zedux logger only bottom up graph
-    9.10x faster than zedux logger only by namespaces graph
-    9.33x faster than zedux logger only incremental top down graph
-    9.33x faster than zedux logger only incremental bottom up graph
-    9.70x faster than zedux logger only incremental by namespaces graph
-    10.66x faster than zedux logger all graphs
-    16.77x faster than zedux logger only incremental flat graph
-    24.40x faster than zedux logger all incremental graphs
+    3.03x faster than zedux logger no graph
+    4.22x faster than zedux logger only top down graph
+    4.98x faster than zedux logger only flat graph
+    5.47x faster than zedux logger only bottom up graph
+    6.96x faster than zedux logger only by namespaces graph
+    7.65x faster than zedux logger only incremental top down graph
+    8.54x faster than zedux logger only incremental by namespaces graph
+    8.93x faster than zedux logger only incremental bottom up graph
+    9.01x faster than zedux logger only incremental flat graph
+    11.46x faster than zedux logger all graphs
+    25.94x faster than zedux logger all incremental graphs
 
   basic zedux logger - benchmarks/oneLineLogs.bench.ts > one line logs
-    3.18x faster than zedux logger one lines logs
-    3.28x faster than zedux logger grouped logs
+    2.53x faster than zedux logger one lines logs
+    2.88x faster than zedux logger grouped logs
 
   basic zedux logger - benchmarks/snapshots.bench.ts > snapshots
-    3.35x faster than zedux logger no snapshots
-    4.15x faster than zedux logger snapshots
+    3.34x faster than zedux logger no snapshots
+    4.01x faster than zedux logger snapshots
 ```

@@ -1,3 +1,5 @@
+import type { ZeduxNode } from '@zedux/atoms';
+
 import type { Graph } from '../generateGraph/generateGraph.js';
 import type { WhatHappened } from '../parseWhatHappened/parseWhatHappened.js';
 import type { ZeduxLoggerEcosystemStorage } from './ZeduxLoggerEcosystemStorage.js';
@@ -76,6 +78,9 @@ export interface ZeduxLoggerLogArgs {
 
   /** The result of the logger's parsing of the event */
   what: WhatHappened;
+
+  /** List of source nodes that the current node is waiting */
+  waitingForPromisesNodes: ZeduxNode[] | undefined;
 
   /** The global logger's options used for this log. Can change based on the filter used. */
   globalOptions: CompleteZeduxLoggerGlobalOptions;

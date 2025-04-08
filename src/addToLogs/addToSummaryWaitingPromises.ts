@@ -3,7 +3,7 @@ import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
 export function addToSummaryWaitingPromises(args: ZeduxLoggerLogArgs): void {
   const {
     addLogToSummary,
-    what: { waitingForPromisesNodes },
+    waitingForPromisesNodes,
     options: {
       showInSummary: { showWaitingPromises },
       colors,

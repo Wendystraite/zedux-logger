@@ -1,4 +1,4 @@
-import type { Ecosystem, EcosystemEvents } from '@zedux/react';
+import type { Ecosystem, EcosystemEvents, ZeduxNode } from '@zedux/react';
 
 import { addAllBuiltInLoggers } from './addToLogs/addAllBuiltInLoggers.js';
 import { addAllBuiltInLoggersToDetails } from './addToLogs/addAllBuiltInLoggersToDetails.js';
@@ -35,6 +35,7 @@ import { calculateCanLogEventWithOptions } from './filters/calculateCanLogEventW
 import { generateGraph } from './generateGraph/generateGraph.js';
 import { generateSnapshot } from './generateSnapshot/generateSnapshot.js';
 import { logLogArgs } from './log/logLogArgs.js';
+import { getWaitingForNodes } from './parseWhatHappened/getWaitingForNodes.js';
 import { parseWhatHappened } from './parseWhatHappened/parseWhatHappened.js';
 import { getZeduxLoggerEcosystemStorage } from './storage/getZeduxLoggerEcosystemStorage.js';
 import type { Writeable } from './types/Writeable.js';
@@ -114,6 +115,15 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       }
     }
 
+    let waitingForPromisesNodes: ZeduxNode[] | undefined;
+    if (
+      what.node !== undefined &&
+      (localOptions.showInSummary.showWaitingPromises ||
+        localOptions.showInDetails.showWaitingPromises)
+    ) {
+      waitingForPromisesNodes = getWaitingForNodes(what.node);
+    }
+
     const logArgs: ZeduxLoggerLogArgs = {
       logSummary: '',
       logSummaryColors: [],
@@ -130,6 +140,7 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
       },
       storage,
       what,
+      waitingForPromisesNodes,
       globalOptions: storage.completeGlobalOptions,
       options: localOptions,
       graph: storage.graph,
