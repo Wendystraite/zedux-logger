@@ -1,5 +1,17 @@
 # zedux-logger
 
+## 2.1.0
+
+### Minor Changes
+
+- a77134f: Bump zedux to 2.0.0-rc.7
+
+  Show @memo nodes in the graph and in the snapshot.
+
+### Patch Changes
+
+- 6e3ba74: Better performances if waiting promises option is disabled
+
 ## 2.0.2
 
 ### Patch Changes
