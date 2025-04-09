@@ -117,6 +117,7 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
 
     let waitingForPromisesNodes: ZeduxNode[] | undefined;
     if (
+      canLog &&
       what.node !== undefined &&
       (localOptions.showInSummary.showWaitingPromises ||
         localOptions.showInDetails.showWaitingPromises)
