@@ -7,6 +7,7 @@ import {
   type GraphByNamespaces,
   generateGraphByNamespaces,
 } from '../src/generateGraph/generateGraphByNamespaces.js';
+import { parseNodeGroupNames } from '../src/parseAtomId/parseNodeGroupNames.js';
 import { defaults } from '../src/utils/defaults.js';
 import { addLotsOfAtomsInEcosystem } from './addLotsOfAtomsInEcosystem.js';
 
@@ -27,6 +28,7 @@ describe('graphByNamespaces', () => {
       getNode: (id: string) => {
         return createFakeNode(id, ecosystem.n.get(id)?.v);
       },
+      getNodeGroupNames: (node) => parseNodeGroupNames(node.id),
       globalGraphOptions: defaults(
         DEFAULT_ZEDUX_LOGGER_GLOBAL_OPTIONS.graphOptions,
         {
@@ -1220,6 +1222,7 @@ describe('graphByNamespaces', () => {
     const graph = generateGraphByNamespaces({
       flat: ecosystem.viewGraph('flat'),
       getNode: (id: string) => ecosystem.n.get(id),
+      getNodeGroupNames: (node) => parseNodeGroupNames(node.id),
       globalGraphOptions: defaults(
         DEFAULT_ZEDUX_LOGGER_GLOBAL_OPTIONS.graphOptions,
         {

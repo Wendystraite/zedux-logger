@@ -1,3 +1,4 @@
+import type { ZeduxNode } from '@zedux/atoms';
 import { type Ecosystem, type GraphViewRecursive } from '@zedux/react';
 
 import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
@@ -31,6 +32,7 @@ export function generateGraph(args: {
   calculateGraph: boolean;
   globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
   console: CompleteZeduxLoggerLocalOptions['console'];
+  getNodeGroupNames(this: void, node: ZeduxNode): string[];
 }): Graph | undefined {
   const {
     ecosystem,
@@ -41,6 +43,7 @@ export function generateGraph(args: {
     calculateTopDownGraph,
     globalGraphOptions,
     console,
+    getNodeGroupNames,
   } = args;
 
   let newGraph: Graph | undefined;
@@ -56,6 +59,7 @@ export function generateGraph(args: {
           flat: newGraph.flat,
           getNode: (id) => ecosystem.n.get(id),
           globalGraphOptions,
+          getNodeGroupNames,
         });
       }
       if (calculateBottomUpGraph) {

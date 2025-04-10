@@ -1,7 +1,6 @@
 import { ZeduxNode } from '@zedux/react';
 import { entries, groupBy, map, pipe } from 'remeda';
 
-import { parseNodeGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
 import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
 
 export const GRAPH_BY_NAMESPACES_NODE_TYPE: unique symbol = Symbol('nsNode');
@@ -39,6 +38,7 @@ export function isGraphByNamespacesNodeObject(
 
 export function generateGraphByNamespaces(args: {
   getNode(this: void, id: string): ZeduxNode | undefined;
+  getNodeGroupNames(this: void, node: ZeduxNode): string[];
   flat: Record<
     string,
     {
@@ -51,6 +51,7 @@ export function generateGraphByNamespaces(args: {
 }): GraphByNamespaces {
   const {
     getNode,
+    getNodeGroupNames,
     flat,
     globalGraphOptions: {
       showNodesInGraphByNamespaces,
@@ -65,8 +66,8 @@ export function generateGraphByNamespaces(args: {
   const nodes = pipe(
     entries(flat),
     map(([id, deps]): { groupNames: string[]; data: GraphByNamespacesNode } => {
-      const groupNames = parseNodeGroupNames(id);
       const node = getNode(id);
+      const groupNames = node === undefined ? [] : getNodeGroupNames(node);
       return {
         groupNames,
         data: onlyShowId

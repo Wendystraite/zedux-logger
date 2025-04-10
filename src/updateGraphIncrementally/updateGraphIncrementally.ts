@@ -1,4 +1,4 @@
-import type { EcosystemEvents } from '@zedux/react';
+import type { EcosystemEvents, ZeduxNode } from '@zedux/react';
 import { produce } from 'immer';
 
 import type { Graph } from '../generateGraph/generateGraph.js';
@@ -17,6 +17,7 @@ export function updateGraphIncrementally(args: {
   calculateBottomUpGraph: boolean;
   calculateByNamespacesGraph: boolean;
   globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
+  getNodeGroupNames(this: void, node: ZeduxNode): string[];
 }): Graph {
   const {
     eventMap,
@@ -26,6 +27,7 @@ export function updateGraphIncrementally(args: {
     calculateFlatGraph,
     calculateTopDownGraph,
     globalGraphOptions,
+    getNodeGroupNames,
   } = args;
   return produce(graph, (draft) => {
     if (calculateFlatGraph) {
@@ -52,6 +54,7 @@ export function updateGraphIncrementally(args: {
         eventMap,
         byNamespacesGraph: draft.byNamespaces as GraphByNamespaces,
         globalGraphOptions,
+        getNodeGroupNames,
       });
     }
   });

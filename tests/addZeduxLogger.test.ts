@@ -1,11 +1,16 @@
+import { render } from '@testing-library/react';
 import {
   type Ecosystem,
+  EcosystemProvider,
   api,
   atom,
   createEcosystem,
   injectAtomValue,
+  injectMemo,
   injectSignal,
+  useAtomState,
 } from '@zedux/react';
+import { createElement } from 'react';
 import {
   type Mock,
   afterEach,
@@ -291,6 +296,181 @@ describe('addZeduxLogger', () => {
       expect(consoleMock.group).not.toHaveBeenCalled();
       expect(consoleMock.groupCollapsed).not.toHaveBeenCalled();
       expect(consoleMock.groupEnd).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('node ids', () => {
+    it('should colorize node ids with namespaces', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: true,
+          oneLineLogs: true,
+        },
+      });
+
+      ecosystem.getNode(atom('simple/atom', 0));
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '%c[⚡] %csimple%c/%catom%c%c%c%c %cinitialized %cto %c0',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: inherit',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #3b82f6',
+          'color: #6b7280',
+          'color: inherit',
+        ],
+      ]);
+    });
+
+    it('should colorize built-in node ids', () => {
+      addZeduxLogger(ecosystem, {
+        templates: ['no-details'],
+        options: {
+          console: consoleMock,
+          showColors: true,
+          oneLineLogs: true,
+        },
+        filters: [
+          {
+            exclude: [{ type: '@atom' }],
+          },
+        ],
+      });
+
+      const node = ecosystem.getNode(
+        atom('simple/atom', () => {
+          // @signal
+          const signal = injectSignal(0);
+          // @memo
+          injectMemo(() => {});
+          return signal;
+        }),
+      );
+      // @listener
+      node.S!.on('change', () => {});
+      // @component
+      const simpleAtom2 = atom('simple/atom2', 0);
+      render(
+        createElement(
+          EcosystemProvider,
+          { ecosystem },
+          createElement(function MyComponent() {
+            useAtomState(simpleAtom2);
+            return null;
+          }),
+        ),
+      );
+      // @selector
+      ecosystem.getNode(function mySelector() {});
+
+      expect(consoleMock.log.mock.calls).toEqual([
+        [
+          '%c[⚡] %c@signal(%csimple%c/%catom%c%c%c%c)-%c1%c %cinitialized %cto %c0',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: inherit',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #3b82f6',
+          'color: #6b7280',
+          'color: inherit',
+        ],
+        [
+          '%c[⚡] %c@memo(%csimple%c/%catom%c%c%c%c)-%c2%c %cinitialized %cto %cundefined',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: inherit',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #3b82f6',
+          'color: #6b7280',
+          'color: inherit',
+        ],
+        [
+          '%c[⚡] %c@listener(%c@signal(simple/atom)-1%c)-%c3%c %cinitialized %cto %cundefined',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #3b82f6',
+          'color: #6b7280',
+          'color: inherit',
+        ],
+        [
+          '%c[⚡] %c@component(%cMyComponent%c)-%c:r0:%c %cinitialized %cto %cundefined',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: inherit',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #3b82f6',
+          'color: #6b7280',
+          'color: inherit',
+        ],
+        [
+          '%c[⚡] %c@selector(%cmySelector%c)-%c4%c %cinitialized %cto %cundefined',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: inherit',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #6b7280',
+          'color: #3b82f6',
+          'color: #6b7280',
+          'color: inherit',
+        ],
+      ]);
+    });
+
+    it('should not leak node ids', () => {
+      addZeduxLogger(ecosystem, {
+        options: {
+          console: consoleMock,
+          showColors: false,
+          oneLineLogs: true,
+        },
+      });
+
+      addLotsOfAtomsInEcosystem(ecosystem, { triggerSomeChanges: true });
+
+      expect(
+        getZeduxLoggerEcosystemStorage(ecosystem)?.parsedNodeIdsMapping,
+      ).not.toEqual(new Map());
+      expect(
+        getZeduxLoggerEcosystemStorage(ecosystem)?.parsedNodeGroupNamesMapping,
+      ).not.toEqual(new Map());
+
+      ecosystem.reset();
+
+      expect(
+        getZeduxLoggerEcosystemStorage(ecosystem)?.parsedNodeIdsMapping,
+      ).toEqual(new Map());
+      expect(
+        getZeduxLoggerEcosystemStorage(ecosystem)?.parsedNodeGroupNamesMapping,
+      ).toEqual(new Map());
     });
   });
 
@@ -2089,7 +2269,7 @@ describe('addZeduxLogger', () => {
           console: consoleMock,
           logHandler(logArgs) {
             logArgs.addLogToSummary(
-              `%cCustom summary log of ${logArgs.what.nodeId!}`,
+              `%cCustom summary log of ${logArgs.what.node?.id ?? '(undefined)'}`,
               '#FF0000',
             );
             logArgs.addLogToDetails({

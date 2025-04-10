@@ -1,17 +1,23 @@
+import { getParsedNodeIdFromStorageOrParse } from '../parseAtomId/getParsedNodeIdFromStorageOrParse.js';
 import type { ZeduxLoggerLogArgs } from '../types/ZeduxLoggerLogArgs.js';
-import { createAddToSummaryAtomName } from './createAddToSummaryAtomName.js';
+import { addToSummaryAnyNodeId } from './addToSummaryAnyNodeId.js';
 
 export function addToSummaryObserverAtomName(args: ZeduxLoggerLogArgs): void {
   const {
     options: {
       showInSummary: { showObserverName },
     },
-    what: { observerId, observerIdParsed },
+    what: { observer },
+    storage,
   } = args;
 
-  createAddToSummaryAtomName({
-    show: showObserverName,
-    nodeId: observerId,
-    nodeIdParsed: observerIdParsed,
-  })(args);
+  if (!showObserverName || observer === undefined) {
+    return;
+  }
+
+  addToSummaryAnyNodeId({
+    nodeId: observer.id,
+    nodeIdParsed: getParsedNodeIdFromStorageOrParse(observer, storage),
+    logArgs: args,
+  });
 }

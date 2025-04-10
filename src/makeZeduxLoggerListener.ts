@@ -35,6 +35,8 @@ import { calculateCanLogEventWithOptions } from './filters/calculateCanLogEventW
 import { generateGraph } from './generateGraph/generateGraph.js';
 import { generateSnapshot } from './generateSnapshot/generateSnapshot.js';
 import { logLogArgs } from './log/logLogArgs.js';
+import { cleanupParsedNodeIdsMapping } from './parseAtomId/cleanupParsedNodeIdsMapping.js';
+import { getParsedNodeGroupNamesFromStorageOrParse } from './parseAtomId/getParsedNodeGroupNamesFromStorageOrParse.js';
 import { getWaitingForNodes } from './parseWhatHappened/getWaitingForNodes.js';
 import { parseWhatHappened } from './parseWhatHappened/parseWhatHappened.js';
 import { getZeduxLoggerEcosystemStorage } from './storage/getZeduxLoggerEcosystemStorage.js';
@@ -78,6 +80,9 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
             calculateTopDownGraph: storage.calculateTopDownGraph,
             console: localOptions.console,
             globalGraphOptions: storage.completeGlobalOptions.graphOptions,
+            getNodeGroupNames(node) {
+              return getParsedNodeGroupNamesFromStorageOrParse(node, storage);
+            },
           });
         } else {
           storage.graph = updateGraphIncrementally({
@@ -88,6 +93,9 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
             calculateFlatGraph: storage.calculateFlatGraph,
             calculateTopDownGraph: storage.calculateTopDownGraph,
             globalGraphOptions: storage.completeGlobalOptions.graphOptions,
+            getNodeGroupNames(node) {
+              return getParsedNodeGroupNamesFromStorageOrParse(node, storage);
+            },
           });
         }
       } else if (canLog) {
@@ -100,6 +108,9 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
           calculateTopDownGraph: storage.calculateTopDownGraph,
           console: localOptions.console,
           globalGraphOptions: storage.completeGlobalOptions.graphOptions,
+          getNodeGroupNames(node) {
+            return getParsedNodeGroupNamesFromStorageOrParse(node, storage);
+          },
         });
       }
     }
@@ -188,10 +199,8 @@ export function makeZeduxLoggerListener(ecosystem: Ecosystem) {
     }
 
     warnExecutionTimeIfSlow(logArgs);
+    cleanupParsedNodeIdsMapping(logArgs);
 
-    checkIncrementalDataConsistency({
-      ecosystem,
-      storage,
-    });
+    checkIncrementalDataConsistency({ ecosystem, storage });
   };
 }

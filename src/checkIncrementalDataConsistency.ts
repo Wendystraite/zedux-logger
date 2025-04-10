@@ -4,6 +4,7 @@ import { isDeepEqual } from 'remeda';
 
 import { generateGraph } from './generateGraph/generateGraph.js';
 import { generateSnapshot } from './generateSnapshot/generateSnapshot.js';
+import { getParsedNodeGroupNamesFromStorageOrParse } from './parseAtomId/getParsedNodeGroupNamesFromStorageOrParse.js';
 import type { ZeduxLoggerEcosystemStorage } from './types/ZeduxLoggerEcosystemStorage.js';
 import type { CompleteZeduxLoggerLocalOptions } from './types/ZeduxLoggerLocalOptions.js';
 
@@ -52,6 +53,9 @@ export function checkIncrementalDataConsistency(args: {
           calculateTopDownGraph: storage.calculateTopDownGraph,
           console: storage.completeMergedOptions.console,
           globalGraphOptions: storage.completeMergedOptions.graphOptions,
+          getNodeGroupNames(node) {
+            return getParsedNodeGroupNamesFromStorageOrParse(node, storage);
+          },
         });
 
         checkConsistency({

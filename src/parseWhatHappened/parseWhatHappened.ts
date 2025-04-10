@@ -8,8 +8,6 @@ import {
   type ZeduxNode,
 } from '@zedux/react';
 
-import { getParsedNodeIdGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
-import { type ParsedNodeId, parseNodeId } from '../parseAtomId/parseNodeId.js';
 import type { EventMap } from '../types/EventMap.js';
 import type { ZeduxLoggerColors } from '../types/ZeduxLoggerColors.js';
 
@@ -25,15 +23,9 @@ export interface WhatHappened {
 
   operation?: string;
 
-  nodeId?: string;
-  nodeIdParsed?: ParsedNodeId;
-  nodeIdGroupNames?: string[];
-
   node?: ZeduxNode;
   observer?: ZeduxNode;
-  observerId?: string;
-  observerIdParsed?: ParsedNodeId;
-  observerIdGroupNames?: string[];
+
   template?: AnyAtomTemplate;
   tags?: string[];
 
@@ -87,18 +79,6 @@ export function parseWhatHappened(
   if (w.hasNewState === false && w.node !== undefined) {
     w.hasNewState = true;
     w.newState = w.node.getOnce();
-  }
-
-  if (w.node !== undefined) {
-    w.nodeId = w.node.id;
-    w.nodeIdParsed = parseNodeId(w.nodeId);
-    w.nodeIdGroupNames = getParsedNodeIdGroupNames(w.nodeIdParsed);
-  }
-
-  if (w.observer?.id !== undefined) {
-    w.observerId = w.observer.id;
-    w.observerIdParsed = parseNodeId(w.observerId);
-    w.observerIdGroupNames = getParsedNodeIdGroupNames(w.observerIdParsed);
   }
 
   if (w.node?.template instanceof AtomTemplateBase) {

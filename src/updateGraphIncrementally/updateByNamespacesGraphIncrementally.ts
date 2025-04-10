@@ -1,11 +1,10 @@
-import { type EcosystemEvents } from '@zedux/react';
+import { type EcosystemEvents, type ZeduxNode } from '@zedux/react';
 
 import type { Graph } from '../generateGraph/generateGraph.js';
 import {
   type GraphByNamespacesNode,
   isGraphByNamespacesNodeObject,
 } from '../generateGraph/generateGraphByNamespaces.js';
-import { parseNodeGroupNames } from '../parseAtomId/parseNodeGroupNames.js';
 import type { CompleteZeduxLoggerGlobalOptions } from '../types/ZeduxLoggerGlobalOptions.js';
 import { addRecursiveGraphByNamespacesNodeToPath } from './utils/addRecursiveGraphByNamespacesNodeToPath.js';
 import { getDefaultByNamespacesGraphNode } from './utils/getDefaultByNamespacesGraphNode.js';
@@ -16,11 +15,13 @@ export function updateByNamespacesGraphIncrementally(args: {
   eventMap: Partial<EcosystemEvents>;
   byNamespacesGraph: NonNullable<Graph['byNamespaces']>;
   globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
+  getNodeGroupNames(this: void, node: ZeduxNode): string[];
 }): void {
   const {
     eventMap: { cycle, edge },
     byNamespacesGraph,
     globalGraphOptions,
+    getNodeGroupNames,
   } = args;
 
   if (cycle === undefined && edge === undefined) {
@@ -28,9 +29,19 @@ export function updateByNamespacesGraphIncrementally(args: {
   }
 
   if (cycle) {
-    handleCycleEvent({ cycle, draft: byNamespacesGraph, globalGraphOptions });
+    handleCycleEvent({
+      cycle,
+      draft: byNamespacesGraph,
+      globalGraphOptions,
+      getNodeGroupNames,
+    });
   } else if (edge) {
-    handleEdgeEvent({ edge, draft: byNamespacesGraph, globalGraphOptions });
+    handleEdgeEvent({
+      edge,
+      draft: byNamespacesGraph,
+      globalGraphOptions,
+      getNodeGroupNames,
+    });
   }
 }
 
@@ -38,16 +49,18 @@ function handleCycleEvent(args: {
   cycle: NonNullable<EcosystemEvents['cycle']>;
   draft: NonNullable<Graph['byNamespaces']>;
   globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
+  getNodeGroupNames(this: void, node: ZeduxNode): string[];
 }): void {
   const {
     cycle: { oldStatus, newStatus, source },
     draft,
     globalGraphOptions,
+    getNodeGroupNames,
   } = args;
 
   if (source !== undefined) {
     if (oldStatus === 'Initializing' && newStatus === 'Active') {
-      const sourceGroupNames = parseNodeGroupNames(source.id);
+      const sourceGroupNames = getNodeGroupNames(source);
 
       // console.log(
       //   `[byNs] add the newly active "${source.id}" node to byNamespaces graph with group names: "${sourceGroupNames.join('/')}"`,
@@ -59,7 +72,7 @@ function handleCycleEvent(args: {
         getDefaultByNamespacesGraphNode(source, globalGraphOptions),
       );
     } else if (newStatus === 'Destroyed') {
-      const sourceGroupNames = parseNodeGroupNames(source.id);
+      const sourceGroupNames = getNodeGroupNames(source);
 
       // console.log(
       //   `[byNs] remove the destroyed "${source.id}" node from byNamespaces graph with group names: "${sourceGroupNames.join('/')}"`,
@@ -74,15 +87,17 @@ function handleEdgeEvent(args: {
   edge: NonNullable<EcosystemEvents['edge']>;
   draft: NonNullable<Graph['byNamespaces']>;
   globalGraphOptions: CompleteZeduxLoggerGlobalOptions['graphOptions'];
+  getNodeGroupNames(this: void, node: ZeduxNode): string[];
 }): void {
   const {
     edge: { action, source, observer },
     draft,
     globalGraphOptions,
+    getNodeGroupNames,
   } = args;
 
-  const sourceGroupNames = parseNodeGroupNames(source.id);
-  const observerGroupNames = parseNodeGroupNames(observer.id);
+  const sourceGroupNames = getNodeGroupNames(source);
+  const observerGroupNames = getNodeGroupNames(observer);
 
   let sourceGraphNode: GraphByNamespacesNode | undefined =
     getRecursiveGraphByNamespacesNodeToPath(draft, sourceGroupNames);

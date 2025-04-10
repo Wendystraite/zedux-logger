@@ -1,6 +1,7 @@
 import type { ZeduxNode } from '@zedux/react';
 
 import type { Graph } from '../generateGraph/generateGraph.js';
+import type { ParsedNodeId } from '../parseAtomId/parseNodeId.js';
 import type { ZeduxLoggerFilter } from './ZeduxLoggerFilter.js';
 import type { CompleteZeduxLoggerGlobalOptions } from './ZeduxLoggerGlobalOptions.js';
 import type { CompleteZeduxLoggerLocalOptions } from './ZeduxLoggerLocalOptions.js';
@@ -50,6 +51,16 @@ export interface ZeduxLoggerEcosystemStorage {
    * A mapping of nodes to the time they started running (@link RunStartEvent).
    */
   runStartTimeMapping: Map<ZeduxNode, /** performance.now() */ number>;
+  /**
+   * A mapping of nodes to the parsing of their IDs.
+   * This is used to avoid parsing the same ID multiple times.
+   */
+  parsedNodeIdsMapping: Map<ZeduxNode, ParsedNodeId>;
+  /**
+   * A mapping of nodes to the group names parsed from their IDs.
+   * This is used to avoid parsing the same ID multiple times.
+   */
+  parsedNodeGroupNamesMapping: Map<ZeduxNode, string[]>;
 
   /** Whether the logger is generating a graph */
   calculateGraph: boolean;

@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { DEFAULT_ZEDUX_LOGGER_GLOBAL_OPTIONS } from '../src/consts/default-zedux-logger-global-options';
 import { type Graph, generateGraph } from '../src/generateGraph/generateGraph';
+import { parseNodeGroupNames } from '../src/parseAtomId/parseNodeGroupNames';
 import { updateGraphIncrementally } from '../src/updateGraphIncrementally/updateGraphIncrementally';
 import { defaults } from '../src/utils/defaults';
 
@@ -121,6 +122,7 @@ describe.each([
         calculateFlatGraph: true,
         calculateTopDownGraph: true,
         globalGraphOptions: completeGlobalGraphOptions,
+        getNodeGroupNames: (node) => parseNodeGroupNames(node.id),
       });
 
       // if (eventMap.cycle !== undefined || eventMap.edge !== undefined) {
@@ -160,6 +162,7 @@ describe.each([
       calculateFlatGraph: true,
       calculateGraph: true,
       calculateTopDownGraph: true,
+      getNodeGroupNames: (node) => parseNodeGroupNames(node.id),
     });
 
     expect(graph.flat).toEqual(generated?.flat);
@@ -184,6 +187,7 @@ describe.each([
       calculateFlatGraph: true,
       calculateTopDownGraph: true,
       globalGraphOptions: completeGlobalGraphOptions,
+      getNodeGroupNames: (node) => parseNodeGroupNames(node.id),
     });
     expect(result).toBe(graph);
   });
