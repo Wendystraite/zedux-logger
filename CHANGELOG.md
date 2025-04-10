@@ -1,5 +1,15 @@
 # zedux-logger
 
+## 2.2.0
+
+### Minor Changes
+
+- d6baab4: Better performances when logging already existing nodes by caching the parsing of the node ids.
+
+### Patch Changes
+
+- de41a86: Better performances when some nodes are excluded
+
 ## 2.1.0
 
 ### Minor Changes
