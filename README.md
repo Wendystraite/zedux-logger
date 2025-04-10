@@ -1,5 +1,8 @@
 # Zedux Logger
 
+[![npm](https://img.shields.io/npm/v/%40wendystraite%2Fzedux-logger)](https://www.npmjs.com/package/@wendystraite/zedux-logger)
+[![license](https://shields.io/badge/license-MIT-informational)](https://github.com/Wendystraite/zedux-logger/blob/main/LICENSE.md)
+
 Logging utility for [Zedux](https://github.com/Omnistac/zedux).
 
 ⚠️ This library is a work in progress and has performance issues, **use only in development** ⚠️
